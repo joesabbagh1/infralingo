@@ -1,0 +1,690 @@
+[
+  {
+    "id": "cloud-iam-01",
+    "skillId": "cloud-iam",
+    "difficulty": "medium",
+    "prompt": "A human and a workload should not share an access key because:",
+    "choices": [
+      "IAM allows only one key per account, so sharing is required.",
+      "Workloads cannot use roles.",
+      "You cannot revoke one without breaking the other, and the audit trail does not say who acted.",
+      "Keys are safer when shared."
+    ],
+    "answer": 2,
+    "explanation": "Give the human SSO and the workload a role it assumes. No long-lived shared key.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-iam-02",
+    "skillId": "cloud-iam",
+    "difficulty": "medium",
+    "prompt": "An instance profile or workload identity is better than a key on disk because:",
+    "choices": [
+      "It cannot be scoped.",
+      "It disables CloudTrail.",
+      "The credential is short-lived and tied to the compute, and there is no secret to commit.",
+      "It grants administrator by design."
+    ],
+    "answer": 2,
+    "explanation": "Scope the role to the API calls that instance actually makes.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-iam-03",
+    "skillId": "cloud-iam",
+    "difficulty": "easy",
+    "prompt": "Least privilege for a deploy role means:",
+    "choices": [
+      "The role is AdministratorAccess so deploys never fail.",
+      "The role has no permissions and the deploy uses a user's password.",
+      "One role is shared with the data science laptops.",
+      "The role can perform the deploy and cannot administer the account."
+    ],
+    "answer": 3,
+    "explanation": "Start from the API calls the pipeline makes. Add those. Do not start from admin and hope.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-iam-04",
+    "skillId": "cloud-iam",
+    "difficulty": "hard",
+    "prompt": "A resource policy on a bucket and an identity policy on a role both exist. Access is allowed when:",
+    "choices": [
+      "Only the bucket policy matters for IAM users.",
+      "Both sides allow it, and neither denies it. An explicit deny wins.",
+      "The resource policy is ignored if the caller is in the same account, always.",
+      "Only the identity policy matters."
+    ],
+    "answer": 1,
+    "explanation": "When something is denied and you expected allow, read both documents and look for an explicit deny.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-vpc-01",
+    "skillId": "cloud-vpc",
+    "difficulty": "medium",
+    "prompt": "A public subnet is public because:",
+    "choices": [
+      "Its name contains the word public. Routes are irrelevant.",
+      "It uses a 10.0.0.0 address.",
+      "It has no network ACL.",
+      "Its route table sends 0.0.0.0/0 to an internet gateway, and the instance has a public address."
+    ],
+    "answer": 3,
+    "explanation": "The route and the address are the definition. A private address with a route to the IGW still needs a public path to be reachable.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-vpc-02",
+    "skillId": "cloud-vpc",
+    "difficulty": "easy",
+    "prompt": "A VPC peering or a transit gateway connects:",
+    "choices": [
+      "Only DNS.",
+      "Private networks so instances can route to each other's private addresses, without making them public.",
+      "Every instance to the internet.",
+      "IAM roles."
+    ],
+    "answer": 1,
+    "explanation": "Add routes both ways for the prefixes you actually need. Peering is not transitive in the classic AWS form.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-vpc-03",
+    "skillId": "cloud-vpc",
+    "difficulty": "medium",
+    "prompt": "You put a database in a private subnet and a bastion in a public subnet. What did you gain?",
+    "choices": [
+      "The database has no public route. Administration goes through a host you can lock down.",
+      "The database is unreachable from the application too.",
+      "The bastion is unnecessary if the database is private.",
+      "Private subnets cannot accept connections from other subnets in the VPC."
+    ],
+    "answer": 0,
+    "explanation": "Security groups still have to allow the app tier. Private does not mean isolated from the VPC.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-vpc-04",
+    "skillId": "cloud-vpc",
+    "difficulty": "hard",
+    "prompt": "A NAT gateway is in one availability zone and that zone fails. What fails with it?",
+    "choices": [
+      "Inbound traffic to a public load balancer in another zone.",
+      "IAM.",
+      "Objects already stored in a regional bucket, by themselves.",
+      "Outbound internet from private subnets whose default route points only at that NAT."
+    ],
+    "answer": 3,
+    "explanation": "A single NAT is a single egress path. Multi-AZ egress costs more and fails less.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-sg-01",
+    "skillId": "cloud-sg",
+    "difficulty": "medium",
+    "prompt": "A security group is stateful. You allow inbound 443. What do you not have to add?",
+    "choices": [
+      "A route to the client.",
+      "A listener on 443.",
+      "The instance.",
+      "An outbound rule for the return packets of that same connection."
+    ],
+    "answer": 3,
+    "explanation": "Statefulness is the difference from a NACL, which needs the return path spelled out.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-sg-02",
+    "skillId": "cloud-sg",
+    "difficulty": "easy",
+    "prompt": "0.0.0.0/0 on port 22 in a security group means:",
+    "choices": [
+      "Only your office, because security groups are private.",
+      "SSH is disabled.",
+      "The port is open only for ten minutes.",
+      "The entire IPv4 internet may attempt SSH."
+    ],
+    "answer": 3,
+    "explanation": "Use a VPN, a bastion, or SSM. Do not leave administration on the internet.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-sg-03",
+    "skillId": "cloud-sg",
+    "difficulty": "hard",
+    "prompt": "The security group allows the port and the connection still times out. A NACL is on the subnet. What is a likely gap?",
+    "choices": [
+      "Security groups override NACLs completely.",
+      "NACLs only affect ICMP.",
+      "Time outs are always the application.",
+      "The stateless NACL allows the request and drops the return, or the reverse."
+    ],
+    "answer": 3,
+    "explanation": "Check both. A timeout is often a drop, and a drop is often the stateless half.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-sg-04",
+    "skillId": "cloud-sg",
+    "difficulty": "medium",
+    "prompt": "Referencing another security group as the source, instead of a CIDR, is better because:",
+    "choices": [
+      "Traffic is allowed from whatever currently has that group, even if the IPs change.",
+      "The group reference disables egress.",
+      "CIDRs are more precise for autoscaling members.",
+      "Group references are not supported."
+    ],
+    "answer": 0,
+    "explanation": "Autoscaling changes IPs. The group membership is the stable name.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-compute-01",
+    "skillId": "cloud-compute",
+    "difficulty": "medium",
+    "prompt": "An autoscaling group replaces an instance that fails its health check. What must be true for that to be safe?",
+    "choices": [
+      "The instance's disk is the only copy of the database.",
+      "User data fetches a secret and writes it to a world-readable file.",
+      "The health check is a ping, while the process is dead. That would not replace it.",
+      "The instance is disposable. State lives elsewhere."
+    ],
+    "answer": 3,
+    "explanation": "Treat the instance as cattle. A health check that matches the real failure is part of the design.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-compute-02",
+    "skillId": "cloud-compute",
+    "difficulty": "easy",
+    "prompt": "User data is:",
+    "choices": [
+      "The IAM policy.",
+      "The disk snapshot.",
+      "A Kubernetes manifest.",
+      "A script or config the instance runs on boot. It is not a secret store."
+    ],
+    "answer": 3,
+    "explanation": "Logs of user data end up in cloud logs. Do not put a long-lived password in them.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-compute-03",
+    "skillId": "cloud-compute",
+    "difficulty": "medium",
+    "prompt": "ECS or a VM and Kubernetes can all run a container. What is the platform choice really about?",
+    "choices": [
+      "VMs cannot run containers.",
+      "ECS cannot use IAM.",
+      "How much of scheduling, identity, and rollout you want to operate yourself.",
+      "Containers only run on Kubernetes."
+    ],
+    "answer": 2,
+    "explanation": "Pick the control plane your team can run at 2 a.m.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-compute-04",
+    "skillId": "cloud-compute",
+    "difficulty": "hard",
+    "prompt": "You baked a secret into an AMI. What is true after you rotate the secret in the manager?",
+    "choices": [
+      "Snapshots cannot contain files.",
+      "Every instance launched from that AMI still has the old secret until you bake again and replace them.",
+      "AMIs refetch user data secrets on every API call.",
+      "Deregistering the AMI wipes disks already running."
+    ],
+    "answer": 1,
+    "explanation": "Secrets in images outlive the rotation. Inject them at boot.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-lb-01",
+    "skillId": "cloud-lb",
+    "difficulty": "medium",
+    "prompt": "An application load balancer and a network load balancer differ because:",
+    "choices": [
+      "The application one cannot have a health check.",
+      "The application one understands HTTP and can route on host and path. The network one forwards TCP or UDP.",
+      "The network one terminates TLS and routes on URL. That is the application one, unless you added TLS features deliberately.",
+      "They both require Kubernetes."
+    ],
+    "answer": 1,
+    "explanation": "Choose from the protocol you need to see.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-lb-02",
+    "skillId": "cloud-lb",
+    "difficulty": "easy",
+    "prompt": "A health check on /healthz that the app does not serve will:",
+    "choices": [
+      "Replace the security group.",
+      "Mark every target unhealthy and stop sending users.",
+      "Be ignored.",
+      "Increase capacity."
+    ],
+    "answer": 1,
+    "explanation": "The check has to match a path the app actually answers.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-lb-03",
+    "skillId": "cloud-lb",
+    "difficulty": "medium",
+    "prompt": "Sticky sessions on a load balancer hurt when:",
+    "choices": [
+      "Health checks are on.",
+      "One client is actually a single NAT full of users, so one target gets the whole office.",
+      "You have one target.",
+      "The protocol is UDP and you enabled HTTP cookies. Cookies are not the UDP mechanism."
+    ],
+    "answer": 1,
+    "explanation": "Affinity is a workaround for state in the process. Moving the state out avoids it.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-lb-04",
+    "skillId": "cloud-lb",
+    "difficulty": "hard",
+    "prompt": "TLS terminates at the load balancer and the backend only sees HTTP. What do you still verify?",
+    "choices": [
+      "The certificate is installed on every client.",
+      "The backend must present the same public certificate or the balancer will not work. Not when it is terminating.",
+      "The backend is not also reachable directly from the network, skipping the balancer and the TLS.",
+      "Nothing. HTTP inside the VPC is always fine."
+    ],
+    "answer": 2,
+    "explanation": "A private path that bypasses the balancer bypasses the policy you thought you had.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-registry-01",
+    "skillId": "cloud-registry",
+    "difficulty": "medium",
+    "prompt": "A cloud container registry such as ECR is where:",
+    "choices": [
+      "Terraform state must live.",
+      "Only public images can be pushed.",
+      "Images live, with IAM deciding who can push and pull, separate from the cluster's RBAC.",
+      "Kubernetes Secrets are stored by default."
+    ],
+    "answer": 2,
+    "explanation": "The node role needs pull. The CI role needs push. Those are different principals.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-registry-02",
+    "skillId": "cloud-registry",
+    "difficulty": "easy",
+    "prompt": "Scanning an image on push tells you:",
+    "choices": [
+      "The image is safe to run forever.",
+      "The Dockerfile is linted.",
+      "The cluster will refuse the image. Not unless you also enforce that.",
+      "Known vulnerabilities in the layers at that moment. It does not patch them."
+    ],
+    "answer": 3,
+    "explanation": "Scan is a signal. Admission or a rebuild is the control.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-registry-03",
+    "skillId": "cloud-registry",
+    "difficulty": "medium",
+    "prompt": "You want production to pull only from your registry, not from Docker Hub. What enforces it?",
+    "choices": [
+      "Network egress, an admission policy, or a runtime policy. A team convention does not.",
+      "The registry's existence.",
+      "A Dockerfile comment.",
+      "IAM on the registry, which cannot see pulls from somewhere else."
+    ],
+    "answer": 0,
+    "explanation": "Block the other path. Otherwise the next manifest will use a public tag.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-registry-04",
+    "skillId": "cloud-registry",
+    "difficulty": "hard",
+    "prompt": "Immutable tags on the registry help because:",
+    "choices": [
+      "It disables deletion.",
+      "A push cannot quietly replace the bytes behind a tag the cluster already references.",
+      "Tags become digests.",
+      "Immutability encrypts the layers."
+    ],
+    "answer": 1,
+    "explanation": "Combine it with a digest pin if the tag is a version you will trust.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-object-01",
+    "skillId": "cloud-object",
+    "difficulty": "medium",
+    "prompt": "Object storage for Terraform state needs:",
+    "choices": [
+      "No versioning, so the file stays small.",
+      "The same bucket as the public website.",
+      "Versioning, encryption, restricted IAM, and a lock. Public access blocked.",
+      "A public-read ACL so the team can debug it."
+    ],
+    "answer": 2,
+    "explanation": "State contains ids and often secrets. Treat the bucket as production data.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-object-02",
+    "skillId": "cloud-object",
+    "difficulty": "easy",
+    "prompt": "A bucket and an object differ because:",
+    "choices": [
+      "Objects can exist without a bucket.",
+      "Buckets are regional and objects are always global with no home region. The bucket has a region or a location constraint.",
+      "The bucket is the container and the policy boundary. The object is one file inside it.",
+      "They are the same ARN."
+    ],
+    "answer": 2,
+    "explanation": "Block public access at the bucket. One object ACL should not be the only control.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-object-03",
+    "skillId": "cloud-object",
+    "difficulty": "hard",
+    "prompt": "You enabled versioning after a ransomware-style overwrite. What do you get for the future, not the past?",
+    "choices": [
+      "Versioning restores every historical object that existed before you enabled it.",
+      "Versioning prevents deletes.",
+      "Versioning publishes the bucket.",
+      "Later overwrites keep the previous bytes as a version. The overwrite that already happened is not undone by turning versioning on."
+    ],
+    "answer": 3,
+    "explanation": "Turn it on before the incident if you want the previous copy.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-object-04",
+    "skillId": "cloud-object",
+    "difficulty": "medium",
+    "prompt": "A lifecycle rule moves old build artifacts to cold storage. What must you not do to the current release?",
+    "choices": [
+      "Expire it. The artifact you may roll back to has to stay readable.",
+      "Encrypt it.",
+      "Put it in a prefix.",
+      "Name it with a version."
+    ],
+    "answer": 0,
+    "explanation": "Lifecycle is a cost tool. Exclude the versions your rollback story needs.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-regions-01",
+    "skillId": "cloud-regions",
+    "difficulty": "medium",
+    "prompt": "An availability zone and a region differ because:",
+    "choices": [
+      "They are synonyms.",
+      "A zone spans continents.",
+      "A region is a single data center.",
+      "A region is a group of zones. A zone is a failure domain with its own power and network inside that region."
+    ],
+    "answer": 3,
+    "explanation": "One zone failing should not take a regional service you designed to survive it. A single-AZ database will.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-regions-02",
+    "skillId": "cloud-regions",
+    "difficulty": "easy",
+    "prompt": "Running a copy of a service in a second region helps when:",
+    "choices": [
+      "You can actually fail over data and DNS, not when the second copy is an empty cluster.",
+      "The second region shares the first region's control plane failure.",
+      "You want lower latency on the same city only. That is a zone or an edge, not automatically a region.",
+      "IAM is regional and cannot be duplicated. Identity is often global. Know which control is."
+    ],
+    "answer": 0,
+    "explanation": "A region pair is a project: data, identity, and the switch. A second VPC with no data is a diagram.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-regions-03",
+    "skillId": "cloud-regions",
+    "difficulty": "hard",
+    "prompt": "The managed database is regional and the app is multi-AZ. The database fails over. What do the app instances see?",
+    "choices": [
+      "Each AZ has its own independent primary.",
+      "The endpoint DNS name changes to the AZ name.",
+      "A short break, then the same endpoint, if they reconnect. They do not each fail over independently.",
+      "Nothing. Multi-AZ apps do not notice a database failover."
+    ],
+    "answer": 2,
+    "explanation": "Test reconnects. A failover that your connection pool cannot survive is still an outage.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-regions-04",
+    "skillId": "cloud-regions",
+    "difficulty": "medium",
+    "prompt": "Putting the only NAT, the only bastion, and the only CI runner in one zone means:",
+    "choices": [
+      "That zone is your real availability, whatever the slide says.",
+      "The region is highly available.",
+      "Zones are decorative.",
+      "The load balancer fixes it."
+    ],
+    "answer": 0,
+    "explanation": "Count the things that exist once. Those are the failure domains.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "cloud-iam-05",
+    "skillId": "cloud-iam",
+    "difficulty": "medium",
+    "prompt": "IAM fundamentals on that path separate users and roles because:",
+    "choices": [
+      "A person should assume a role for a task. A long-lived user key is not how a workload should call an API.",
+      "Roles cannot be scoped and users can.",
+      "Users are for applications and roles are for people. That swaps them.",
+      "A role is a password."
+    ],
+    "answer": 0,
+    "explanation": "Policy is the allow. The principal is who presents it. Do not share one key across both.",
+    "source": "devsec blueprint",
+    "url": "https://devsecblueprint.com/curriculum"
+  },
+  {
+    "id": "cloud-compute-05",
+    "skillId": "cloud-compute",
+    "difficulty": "medium",
+    "prompt": "Many managed Kubernetes products put the API server on the internet by default. The census post's advice is:",
+    "choices": [
+      "Turn that off when you do not need it. The certificate and the version banner are enough for the internet to find you.",
+      "Leave it open and rely on anonymous auth being useless.",
+      "The API cannot listen on 443.",
+      "A public API is required for kubelet heartbeats."
+    ],
+    "answer": 0,
+    "explanation": "1.6 million version-disclosing API servers was the last count before that census stopped. Exposure is the common case, not the exception.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2021-06-05-A-Census-of-Kubernetes-Clusters.markdown"
+  },
+  {
+    "id": "cloud-registry-05",
+    "skillId": "cloud-registry",
+    "difficulty": "medium",
+    "prompt": "A registry is an OCI HTTP API. In a Kubernetes patch path it is:",
+    "choices": [
+      "Only a cache of Docker Hub.",
+      "The same store as etcd.",
+      "The place the new image must land before a rollout can pull it. Losing the registry stops updates.",
+      "Optional, because nodes build images locally."
+    ],
+    "answer": 2,
+    "explanation": "Authenticate push and pull separately. A cluster that can push to its own registry can replace what it runs.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2022-12-14-PCI-Kubernetes-Section13%20-%20Registry.markdown"
+  },
+  {
+    "id": "cloud-vpc-05",
+    "skillId": "cloud-vpc",
+    "difficulty": "easy",
+    "prompt": "A Terraform VPC exercise with 10.0.0.0/16 and a subnet 10.0.1.0/24 must also:",
+    "choices": [
+      "Skip the route table.",
+      "Assign a public IP to every address in the /16.",
+      "Put the subnet in that VPC. A subnet CIDR outside the VPC CIDR will not create.",
+      "Use a default VPC only."
+    ],
+    "answer": 2,
+    "explanation": "The subnet is a slice of the VPC. The dependency is the VPC id.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+  },
+  {
+    "id": "cloud-compute-06",
+    "skillId": "cloud-compute",
+    "difficulty": "easy",
+    "prompt": "An EC2 instance in Terraform is not 'Amazon Linux 2' unless:",
+    "choices": [
+      "You tag it Name=amazon-linux.",
+      "The default AMI is Amazon Linux.",
+      "The AMI id you set is that image, in that region. AMI ids are not global.",
+      "You set instance_type to t2.micro. That picks the OS."
+    ],
+    "answer": 2,
+    "explanation": "Look up the AMI in the region you deploy. A hard-coded id from a blog is often wrong or old.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+  },
+  {
+    "id": "cloud-sg-05",
+    "skillId": "cloud-sg",
+    "difficulty": "medium",
+    "prompt": "The AWS, Azure, and GCP security challenges are the same shape:",
+    "choices": [
+      "Security groups are stateless everywhere.",
+      "Identity is least privilege, storage is not public, and the network allow is the port you mean.",
+      "Each cloud uses Kubernetes RBAC for VM firewalls.",
+      "A public bucket is required for Terraform state."
+    ],
+    "answer": 1,
+    "explanation": "Translate the control, do not memorize three consoles and miss the idea.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+  },
+  {
+    "id": "cloud-iam-06",
+    "skillId": "cloud-iam",
+    "difficulty": "easy",
+    "prompt": "A serverless to-do API in that challenge puts permissions:",
+    "choices": [
+      "In the client application as an access key.",
+      "On the API Gateway as a wildcard.",
+      "In the DynamoDB item.",
+      "On the Lambda role, scoped to the one table. The function should not use an admin user key."
+    ],
+    "answer": 3,
+    "explanation": "API Gateway is the front door. The function's role is the cloud permission.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+  },
+  {
+    "id": "cloud-compute-07",
+    "skillId": "cloud-compute",
+    "difficulty": "hard",
+    "prompt": "A Lambda that cannot read its S3 bucket, with Terraform already applied, is usually:",
+    "choices": [
+      "A VPC that Lambda always requires.",
+      "The function role or the bucket policy, not the provider block you were told not to change.",
+      "A missing region in the laptop AWS CLI only.",
+      "An IAM change you make in the console and never in code."
+    ],
+    "answer": 1,
+    "explanation": "The exercise forbids a console fix. The role belongs in Terraform.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+  },
+  {
+    "id": "cloud-compute-08",
+    "skillId": "cloud-compute",
+    "difficulty": "medium",
+    "prompt": "Packer then Terraform means:",
+    "choices": [
+      "Terraform SSHes on every apply to yum install.",
+      "The AMI is rebuilt on every instance boot.",
+      "User data is forbidden.",
+      "Packer bakes Nginx into an AMI. Terraform launches instances from that AMI and does not install Nginx over SSH."
+    ],
+    "answer": 3,
+    "explanation": "Replace the instance to patch. Do not patch the running one and call it immutable.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+  },
+  {
+    "id": "cloud-lb-05",
+    "skillId": "cloud-lb",
+    "difficulty": "medium",
+    "prompt": "Traefik on ECS is the edge router. It fails when:",
+    "choices": [
+      "Traefik replaces IAM.",
+      "The target group or the task port does not match the container, or the security group blocks the load balancer.",
+      "The Dockerfile has a HEALTHCHECK. That is irrelevant to the cloud path.",
+      "ECS cannot run more than one task."
+    ],
+    "answer": 1,
+    "explanation": "The route, the task, and the security group are three different configs that must agree.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+  },
+  {
+    "id": "cloud-compute-09",
+    "skillId": "cloud-compute",
+    "difficulty": "medium",
+    "prompt": "Serverless permission boundaries matter because:",
+    "choices": [
+      "A function cannot have a role.",
+      "API Gateway policies replace the function role.",
+      "The function role is the only cloud identity the code should have, and the event source should not be the whole account.",
+      "Lambda runs as the account root."
+    ],
+    "answer": 2,
+    "explanation": "A too-wide role turns one bug into every bucket.",
+    "source": "devsec blueprint",
+    "url": "https://devsecblueprint.com/curriculum"
+  }
+]

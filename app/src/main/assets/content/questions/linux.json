@@ -1,0 +1,1186 @@
+[
+  {
+    "id": "linux-processes-01",
+    "skillId": "linux-processes",
+    "difficulty": "medium",
+    "prompt": "A service is up but slow, and load average is high while CPU idle stays high. What does that usually mean?",
+    "choices": [
+      "The host is out of process IDs.",
+      "The OOM killer is about to fire.",
+      "Every CPU core is in userspace.",
+      "Work is stuck waiting on I/O or uninterruptible sleep, not burning CPU."
+    ],
+    "answer": 3,
+    "explanation": "Load average counts tasks that are running or waiting on I/O. High load with idle CPU points at waiting, often disk or a stuck filesystem.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-processes-02",
+    "skillId": "linux-processes",
+    "difficulty": "medium",
+    "prompt": "You need the parent of a stuck process and what it is waiting on. Which pair of facts is the useful one?",
+    "choices": [
+      "Only the process name from ps, which includes the wait channel.",
+      "The executable inode, which stores the parent.",
+      "nice, which is the parent pid.",
+      "PPID from the process list, and the wchan or stack in /proc."
+    ],
+    "answer": 3,
+    "explanation": "ps shows PPID. /proc/<pid>/wchan or the stack shows the kernel wait. The name and niceness do not tell you who spawned it or why it is stuck.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-processes-03",
+    "skillId": "linux-processes",
+    "difficulty": "hard",
+    "prompt": "A zombie is accumulating. What actually clears it?",
+    "choices": [
+      "Dropping caches.",
+      "Raising nofile.",
+      "The parent calls wait. Killing the zombie itself does nothing, because it is already dead.",
+      "Restarting the process with the same PID."
+    ],
+    "answer": 2,
+    "explanation": "A zombie is an exited child whose parent has not collected the status. Reparent it to init by killing a stuck parent if that parent will never wait.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-processes-04",
+    "skillId": "linux-processes",
+    "difficulty": "easy",
+    "prompt": "What is a reasonable first check when a host feels busy?",
+    "choices": [
+      "Disable swap before looking at anything else.",
+      "uptime, the runnable and blocked counts, and which processes are in D or R.",
+      "Immediately reboot so the load average resets.",
+      "Delete /var/log."
+    ],
+    "answer": 1,
+    "explanation": "Characterize the host before changing it: load, CPU versus I/O wait, and the process states.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-signals-01",
+    "skillId": "linux-signals",
+    "difficulty": "medium",
+    "prompt": "A process ignores SIGTERM and you need it gone. What is the honest next step?",
+    "choices": [
+      "SIGKILL, knowing it cannot be caught and will not run cleanup.",
+      "SIGSTOP, which terminates after the next syscall.",
+      "SIGHUP, which the kernel treats as an unblockable kill.",
+      "SIGCHLD, which reaps and deletes the process."
+    ],
+    "answer": 0,
+    "explanation": "SIGTERM can be handled. SIGKILL cannot. Use it when a process will not exit, and expect no graceful shutdown.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-signals-02",
+    "skillId": "linux-signals",
+    "difficulty": "medium",
+    "prompt": "You want a daemon to reopen its log files after logrotate. Which signal is the usual convention?",
+    "choices": [
+      "SIGPIPE",
+      "SIGURG",
+      "SIGWINCH",
+      "SIGHUP"
+    ],
+    "answer": 3,
+    "explanation": "Many daemons treat SIGHUP as 'reload configuration and reopen files'. logrotate often sends it for that reason. It is a convention, not a kernel rule.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-signals-03",
+    "skillId": "linux-signals",
+    "difficulty": "hard",
+    "prompt": "A write to a closed socket kills the client with no error handling. Which signal is that, and why did it happen?",
+    "choices": [
+      "SIGPIPE. The default action is to terminate the writer.",
+      "SIGALRM. Sockets always arm a one-second timer.",
+      "SIGIO. It is fatal unless the process is root.",
+      "SIGXFSZ. It fires when a TCP window closes."
+    ],
+    "answer": 0,
+    "explanation": "Writing to a pipe or socket whose read end is gone raises SIGPIPE. Programs that want EPIPE instead ignore or mask it.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-signals-04",
+    "skillId": "linux-signals",
+    "difficulty": "easy",
+    "prompt": "What does SIGSTOP do that SIGTSTP does not?",
+    "choices": [
+      "SIGSTOP cannot be caught or ignored. SIGTSTP is the terminal's suspend key and can be handled.",
+      "SIGSTOP reboots the session. SIGTSTP only logs.",
+      "They are the same signal number.",
+      "SIGSTOP is ignored by PID 1 only, and SIGTSTP is always fatal."
+    ],
+    "answer": 0,
+    "explanation": "SIGSTOP is unblockable. SIGTSTP is what Ctrl-Z sends, and a process may catch it.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-systemd-01",
+    "skillId": "linux-systemd",
+    "difficulty": "medium",
+    "prompt": "A unit is enabled but the machine just booted and the service is inactive. What does enabled actually mean?",
+    "choices": [
+      "The process is running and will respawn forever.",
+      "The unit file was deleted from /etc.",
+      "systemctl status will always show active (running).",
+      "It will be started on boot according to its install rules. It does not mean it is running now."
+    ],
+    "answer": 3,
+    "explanation": "enable installs the boot symlink. start is what runs it now. A failed boot can leave an enabled unit inactive.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-systemd-02",
+    "skillId": "linux-systemd",
+    "difficulty": "medium",
+    "prompt": "A service keeps restarting and you want the reason, not another restart. Where do you look first?",
+    "choices": [
+      "Only dmesg, because user services never reach the journal.",
+      "/etc/passwd.",
+      "The crontab of root, which systemd always mirrors.",
+      "journalctl -u for that unit, then the exit status in systemctl status."
+    ],
+    "answer": 3,
+    "explanation": "The journal has stdout, stderr, and the manager's result code. status shows the last exit and whether Restart= is looping it.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-systemd-03",
+    "skillId": "linux-systemd",
+    "difficulty": "hard",
+    "prompt": "You need a one-off command limited to 512M of memory without writing a unit file. What fits?",
+    "choices": [
+      "systemd-run with a transient unit and MemoryMax.",
+      "nice -n 512.",
+      "ulimit in /etc/fstab.",
+      "sysctl vm.max_map_count."
+    ],
+    "answer": 0,
+    "explanation": "systemd-run creates a transient scope or service. MemoryMax on cgroup v2 is the cap. nice only changes scheduling priority.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-systemd-04",
+    "skillId": "linux-systemd",
+    "difficulty": "medium",
+    "prompt": "RestrictNetworkInterfaces= on a service does what?",
+    "choices": [
+      "It changes the default route for the whole host.",
+      "It installs an nftables table named after the unit.",
+      "It binds the service to 127.0.0.1 only.",
+      "It limits which host interfaces that service's processes may use."
+    ],
+    "answer": 3,
+    "explanation": "The setting is a per-service network restriction in systemd, useful when a daemon should speak on one NIC of a dual-homed host.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/challenges/networking-block-unexpected-access-on-dual-homed-server"
+  },
+  {
+    "id": "linux-users-01",
+    "skillId": "linux-users",
+    "difficulty": "medium",
+    "prompt": "A user can log in with a key but sudo fails with 'not in the sudoers file'. What is missing?",
+    "choices": [
+      "A sudoers rule or group membership such as sudo or wheel. The account existing is not enough.",
+      "A password hash of '*'. That grants sudo.",
+      "Ownership of /bin/su by that user.",
+      "A world-writable /etc/shadow."
+    ],
+    "answer": 0,
+    "explanation": "sudo reads sudoers. Group membership is the usual path. Login and privilege escalation are separate.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-users-02",
+    "skillId": "linux-users",
+    "difficulty": "easy",
+    "prompt": "What does a shell of /usr/sbin/nologin do?",
+    "choices": [
+      "It grants root for cron only.",
+      "It disables the account's UID.",
+      "It refuses interactive login. The account can still own files and run as a service user.",
+      "It deletes the home directory on each attempt."
+    ],
+    "answer": 2,
+    "explanation": "nologin is a shell that exits with a refusal. Service accounts use it so nobody gets a prompt.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-users-03",
+    "skillId": "linux-users",
+    "difficulty": "medium",
+    "prompt": "You must let a deploy user restart one service and nothing else. Where does that belong?",
+    "choices": [
+      "Adding the user to the disk group.",
+      "A sudoers rule limited to that systemctl command, not membership in a group that can run all of sudo.",
+      "A copy of root's authorized_keys.",
+      "chmod 4755 on systemctl."
+    ],
+    "answer": 1,
+    "explanation": "Least privilege for sudo is a command-scoped rule. The disk group and a setuid systemctl are far broader than a restart.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-users-04",
+    "skillId": "linux-users",
+    "difficulty": "hard",
+    "prompt": "Why is the docker group on a host effectively root?",
+    "choices": [
+      "Docker drops all capabilities for members of that group.",
+      "The kernel grants CAP_SYS_ADMIN to supplementary groups.",
+      "Anyone who can talk to the Docker socket can start a privileged container and rewrite the host.",
+      "The group is hard-coded as UID 0."
+    ],
+    "answer": 2,
+    "explanation": "The socket is usually root:docker mode 660. Socket access is full daemon access, and the daemon runs as root unless you are on rootless Docker.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/tutorials/docker-security-introduction-a859718d"
+  },
+  {
+    "id": "linux-permissions-01",
+    "skillId": "linux-permissions",
+    "difficulty": "medium",
+    "prompt": "A file is mode 644, owned by root:app, and the app user is in group app. Can the app user write it?",
+    "choices": [
+      "Yes, because the directory is what matters and the file mode is ignored.",
+      "Only if the process is not in a container.",
+      "No. 644 is owner read/write, group read, others read. Group write would be 664.",
+      "Yes, because group membership overrides the mode."
+    ],
+    "answer": 2,
+    "explanation": "The middle digit is the group. 4 is read. Write needs 6 or 2 in that position, or an ACL.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-permissions-02",
+    "skillId": "linux-permissions",
+    "difficulty": "medium",
+    "prompt": "A script is executable and the directory is 755, but the service user still cannot run it. The script's interpreter line points at a binary the user cannot execute. What is the failure?",
+    "choices": [
+      "The kernel can read the script but exec of the interpreter fails.",
+      "The directory sticky bit blocks interpreters.",
+      "Executable scripts ignore the shebang when the file is not owned by root.",
+      "755 on a directory removes the execute bit from files inside it."
+    ],
+    "answer": 0,
+    "explanation": "Running a script means executing the interpreter with the script as input. The interpreter itself must be executable by that user.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-permissions-03",
+    "skillId": "linux-permissions",
+    "difficulty": "hard",
+    "prompt": "Setuid on a shell script is a poor way to grant privilege. Why do operators avoid it?",
+    "choices": [
+      "The kernel historically ignores the setuid bit on scripts, and a setuid binary that calls a script is easy to trick via PATH and environment.",
+      "Setuid only works on directories.",
+      "The bit forces the process into the caller's group and drops root.",
+      "Scripts cannot be executable and setuid at the same time because of the shebang length."
+    ],
+    "answer": 0,
+    "explanation": "Use a small, careful setuid helper or capabilities, not a setuid shell script. The environment and interpreter are the attack.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-permissions-04",
+    "skillId": "linux-permissions",
+    "difficulty": "easy",
+    "prompt": "What does the execute bit on a directory mean?",
+    "choices": [
+      "You may traverse it and access entries by name. Listing still needs the read bit.",
+      "You may delete every file inside, even ones you do not own.",
+      "The directory's files become executable.",
+      "New files inherit that execute bit."
+    ],
+    "answer": 0,
+    "explanation": "Directory execute is search/traverse. Read is list. Write plus execute is create and remove names.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-files-01",
+    "skillId": "linux-files",
+    "difficulty": "medium",
+    "prompt": "rm of a file that is still open by a process frees the disk space immediately. True or false, and why?",
+    "choices": [
+      "True, but only on ext4.",
+      "False, because rm never unlinks a busy file and returns EBUSY always.",
+      "False. The directory entry is gone, but the inode stays until the last file descriptor closes.",
+      "True. open file descriptors are paths, and rm deletes those too."
+    ],
+    "answer": 2,
+    "explanation": "Unlink removes the name. Space returns when the link count and the open count both hit zero. A deleted log can still fill the disk.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-files-02",
+    "skillId": "linux-files",
+    "difficulty": "medium",
+    "prompt": "A symlink and a hard link differ how?",
+    "choices": [
+      "A symlink shares the inode number and a hard link does not.",
+      "A symlink is a path stored in a new inode. A hard link is another name for the same inode, and it cannot cross filesystems.",
+      "A hard link can point at a directory on another disk. A symlink cannot point at a file.",
+      "They are the same structure with a different permission bit."
+    ],
+    "answer": 1,
+    "explanation": "Hard links are extra directory entries for one inode, same filesystem only. Symlinks are their own inode holding a target path.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-files-03",
+    "skillId": "linux-files",
+    "difficulty": "hard",
+    "prompt": "You copy a tree with cp -a and the application still writes to the old path. What did you fail to move?",
+    "choices": [
+      "The new tree has no inodes until reboot.",
+      "cp never preserves directory entries.",
+      "The running process has the old inode open. Copying names does not retarget open descriptors.",
+      "cp -a follows no symlinks and therefore copies nothing."
+    ],
+    "answer": 2,
+    "explanation": "Replacing a binary or a log on disk does not change a process that already mapped or opened the old inode. Restart the process.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-files-04",
+    "skillId": "linux-files",
+    "difficulty": "easy",
+    "prompt": "What does df show that du of one directory does not?",
+    "choices": [
+      "They always match, to the byte.",
+      "df ignores the filesystem the directory is mounted on.",
+      "df is the filesystem, including other directories, deleted-but-open files, and reserved blocks. du is a tree walk.",
+      "df counts inodes of a single folder. du counts free space for the whole disk."
+    ],
+    "answer": 2,
+    "explanation": "If du looks small and df says the disk is full, suspect another mount, a deleted open file, or reserved root space.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-disks-01",
+    "skillId": "linux-disks",
+    "difficulty": "medium",
+    "prompt": "lsblk shows a disk, but it is not in df. What is the usual gap?",
+    "choices": [
+      "The kernel has not created the device node yet if lsblk can see it.",
+      "The disk or partition exists and is not mounted. df only lists mounted filesystems.",
+      "df hides anything larger than 2G.",
+      "lsblk lists network mounts only."
+    ],
+    "answer": 1,
+    "explanation": "Block devices can be partitioned and formatted and still unused. Mount is a separate step.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-disks-02",
+    "skillId": "linux-disks",
+    "difficulty": "medium",
+    "prompt": "You formatted a new partition and rebooted. The filesystem is gone from the tree. Why?",
+    "choices": [
+      "Nothing in fstab or a systemd mount unit mounts it. Formatting does not persist the mount.",
+      "mkfs stores the mount point inside the superblock and the superblock was not labeled.",
+      "Reboot always wipes filesystems that are not ext4.",
+      "The partition table cannot survive a reboot."
+    ],
+    "answer": 0,
+    "explanation": "Persistence is fstab, a generator, or a mount unit. The filesystem itself survives. The attachment does not, unless you record it.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-disks-03",
+    "skillId": "linux-disks",
+    "difficulty": "hard",
+    "prompt": "An ext4 filesystem is full, df shows free space, and root can write but the app cannot. What is a classic cause?",
+    "choices": [
+      "ext4 hides free space from every user except UID 1, which is not root.",
+      "df counts inodes and the app is looking at blocks, so they can never agree.",
+      "Reserved blocks for root, typically 5 percent, so a non-root user hits ENOSPC first.",
+      "The journal is stored on a different disk that only root can see."
+    ],
+    "answer": 2,
+    "explanation": "tune2fs shows the reserved count. Lower it if this is a data disk and root does not need the reserve. Also check inodes separately with df -i.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-disks-04",
+    "skillId": "linux-disks",
+    "difficulty": "easy",
+    "prompt": "What does df -i tell you that df does not?",
+    "choices": [
+      "The SMART health of the physical disk.",
+      "Which process holds a deleted file.",
+      "The LVM thin pool metadata size.",
+      "Whether you are out of inodes even though blocks remain."
+    ],
+    "answer": 3,
+    "explanation": "A filesystem can fail creates with 'no space' because inode tables are exhausted. df without -i will still show free blocks.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-mounts-01",
+    "skillId": "linux-mounts",
+    "difficulty": "medium",
+    "prompt": "A bind mount of a directory into a chroot is useful because:",
+    "choices": [
+      "It snapshots the directory into a new filesystem.",
+      "It changes the directory's owner to root.",
+      "It encrypts the tree for the duration of the mount.",
+      "It attaches an existing tree at a second path without copying bytes."
+    ],
+    "answer": 3,
+    "explanation": "mount --bind is another view of the same inode tree. It is how containers and chroots expose a host path.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-mounts-02",
+    "skillId": "linux-mounts",
+    "difficulty": "medium",
+    "prompt": "findmnt is a better first tool than reading /etc/fstab when a path looks wrong. Why?",
+    "choices": [
+      "The kernel ignores fstab after the first week of uptime.",
+      "findmnt shows what is mounted now, including bind mounts and propagation. fstab is only the requested configuration.",
+      "fstab is rewritten every minute to match the live table, so findmnt is historical.",
+      "findmnt edits fstab safely."
+    ],
+    "answer": 1,
+    "explanation": "Live state and intended state diverge. Look at the mount table before editing fstab.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-mounts-03",
+    "skillId": "linux-mounts",
+    "difficulty": "hard",
+    "prompt": "A container cannot see a file you just wrote on the host path you thought was mounted. What should you check?",
+    "choices": [
+      "Bind mounts only flow from container to host.",
+      "The file must be mode 777 or the mount refuses to show it.",
+      "The mount is on a different path, a different mount namespace, or a file hidden by a later mount on top of the directory.",
+      "Host writes are invisible to containers until the page cache is dropped."
+    ],
+    "answer": 2,
+    "explanation": "Mount namespaces and stacked mounts hide files. Confirm the namespace and the exact target with findmnt inside the container.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-mounts-04",
+    "skillId": "linux-mounts",
+    "difficulty": "easy",
+    "prompt": "What does the noexec mount option stop?",
+    "choices": [
+      "All writes.",
+      "Root logging in.",
+      "Creating symlinks.",
+      "Running binaries from that filesystem. It does not stop reading them."
+    ],
+    "answer": 3,
+    "explanation": "noexec is a control on a data volume so a dropped binary cannot be executed from it. The interpreter-on-the-host trick can still read a script.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-packages-01",
+    "skillId": "linux-packages",
+    "difficulty": "medium",
+    "prompt": "apt says a package is not installed, but the binary is on PATH. What is a plausible reason?",
+    "choices": [
+      "PATH never includes files dpkg knows about.",
+      "Binaries unregister themselves after the first run.",
+      "It was copied, built from source, or installed with a different package manager. The distro database is not the whole machine.",
+      "apt only indexes packages newer than the running kernel."
+    ],
+    "answer": 2,
+    "explanation": "which and dpkg -S tell you if the distro owns the file. Homebrew, a tarball, or a vendored path will not show up as an apt package.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-packages-02",
+    "skillId": "linux-packages",
+    "difficulty": "easy",
+    "prompt": "What is the point of apt update before apt install on a fresh shell?",
+    "choices": [
+      "The local package index may be older than the repository. update refreshes the index. It does not upgrade installed packages.",
+      "update upgrades every installed package and reboots.",
+      "update only works offline.",
+      "install always refreshes the index first, so update is a no-op."
+    ],
+    "answer": 0,
+    "explanation": "update fetches metadata. upgrade is the thing that changes installed versions. install uses whatever index you have.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-packages-03",
+    "skillId": "linux-packages",
+    "difficulty": "medium",
+    "prompt": "A package upgrade replaced a config file you had edited. Debian asked you, and you kept the old one. What should you still do?",
+    "choices": [
+      "Reinstall the kernel.",
+      "Read the dpkg .ucf or the 'new' file it saved, and merge the maintainer's changes. Keeping yours can leave a daemon unable to start.",
+      "Delete /etc. The package will restore defaults on the next boot automatically.",
+      "Nothing. Kept files are guaranteed compatible."
+    ],
+    "answer": 1,
+    "explanation": "Config prompts exist because both sides may be right. A kept file that misses a new required key is a common outage after upgrade.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-packages-04",
+    "skillId": "linux-packages",
+    "difficulty": "hard",
+    "prompt": "Why pin a package instead of holding the whole upgrade forever?",
+    "choices": [
+      "Holding upgrades still installs security updates by default.",
+      "A pin freezes one package you know is risky. Holding all upgrades piles up security fixes you meant to take.",
+      "Pins delete the package from the repository.",
+      "A pin upgrades the package daily."
+    ],
+    "answer": 1,
+    "explanation": "Pin or hold the exception. Take the rest. An unpatched host is not a strategy.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-shell-01",
+    "skillId": "linux-shell",
+    "difficulty": "medium",
+    "prompt": "A cron job works when you paste it into the terminal and fails at night. What is the usual difference?",
+    "choices": [
+      "The shell in cron cannot run pipes.",
+      "Nightly jobs always see a read-only filesystem.",
+      "Cron has a minimal environment: PATH, cwd, and missing variables. Your shell startup files did not run.",
+      "Cron runs as root even when the crontab is a user's."
+    ],
+    "answer": 2,
+    "explanation": "Set PATH inside the crontab or use absolute paths. Do not assume .bashrc.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-shell-02",
+    "skillId": "linux-shell",
+    "difficulty": "medium",
+    "prompt": "set -euo pipefail at the top of a bash script is there to:",
+    "choices": [
+      "Exit on a failed command, an unset variable, or a failed command in a pipeline.",
+      "Disable all errors so the script always returns 0.",
+      "Run the script under dash.",
+      "Turn every variable into an environment variable."
+    ],
+    "answer": 0,
+    "explanation": "Without pipefail, a pipeline's status is the last command. A failing curl | tee can look successful. -u catches typos in variable names.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-shell-03",
+    "skillId": "linux-shell",
+    "difficulty": "hard",
+    "prompt": "A pipeline's overall status is needed, and the script uses bash. What reports a failure in the middle of the pipe?",
+    "choices": [
+      "set -o pipefail, then look at $?.",
+      "set -x alone.",
+      "The PIPESTATUS array does not exist in bash.",
+      "echo $? always prints the first command, even without pipefail."
+    ],
+    "answer": 0,
+    "explanation": "pipefail makes the pipeline fail if any stage fails. PIPESTATUS still has the per-stage codes.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-shell-04",
+    "skillId": "linux-shell",
+    "difficulty": "easy",
+    "prompt": "Why quote \"$var\" when the variable holds a path?",
+    "choices": [
+      "The kernel rejects quoted paths.",
+      "Quoting converts the path to a URL.",
+      "Unquoted expansion splits on whitespace and globs. A path with a space becomes multiple arguments.",
+      "Quotes disable the variable."
+    ],
+    "answer": 2,
+    "explanation": "Quote expansions unless you mean to split them.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-text-01",
+    "skillId": "linux-text",
+    "difficulty": "medium",
+    "prompt": "You need the second field of a colon-separated file. What is the direct tool?",
+    "choices": [
+      "uniq -f2.",
+      "cut -d: -f2, or awk -F: '{print $2}'.",
+      "tr, which selects fields.",
+      "head -2, which prints field 2 of every line."
+    ],
+    "answer": 1,
+    "explanation": "cut and awk both do fields. head is lines. uniq collapses duplicates.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-text-02",
+    "skillId": "linux-text",
+    "difficulty": "medium",
+    "prompt": "A log line is huge and you want a count of each status code. What is the usual shape?",
+    "choices": [
+      "paste, which histograms.",
+      "Extract the field, sort, then uniq -c.",
+      "wc -l on the raw file, which groups by field.",
+      "tail -f, which prints counts."
+    ],
+    "answer": 1,
+    "explanation": "sort | uniq -c is the classic frequency count. awk can do it in one pass.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-text-03",
+    "skillId": "linux-text",
+    "difficulty": "hard",
+    "prompt": "grep -r on a directory that contains a binary and a huge journal is painful. What narrows it?",
+    "choices": [
+      "grep always skips files over 1K.",
+      "Use ls | grep, which searches file contents.",
+      "grep -r --include or a path, and -I or -a only when you mean to treat binary as text.",
+      "grep -v, which skips directories."
+    ],
+    "answer": 2,
+    "explanation": "Limit the file set. Recursive grep of /var is how people melt a disk.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-text-04",
+    "skillId": "linux-text",
+    "difficulty": "easy",
+    "prompt": "What is jq for, next to grep, on an operator workstation?",
+    "choices": [
+      "Rotating logs.",
+      "Editing ext4 inodes.",
+      "Selecting and reshaping JSON. grep only sees the raw text.",
+      "Compiling Go."
+    ],
+    "answer": 2,
+    "explanation": "API and journal output is JSON. jq is the field tool. grep still finds a string when you do not know the shape.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-ssh-01",
+    "skillId": "linux-ssh",
+    "difficulty": "medium",
+    "prompt": "You want a shell on a host that is only reachable from a bastion, without copying your key onto the bastion. What is the mechanism?",
+    "choices": [
+      "A local -L forward of port 22 to yourself.",
+      "SSH cannot hop.",
+      "ProxyJump or a ProxyCommand. Your key stays on the laptop and the bastion only forwards the TCP connection.",
+      "ssh-copy-id to the bastion, then agent forwarding of every key by default."
+    ],
+    "answer": 2,
+    "explanation": "ProxyJump (-J) is the straightforward form. The bastion does not need your private key.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-ssh-02",
+    "skillId": "linux-ssh",
+    "difficulty": "medium",
+    "prompt": "Password authentication is on, root login is on, and the host is on the internet. What is the first hardening that removes the common brute force?",
+    "choices": [
+      "Install a second sshd on port 22 with an empty password.",
+      "Turn off UsePAM and leave PasswordAuthentication yes.",
+      "Disable password auth and root login, and use keys.",
+      "Move SSH to port 2222 and leave passwords on. That is sufficient."
+    ],
+    "answer": 2,
+    "explanation": "Keys plus no root password login removes the attack that scans port 22. A new port is obscurity, not the control.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/tutorials/2fa-pkey-auth-linux-ssh-b1dcdb9a"
+  },
+  {
+    "id": "linux-ssh-03",
+    "skillId": "linux-ssh",
+    "difficulty": "hard",
+    "prompt": "Agent forwarding to a shared bastion is risky because:",
+    "choices": [
+      "Forwarding disables the key.",
+      "The bastion's root password is sent to your laptop.",
+      "A process on the bastion can use your agent to authenticate as you while the session is open.",
+      "The agent copies your private key into authorized_keys on the bastion permanently."
+    ],
+    "answer": 2,
+    "explanation": "Forward the agent only to hosts you trust, for as long as you need it. The socket on the far side is usable by anyone who can reach it as you.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-ssh-04",
+    "skillId": "linux-ssh",
+    "difficulty": "easy",
+    "prompt": "Where does an OpenSSH client look for your private key by default?",
+    "choices": [
+      "Under ~/.ssh, for names such as id_ed25519, unless IdentityFile or an agent overrides it.",
+      "In /etc/shadow.",
+      "In the remote host's authorized_keys. That file holds the private key.",
+      "In the shell history."
+    ],
+    "answer": 0,
+    "explanation": "The private key stays on the client. authorized_keys holds public keys.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-logs-01",
+    "skillId": "linux-logs",
+    "difficulty": "medium",
+    "prompt": "journalctl -u nginx --since '1 hour ago' is empty, but the site is serving. What is a likely split?",
+    "choices": [
+      "journalctl cannot see a service that is running.",
+      "Nginx disables all logs when the journal is empty.",
+      "The since filter only matches kernel messages.",
+      "Nginx is logging to files in /var/log, and the journal only has the unit's stdout."
+    ],
+    "answer": 3,
+    "explanation": "Daemons that log to files will not appear in the journal unless stderr is also captured. Check both.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-logs-02",
+    "skillId": "linux-logs",
+    "difficulty": "easy",
+    "prompt": "A disk fills with logs overnight. What stops the repeat without deleting the only copy you might need?",
+    "choices": [
+      "logrotate with size or time rules, and a look at which unit is suddenly verbose.",
+      "chmod 000 /var/log so nothing can write.",
+      "Turn off the journal permanently.",
+      "Delete /var."
+    ],
+    "answer": 0,
+    "explanation": "Rotation plus finding the noisy source. A one-time delete fills again.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-logs-03",
+    "skillId": "linux-logs",
+    "difficulty": "medium",
+    "prompt": "You need lines from a structured journal for one request id. What helps?",
+    "choices": [
+      "dmesg -i, which indexes request ids.",
+      "lastlog, which stores HTTP requests.",
+      "utmp.",
+      "journalctl -o json and a filter, or grep on the message if the id is in the text."
+    ],
+    "answer": 3,
+    "explanation": "The journal can emit JSON. Request ids live in the message or in a field the application added. utmp is logins, not HTTP.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-logs-04",
+    "skillId": "linux-logs",
+    "difficulty": "hard",
+    "prompt": "Persistent journal storage is off and you rebooted. What did you lose?",
+    "choices": [
+      "Nothing. journald always writes /var/log/journal even when Storage=volatile.",
+      "The package database.",
+      "The previous boot's journal. A volatile journal lives in /run and dies with the machine.",
+      "Only kernel logs. User logs are always on disk."
+    ],
+    "answer": 2,
+    "explanation": "Set Storage=persistent if you need logs after a crash. Otherwise the evidence is gone when you reboot to recover.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-cgroups-01",
+    "skillId": "linux-cgroups",
+    "difficulty": "medium",
+    "prompt": "Kubernetes sets a memory limit on a container. What happens when the process allocates past it?",
+    "choices": [
+      "The limit only affects CPU, so memory allocations always succeed.",
+      "The cgroup OOM killer stops a process in that cgroup. The node does not have to be out of memory.",
+      "The kernel ignores container limits and only OOMs the whole host.",
+      "The container is paused until the next day."
+    ],
+    "answer": 1,
+    "explanation": "memory.max on cgroup v2 is a hard cap for that subtree. The host can have free memory and the container still dies.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-cgroups-02",
+    "skillId": "linux-cgroups",
+    "difficulty": "medium",
+    "prompt": "CPU requests in Kubernetes and a cpu.max limit are different. Which statement is right?",
+    "choices": [
+      "The request steers scheduling. The limit is the cgroup throttle.",
+      "They are the same number written to the same file.",
+      "The request throttles the container. The limit only changes the nice value.",
+      "Neither touches cgroups. The kubelet simulates them."
+    ],
+    "answer": 0,
+    "explanation": "Requests are a scheduling claim. Limits become cgroup bandwidth. A pod can be throttled while the node looks idle.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/skill-paths/get-started-with-cgroups"
+  },
+  {
+    "id": "linux-cgroups-03",
+    "skillId": "linux-cgroups",
+    "difficulty": "hard",
+    "prompt": "Where do you look on a cgroup v2 host to see a running service's memory cap?",
+    "choices": [
+      "nice -n.",
+      "Under /sys/fs/cgroup, in the service's cgroup, at memory.max.",
+      "In /proc/cpuinfo.",
+      "In /etc/cgroup.conf only. The sysfs tree is a cache."
+    ],
+    "answer": 1,
+    "explanation": "cgroup v2 is a single hierarchy. The controller files in the cgroup directory are the live settings.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-cgroups-04",
+    "skillId": "linux-cgroups",
+    "difficulty": "easy",
+    "prompt": "What problem do cgroups solve that nice does not?",
+    "choices": [
+      "They replace the need for a kernel.",
+      "They encrypt process memory.",
+      "They assign IP addresses.",
+      "They account and cap a group of processes for memory, CPU, and IO. nice is only a CPU scheduling hint."
+    ],
+    "answer": 3,
+    "explanation": "nice will not stop a leak from taking the machine down. A memory cgroup will.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-namespaces-01",
+    "skillId": "linux-namespaces",
+    "difficulty": "medium",
+    "prompt": "A container is a process you can see from the host. What makes it look like its own machine?",
+    "choices": [
+      "Only a chroot. Namespaces are optional marketing.",
+      "Namespaces (pid, mount, network, user, uts, ipc) plus cgroups. Not a separate kernel.",
+      "A second kernel loaded into the process.",
+      "A virtual machine by definition. Containers cannot be plain processes."
+    ],
+    "answer": 1,
+    "explanation": "ps on the host shows the container process. Inside, namespaces hide the rest of the host. The kernel is shared, which is why a breakout matters.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/tutorials/docker-security-introduction-a859718d"
+  },
+  {
+    "id": "linux-namespaces-02",
+    "skillId": "linux-namespaces",
+    "difficulty": "medium",
+    "prompt": "The container has its own eth0 and you cannot see it in the host's ip addr. Why?",
+    "choices": [
+      "Network namespaces share one interface table.",
+      "The interface is a file in /etc.",
+      "It is in a network namespace. The host's default namespace has the veth peer, not the container's eth0.",
+      "ip addr hides interfaces whose names are eth0."
+    ],
+    "answer": 2,
+    "explanation": "ip netns or nsenter -t <pid> -n ip addr shows the container's interfaces. The host sees the other end of the veth.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-namespaces-03",
+    "skillId": "linux-namespaces",
+    "difficulty": "hard",
+    "prompt": "A user namespace lets a process be root inside and nobody special outside. Why does that matter for rootless containers?",
+    "choices": [
+      "They only work for UDP.",
+      "They replace seccomp.",
+      "UID 0 in the container is mapped to an unprivileged UID on the host, so a breakout is not automatically host root.",
+      "User namespaces disable the mapping and always use UID 0 on the host."
+    ],
+    "answer": 2,
+    "explanation": "Rootless Docker uses that map. Inside, id says root. On the host, ps shows the ordinary user.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/tutorials/docker-security-introduction-a859718d"
+  },
+  {
+    "id": "linux-namespaces-04",
+    "skillId": "linux-namespaces",
+    "difficulty": "easy",
+    "prompt": "What does a PID namespace change?",
+    "choices": [
+      "The hostname only. That is the UTS namespace.",
+      "PID 1 and the set of visible processes. It does not give the process a new kernel.",
+      "The CPU architecture.",
+      "The disk encryption key."
+    ],
+    "answer": 1,
+    "explanation": "UTS is hostname. PID is the process id space. A container's init is PID 1 inside its namespace.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-netfilter-01",
+    "skillId": "linux-netfilter",
+    "difficulty": "medium",
+    "prompt": "You added an iptables rule and rebooted. The port is exposed again. Why?",
+    "choices": [
+      "iptables writes /etc/iptables automatically on every insert.",
+      "Reboot flushes only rules that use the word DROP.",
+      "nftables and iptables persist themselves in the kernel image.",
+      "iptables rules are runtime state unless a package or unit restores them."
+    ],
+    "answer": 3,
+    "explanation": "Install a persistence path, or put the rules in a unit that runs at boot. The insert you typed was only in memory.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/challenges/linux-preserve-iptables-rules"
+  },
+  {
+    "id": "linux-netfilter-02",
+    "skillId": "linux-netfilter",
+    "difficulty": "hard",
+    "prompt": "A service listens on one IP of a dual-homed host and is still reachable on that IP via the other NIC. Binding tighter did not help. Why?",
+    "choices": [
+      "The weak host model drops those packets, so this cannot happen.",
+      "ss -ltnp is wrong whenever a host has two NICs.",
+      "Only a router can have two interfaces.",
+      "Linux is a weak end host. It accepts packets for any local address no matter which interface they arrive on. Filter by ingress interface."
+    ],
+    "answer": 3,
+    "explanation": "Change the firewall to drop that destination when it arrives on the wrong NIC, or restrict the service's interfaces. The listen address is not the control.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/challenges/networking-block-unexpected-access-on-dual-homed-server"
+  },
+  {
+    "id": "linux-netfilter-03",
+    "skillId": "linux-netfilter",
+    "difficulty": "medium",
+    "prompt": "nft and iptables on a modern distro often program the same kernel tables. What should you avoid?",
+    "choices": [
+      "Editing both as if they were independent copies of the ruleset.",
+      "Using nft at all.",
+      "Matching on dport.",
+      "Persisting either of them."
+    ],
+    "answer": 0,
+    "explanation": "One ruleset, one tool path. Two front ends stepping on the same hooks produce surprises.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-netfilter-04",
+    "skillId": "linux-netfilter",
+    "difficulty": "easy",
+    "prompt": "What does a default-drop input policy require you to remember?",
+    "choices": [
+      "A default drop also deletes routes.",
+      "Allow the traffic you still need, including established connections and management access, before you disconnect yourself.",
+      "Drop means log. Traffic still flows.",
+      "Input rules do not apply to the local machine."
+    ],
+    "answer": 1,
+    "explanation": "Lockouts happen when the allow for SSH is below the policy change and you are not on a console.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-troubleshooting-01",
+    "skillId": "linux-troubleshooting",
+    "difficulty": "medium",
+    "prompt": "A disk is full and du of the big directories does not add up to df. What is the classic missing piece?",
+    "choices": [
+      "du skips directories named log.",
+      "The filesystem is always lying about ext4.",
+      "A deleted file still held open by a process. lsof +L1 or the fd links in /proc show it.",
+      "df counts RAM."
+    ],
+    "answer": 2,
+    "explanation": "Restart the process that holds the deleted file, or truncate it via the /proc fd, after you know what it is.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-troubleshooting-02",
+    "skillId": "linux-troubleshooting",
+    "difficulty": "medium",
+    "prompt": "SSH died after a firewall change and you have no console. What would have prevented the lockout?",
+    "choices": [
+      "Setting the input policy to drop as the first command.",
+      "Disabling sshd before changing rules.",
+      "There is no way to test firewall rules.",
+      "A second path, a timed revert, or applying the rules in a way that rolls back if you do not confirm."
+    ],
+    "answer": 3,
+    "explanation": "Operators use at, systemd-run timers, or a confirm script so a bad ruleset reverts.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-troubleshooting-03",
+    "skillId": "linux-troubleshooting",
+    "difficulty": "hard",
+    "prompt": "The host answers ping and nothing else. Web and SSH hang. What is a useful split?",
+    "choices": [
+      "Ping uses TCP port 7, so it proves every TCP port is open.",
+      "If ping works, the firewall cannot be involved.",
+      "SSH and ping share a port.",
+      "Ping is ICMP. SSH and HTTP are TCP. A filter or a full connection table can break one and not the other."
+    ],
+    "answer": 3,
+    "explanation": "Test the layer you care about. ICMP success does not prove TCP/22 or a path MTU that can carry a handshake.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-troubleshooting-04",
+    "skillId": "linux-troubleshooting",
+    "difficulty": "easy",
+    "prompt": "Before you change a broken host, what do you record?",
+    "choices": [
+      "Only the hostname.",
+      "A reboot, so the record is clean.",
+      "The output of rm -rf /tmp.",
+      "What is true now: who is logged in, disk, memory, the failing unit, and the last change."
+    ],
+    "answer": 3,
+    "explanation": "You cannot tell a fix from a coincidence if you did not look first.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "linux-permissions-05",
+    "skillId": "linux-permissions",
+    "difficulty": "medium",
+    "prompt": "Capabilities exist so that ping does not need to be setuid root. Which capability is the small one ping needs?",
+    "choices": [
+      "CAP_NET_RAW, to send raw packets.",
+      "CAP_SYS_ADMIN, which is the only capability that can open a socket.",
+      "CAP_NET_BIND_SERVICE, which is required for ICMP.",
+      "No capability. Ping is always unprivileged."
+    ],
+    "answer": 0,
+    "explanation": "setcap can put cap_net_raw on the ping binary. A compromise of ping is then not full root.",
+    "source": "raesene",
+    "url": "https://raesene.github.io/blog/2017/08/27/Linux-capabilities-and-when-to-drop-all/"
+  },
+  {
+    "id": "linux-permissions-06",
+    "skillId": "linux-permissions",
+    "difficulty": "easy",
+    "prompt": "A process that only does what an ordinary user can do needs which capabilities?",
+    "choices": [
+      "CAP_SETUID, so it can drop to that user.",
+      "CAP_SYS_ADMIN, or it cannot read files.",
+      "None.",
+      "The Docker default set."
+    ],
+    "answer": 2,
+    "explanation": "Capabilities are for privileged actions. Ordinary work needs an empty set.",
+    "source": "raesene",
+    "url": "https://raesene.github.io/blog/2017/08/27/Linux-capabilities-and-when-to-drop-all/"
+  },
+  {
+    "id": "linux-shell-05",
+    "skillId": "linux-shell",
+    "difficulty": "medium",
+    "prompt": "The backup exercise wants the script to log success and failure. Why is a silent cron backup a bad default?",
+    "choices": [
+      "A script that exits 0 cannot have failed the upload.",
+      "You discover it was broken on the day you need the restore.",
+      "Cron emails stdout automatically even when the script writes nothing and MAILTO is empty.",
+      "Logs replace the dump."
+    ],
+    "answer": 1,
+    "explanation": "Check the exit status of the dump and of the upload. Write both to a log you actually read.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/tree/main/devops-challenges"
+  },
+  {
+    "id": "linux-permissions-07",
+    "skillId": "linux-permissions",
+    "difficulty": "easy",
+    "prompt": "getcap on a file shows cap_net_raw+ep. The +ep means:",
+    "choices": [
+      "The capability is effective and permitted on that file, so the binary can use it.",
+      "The capability is dropped.",
+      "The file is setuid root.",
+      "The capability applies to every process on the host."
+    ],
+    "answer": 0,
+    "explanation": "File capabilities are how a non-root binary gets one privilege. They are also how a non-root container image smuggles that privilege in.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2022-07-31-Fun-With-Capabilities.markdown"
+  },
+  {
+    "id": "linux-files-05",
+    "skillId": "linux-files",
+    "difficulty": "easy",
+    "prompt": "The Linux automation challenge extracts a tarball, sets 0664 on files and 0775 on directories, and changes owner. chmod -R 0664 is wrong because:",
+    "choices": [
+      "tar cannot restore owners.",
+      "Directories do not have permission bits.",
+      "It clears the execute bit on directories, so you cannot traverse them afterwards.",
+      "0664 is more open than 0775."
+    ],
+    "answer": 2,
+    "explanation": "Set directory and file modes separately. Then pack the result.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+  },
+  {
+    "id": "linux-shell-06",
+    "skillId": "linux-shell",
+    "difficulty": "medium",
+    "prompt": "A bash installer that asks which database and web server to install needs:",
+    "choices": [
+      "To ignore errors so the script always finishes.",
+      "Python, despite the constraint that says bash only.",
+      "To run as a container on every call.",
+      "set -euo pipefail or an explicit check, and a dry-run that prints commands without running them."
+    ],
+    "answer": 3,
+    "explanation": "Idempotent package installs. A second run should not break a working Apache.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+  }
+]

@@ -1,0 +1,562 @@
+[
+  {
+    "id": "obs-logs-01",
+    "skillId": "obs-logs",
+    "difficulty": "medium",
+    "prompt": "A request id in every log line is useful because:",
+    "choices": [
+      "It replaces traces.",
+      "It makes the log smaller.",
+      "It is the HTTP status.",
+      "You can collect one request across services. Without it you have timestamps and a guess."
+    ],
+    "answer": 3,
+    "explanation": "Generate it at the edge and pass it. Searching by time across five services is how incidents get long.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-logs-02",
+    "skillId": "obs-logs",
+    "difficulty": "easy",
+    "prompt": "stdout from a container is a better default than a file in the container because:",
+    "choices": [
+      "stdout cannot be structured.",
+      "The kubelet deletes stdout.",
+      "The node or the platform can ship it without you execing in to read a file that vanishes with the container.",
+      "Files are shipped automatically and stdout is dropped."
+    ],
+    "answer": 2,
+    "explanation": "Log to stdout unless you have a reason. Then make sure something reads it.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-logs-03",
+    "skillId": "obs-logs",
+    "difficulty": "medium",
+    "prompt": "A log pipeline dropped messages during a deploy. What did you fail to budget?",
+    "choices": [
+      "Disk or memory at the shipper, and a decision about whether you drop, block, or sample.",
+      "The certificate expiry of the API server.",
+      "The number of Kubernetes namespaces, which caps log volume.",
+      "CPU requests, which do not affect logging."
+    ],
+    "answer": 0,
+    "explanation": "Logging has a failure mode. Decide it before the incident produces more logs than the pipeline can hold.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-logs-04",
+    "skillId": "obs-logs",
+    "difficulty": "hard",
+    "prompt": "You logged a full HTTP header set and now a token is in the log store. What is true?",
+    "choices": [
+      "Tokens in headers are automatically masked by every agent.",
+      "The token is compromised to everyone who can read logs. Rotate it. Redact next time.",
+      "Logs are encrypted so the token is safe.",
+      "Retention does not matter."
+    ],
+    "answer": 1,
+    "explanation": "Treat log access like secret access. Do not write secrets in the first place.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-metrics-01",
+    "skillId": "obs-metrics",
+    "difficulty": "medium",
+    "prompt": "A Prometheus label with a user id on every request will:",
+    "choices": [
+      "Explode cardinality and the memory of the server.",
+      "Make queries faster.",
+      "Be required for a RED dashboard.",
+      "Replace logs."
+    ],
+    "answer": 0,
+    "explanation": "Labels are an index. Unbounded labels are an outage.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-metrics-02",
+    "skillId": "obs-metrics",
+    "difficulty": "easy",
+    "prompt": "A counter and a gauge differ because:",
+    "choices": [
+      "They are scraped differently.",
+      "A counter resets every scrape.",
+      "A counter only goes up, aside from a restart. A gauge moves up and down.",
+      "A gauge is always an integer and a counter is a string."
+    ],
+    "answer": 2,
+    "explanation": "Use a counter for requests. Use a gauge for queue depth or temperature.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-metrics-03",
+    "skillId": "obs-metrics",
+    "difficulty": "medium",
+    "prompt": "An average latency hides:",
+    "choices": [
+      "Nothing. The average is the SLO.",
+      "The request rate.",
+      "Errors.",
+      "The slow tail. A histogram or a percentile is what tells you the bad requests."
+    ],
+    "answer": 3,
+    "explanation": "A p99 and a count tell an incident story. An average can stay flat while a slice of users time out.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-metrics-04",
+    "skillId": "obs-metrics",
+    "difficulty": "hard",
+    "prompt": "USE for a resource and RED for a service mean:",
+    "choices": [
+      "Utilization, saturation, errors for the resource. Rate, errors, duration for the service.",
+      "The same three graphs for both.",
+      "User, system, and disk.",
+      "They are log levels."
+    ],
+    "answer": 0,
+    "explanation": "Pick the method that matches the thing. A CPU and an HTTP API are not the same shape.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-traces-01",
+    "skillId": "obs-traces",
+    "difficulty": "medium",
+    "prompt": "A trace is more than a log because:",
+    "choices": [
+      "It cannot cross a network.",
+      "It connects spans across processes with a shared trace id, including timing.",
+      "It replaces metrics.",
+      "It is a single line."
+    ],
+    "answer": 1,
+    "explanation": "You want one trace when a request is slow and you do not know which hop.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-traces-02",
+    "skillId": "obs-traces",
+    "difficulty": "easy",
+    "prompt": "Sampling traces exists because:",
+    "choices": [
+      "Traces are useless at low volume.",
+      "The collector requires sampling of 100 percent.",
+      "Sampling makes them more accurate.",
+      "Recording every span of every request can cost more than the request."
+    ],
+    "answer": 3,
+    "explanation": "Sample enough to debug. Do not assume you can keep everything.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-traces-03",
+    "skillId": "obs-traces",
+    "difficulty": "medium",
+    "prompt": "A span without the parent id from the incoming request is:",
+    "choices": [
+      "A health check.",
+      "A broken trace. The hop looks like a new, unrelated request.",
+      "A metric.",
+      "A log level."
+    ],
+    "answer": 1,
+    "explanation": "Propagate the trace context. The header you forgot is why the picture stops at the proxy.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-traces-04",
+    "skillId": "obs-traces",
+    "difficulty": "hard",
+    "prompt": "You have traces and no metrics. What is painful?",
+    "choices": [
+      "Alerting and capacity. Traces explain one request. They are a poor counter of all requests.",
+      "Nothing. Traces include a complete RED dashboard for free.",
+      "Deploying.",
+      "Authentication."
+    ],
+    "answer": 0,
+    "explanation": "Keep a cheap metric for the alert and a trace for the example.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-prometheus-01",
+    "skillId": "obs-prometheus",
+    "difficulty": "medium",
+    "prompt": "Prometheus scrapes. The application:",
+    "choices": [
+      "Writes to a local CSV that Prometheus tails.",
+      "Uses syslog.",
+      "Exposes a metrics endpoint. Prometheus pulls it. The app does not push, in the basic setup.",
+      "Must ship metrics to a vendor directly."
+    ],
+    "answer": 2,
+    "explanation": "If the target is down, the scrape fails and you see the gap. That is a feature.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-prometheus-02",
+    "skillId": "obs-prometheus",
+    "difficulty": "easy",
+    "prompt": "Grafana in front of Prometheus is:",
+    "choices": [
+      "A second database that scrapes targets itself by default.",
+      "An alert router only.",
+      "A log store.",
+      "The dashboard. Prometheus is the store and the query language."
+    ],
+    "answer": 3,
+    "explanation": "Do not expect Grafana to have the samples if Prometheus never scraped them.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-prometheus-03",
+    "skillId": "obs-prometheus",
+    "difficulty": "medium",
+    "prompt": "Alertmanager's job is:",
+    "choices": [
+      "To scrape targets.",
+      "To store raw logs.",
+      "To deploy Helm charts.",
+      "To route, group, and silence alerts. The alert rule lives in Prometheus."
+    ],
+    "answer": 3,
+    "explanation": "A rule with no route is a rule nobody sees. A route with no rule is silence.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-prometheus-04",
+    "skillId": "obs-prometheus",
+    "difficulty": "hard",
+    "prompt": "A recording rule helps when:",
+    "choices": [
+      "You need traces.",
+      "The scrape is failing.",
+      "The same expensive query is used on every dashboard and you would rather compute it once.",
+      "You want to drop labels to increase cardinality."
+    ],
+    "answer": 2,
+    "explanation": "Record the aggregation you always ask for. Do not record every raw series again.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-otel-01",
+    "skillId": "obs-otel",
+    "difficulty": "medium",
+    "prompt": "OpenTelemetry is the point where:",
+    "choices": [
+      "The SDK replaces the application.",
+      "The application emits signals in a vendor-neutral way, and a collector exports them to wherever you store them.",
+      "You must run Prometheus and nothing else.",
+      "Logs are forbidden."
+    ],
+    "answer": 1,
+    "explanation": "Instrument once. Change the exporter when you change vendors.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-otel-02",
+    "skillId": "obs-otel",
+    "difficulty": "easy",
+    "prompt": "A collector in the path lets you:",
+    "choices": [
+      "Skip instrumentation.",
+      "Remove the need for a trace id.",
+      "Encrypt the disk.",
+      "Batch, filter, and fan out, without shipping a vendor SDK in every binary."
+    ],
+    "answer": 3,
+    "explanation": "The collector is a process you operate. It is also the place a bad config drops data.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-otel-03",
+    "skillId": "obs-otel",
+    "difficulty": "medium",
+    "prompt": "You send traces to one vendor and metrics to Prometheus. OTel fits because:",
+    "choices": [
+      "Different exporters can sit behind one instrumentation.",
+      "It requires a single backend.",
+      "It cannot do metrics.",
+      "Prometheus cannot scrape an OTel collector."
+    ],
+    "answer": 0,
+    "explanation": "The pipeline is allowed to fork. The app should not have to.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-otel-04",
+    "skillId": "obs-otel",
+    "difficulty": "hard",
+    "prompt": "A collector queue fills and the collector is configured to drop. What do you lose first, and what should you have paged on?",
+    "choices": [
+      "The application process, which blocks forever by default in every SDK.",
+      "Nothing. A full queue retries forever in the application thread always.",
+      "Only traces older than a year.",
+      "New telemetry, while the app keeps running. Page on the collector's own queue and export failures."
+    ],
+    "answer": 3,
+    "explanation": "The pipeline's failure mode is a decision. Watch the pipeline, not only the app.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-alerts-01",
+    "skillId": "obs-alerts",
+    "difficulty": "medium",
+    "prompt": "An alert that fires whenever CPU is over 80 percent for a minute is weak because:",
+    "choices": [
+      "CPU is a cause, not a symptom. Users may be fine, and you will learn to ignore it.",
+      "CPU cannot be measured.",
+      "Alerts should only use logs.",
+      "80 percent is always an outage."
+    ],
+    "answer": 0,
+    "explanation": "Alert on error rate, latency, or saturation that means the service is failing its job.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-alerts-02",
+    "skillId": "obs-alerts",
+    "difficulty": "easy",
+    "prompt": "A good alert has:",
+    "choices": [
+      "A name that says what is wrong, and a link or a sentence that says what to do next.",
+      "Only a metric name.",
+      "A threshold copied from another company.",
+      "No owner."
+    ],
+    "answer": 0,
+    "explanation": "If it does not change what a human does, it is a chart, not an alert.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-alerts-03",
+    "skillId": "obs-alerts",
+    "difficulty": "hard",
+    "prompt": "You silenced a noisy alert during an incident and forgot. What is the durable fix?",
+    "choices": [
+      "Raise the threshold until it never fires, including during the real outage.",
+      "Turn off the receiver.",
+      "A silence with an owner and an expiry, and a ticket to fix the rule. An infinite silence is a deleted alert.",
+      "Delete the metric."
+    ],
+    "answer": 2,
+    "explanation": "Silence is a pause. The rule still needs to be true.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-alerts-04",
+    "skillId": "obs-alerts",
+    "difficulty": "medium",
+    "prompt": "Paging someone for a dev cluster and for production on the same route causes:",
+    "choices": [
+      "Better coverage.",
+      "Lower latency.",
+      "Fewer false positives automatically.",
+      "Fatigue. Production pages get ignored because dev is loud."
+    ],
+    "answer": 3,
+    "explanation": "Separate the routes. The severity is part of the alert.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "obs-logs-05",
+    "skillId": "obs-logs",
+    "difficulty": "medium",
+    "prompt": "Cloud logging in that curriculum is a detection problem, not a disk problem. The useful pipeline:",
+    "choices": [
+      "Stores logs only on the instance that produced them.",
+      "Turns debug on in production and keeps every line forever in the same bucket as the website.",
+      "Replaces metrics.",
+      "Gets control-plane events to a place the workload owner cannot delete, with enough identity to say who changed what."
+    ],
+    "answer": 3,
+    "explanation": "If the attacker can delete the only copy, you do not have detection.",
+    "source": "devsec blueprint",
+    "url": "https://devsecblueprint.com/curriculum"
+  },
+  {
+    "id": "obs-metrics-05",
+    "skillId": "obs-metrics",
+    "difficulty": "medium",
+    "prompt": "cAdvisor on 4194 with no authentication tells a compromised container:",
+    "choices": [
+      "The cloud account password.",
+      "Nothing. Metrics ports are empty.",
+      "Only its own cgroup.",
+      "What else is running on the node: container names, images, and resource use."
+    ],
+    "answer": 3,
+    "explanation": "An open metrics port is reconnaissance. Bind it to localhost or put it behind auth.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2016-10-14-Kubernetes-Attack-Surface-cAdvisor.markdown"
+  },
+  {
+    "id": "obs-logs-06",
+    "skillId": "obs-logs",
+    "difficulty": "hard",
+    "prompt": "Container logs collected only on the node are incomplete because:",
+    "choices": [
+      "Namespaces keep a copy of stdout.",
+      "The scheduler moves pods. A log that dies with the node misses the rest of the pod's life, and stdout needs a shipper.",
+      "Pods write to etcd.",
+      "kubectl logs works after the container is gone from every node."
+    ],
+    "answer": 1,
+    "explanation": "Ship stdout off the node. Design for ephemeral pods, not for a syslog file on one VM.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2022-11-19-PCI-Kubernetes-Section8%20-%20monitoring.markdown"
+  },
+  {
+    "id": "obs-metrics-06",
+    "skillId": "obs-metrics",
+    "difficulty": "medium",
+    "prompt": "kube-proxy's health endpoint listens on 0.0.0.0:10256 and:",
+    "choices": [
+      "Requires a client certificate.",
+      "Is the API server.",
+      "Is disabled unless you pass a flag.",
+      "Has no authentication. /healthz returns metadata, not a bare ok. The root path 404s."
+    ],
+    "answer": 3,
+    "explanation": "An open health port is a discovery aid. Know which component ports are unauthenticated on your nodes.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2024-05-29-Taking-A-Look-At-The-Kube-Proxy-API.markdown"
+  },
+  {
+    "id": "obs-otel-05",
+    "skillId": "obs-otel",
+    "difficulty": "medium",
+    "prompt": "An OpenTelemetry setup for Kubernetes has three pieces:",
+    "choices": [
+      "A DaemonSet that replaces the API audit log.",
+      "kube-proxy metrics and nothing else.",
+      "Sources that emit signals, a collector that processes them, and backends that store them.",
+      "Only Grafana."
+    ],
+    "answer": 2,
+    "explanation": "The collector is the process you operate. If it is down, the backends go quiet while the cluster does not.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2024-02-10-adding-open-telemetry-to-container-stacks.markdown"
+  },
+  {
+    "id": "obs-metrics-07",
+    "skillId": "obs-metrics",
+    "difficulty": "easy",
+    "prompt": "A Linux monitoring script is not done when it prints CPU once. It needs:",
+    "choices": [
+      "Root with no log.",
+      "To replace the application metrics.",
+      "A schedule, a log of failures, and a threshold that a human will look at.",
+      "To run only when you remember."
+    ],
+    "answer": 2,
+    "explanation": "Cron plus a silent failure is how a disk fills up unseen.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+  },
+  {
+    "id": "obs-alerts-05",
+    "skillId": "obs-alerts",
+    "difficulty": "medium",
+    "prompt": "A chaos exercise is useful when:",
+    "choices": [
+      "You break production with no signal and no rollback.",
+      "You only read a slide.",
+      "You disable the health checks first so they do not page you.",
+      "You break one dependency on purpose and the alert plus the fallback behave as designed."
+    ],
+    "answer": 3,
+    "explanation": "The point is the detection and the recovery, not the outage.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+  },
+  {
+    "id": "obs-prometheus-05",
+    "skillId": "obs-prometheus",
+    "difficulty": "easy",
+    "prompt": "The monitoring challenge wants Prometheus and Grafana because:",
+    "choices": [
+      "A dashboard replaces a pager.",
+      "Logs and metrics are the same store.",
+      "Prometheus holds the series and Grafana draws them. An alert needs a rule, not only a chart.",
+      "Grafana scrapes targets by itself in the default setup."
+    ],
+    "answer": 2,
+    "explanation": "If nobody is paged, the chart is a souvenir.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+  },
+  {
+    "id": "obs-alerts-06",
+    "skillId": "obs-alerts",
+    "difficulty": "easy",
+    "prompt": "Elastalert sits in the alerting section because:",
+    "choices": [
+      "It scrapes Prometheus.",
+      "It replaces audit policy.",
+      "It signs images.",
+      "It watches a log store and notifies when a rule matches. It does not collect the logs."
+    ],
+    "answer": 3,
+    "explanation": "A rule with no route is silent. A route with no owner is noise.",
+    "source": "awesome-devsecops",
+    "url": "https://github.com/yelp/elastalert"
+  },
+  {
+    "id": "obs-logs-07",
+    "skillId": "obs-logs",
+    "difficulty": "easy",
+    "prompt": "Moloch, now Arkime, is a packet capture store. It is the wrong tool when:",
+    "choices": [
+      "You are hunting an unexpected connection.",
+      "You already have a span and want the packets behind it.",
+      "You need who called the Kubernetes API. That is the audit log, not a pcap.",
+      "You need to see a flow that the flow log dropped."
+    ],
+    "answer": 2,
+    "explanation": "Capture is heavy. Turn it on for a question, with a retention limit.",
+    "source": "awesome-devsecops",
+    "url": "https://github.com/aol/moloch"
+  },
+  {
+    "id": "obs-metrics-08",
+    "skillId": "obs-metrics",
+    "difficulty": "easy",
+    "prompt": "Grafana and Kibana are dashboards over different stores:",
+    "choices": [
+      "Grafana stores packets.",
+      "Grafana is commonly in front of metrics. Kibana is in front of Elasticsearch logs.",
+      "They both require Prometheus.",
+      "Kibana scrapes nodes."
+    ],
+    "answer": 1,
+    "explanation": "A dashboard is not the retention policy of the store behind it.",
+    "source": "awesome-devsecops",
+    "url": "https://github.com/devsecops/awesome-devsecops"
+  }
+]

@@ -1,0 +1,668 @@
+[
+  {
+    "id": "linux-processes",
+    "categoryId": "linux",
+    "title": "Processes",
+    "order": 1
+  },
+  {
+    "id": "linux-signals",
+    "categoryId": "linux",
+    "title": "Signals",
+    "order": 2
+  },
+  {
+    "id": "linux-systemd",
+    "categoryId": "linux",
+    "title": "systemd",
+    "order": 3
+  },
+  {
+    "id": "linux-users",
+    "categoryId": "linux",
+    "title": "Users and groups",
+    "order": 4
+  },
+  {
+    "id": "linux-permissions",
+    "categoryId": "linux",
+    "title": "Permissions",
+    "order": 5
+  },
+  {
+    "id": "linux-files",
+    "categoryId": "linux",
+    "title": "Files and links",
+    "order": 6
+  },
+  {
+    "id": "linux-disks",
+    "categoryId": "linux",
+    "title": "Disks and filesystems",
+    "order": 7
+  },
+  {
+    "id": "linux-mounts",
+    "categoryId": "linux",
+    "title": "Mounts",
+    "order": 8
+  },
+  {
+    "id": "linux-packages",
+    "categoryId": "linux",
+    "title": "Packages",
+    "order": 9
+  },
+  {
+    "id": "linux-shell",
+    "categoryId": "linux",
+    "title": "Shell",
+    "order": 10
+  },
+  {
+    "id": "linux-text",
+    "categoryId": "linux",
+    "title": "Text processing",
+    "order": 11
+  },
+  {
+    "id": "linux-ssh",
+    "categoryId": "linux",
+    "title": "SSH",
+    "order": 12
+  },
+  {
+    "id": "linux-logs",
+    "categoryId": "linux",
+    "title": "Logs",
+    "order": 13
+  },
+  {
+    "id": "linux-cgroups",
+    "categoryId": "linux",
+    "title": "cgroups",
+    "order": 14
+  },
+  {
+    "id": "linux-namespaces",
+    "categoryId": "linux",
+    "title": "Namespaces",
+    "order": 15
+  },
+  {
+    "id": "linux-netfilter",
+    "categoryId": "linux",
+    "title": "Host firewall",
+    "order": 16
+  },
+  {
+    "id": "linux-troubleshooting",
+    "categoryId": "linux",
+    "title": "Troubleshooting a host",
+    "order": 17
+  },
+  {
+    "id": "net-osi",
+    "categoryId": "networking",
+    "title": "Layers and segments",
+    "order": 1
+  },
+  {
+    "id": "net-ip",
+    "categoryId": "networking",
+    "title": "IP and subnets",
+    "order": 2
+  },
+  {
+    "id": "net-routing",
+    "categoryId": "networking",
+    "title": "Routing",
+    "order": 3
+  },
+  {
+    "id": "net-dns",
+    "categoryId": "networking",
+    "title": "DNS",
+    "order": 4
+  },
+  {
+    "id": "net-tcp",
+    "categoryId": "networking",
+    "title": "TCP and UDP",
+    "order": 5
+  },
+  {
+    "id": "net-http",
+    "categoryId": "networking",
+    "title": "HTTP",
+    "order": 6
+  },
+  {
+    "id": "net-tls",
+    "categoryId": "networking",
+    "title": "TLS",
+    "order": 7
+  },
+  {
+    "id": "net-tunnels",
+    "categoryId": "networking",
+    "title": "SSH tunnels",
+    "order": 8
+  },
+  {
+    "id": "net-firewall",
+    "categoryId": "networking",
+    "title": "Firewalls and ACLs",
+    "order": 9
+  },
+  {
+    "id": "net-nat",
+    "categoryId": "networking",
+    "title": "NAT",
+    "order": 10
+  },
+  {
+    "id": "net-proxy",
+    "categoryId": "networking",
+    "title": "Proxies",
+    "order": 11
+  },
+  {
+    "id": "net-lb",
+    "categoryId": "networking",
+    "title": "Load balancing",
+    "order": 12
+  },
+  {
+    "id": "net-cloud",
+    "categoryId": "networking",
+    "title": "Cloud networking",
+    "order": 13
+  },
+  {
+    "id": "net-dual",
+    "categoryId": "networking",
+    "title": "Dual-homed hosts",
+    "order": 14
+  },
+  {
+    "id": "net-l2",
+    "categoryId": "networking",
+    "title": "Bridges, VLANs, and switches",
+    "order": 15
+  },
+  {
+    "id": "srv-nginx",
+    "categoryId": "servers",
+    "title": "Nginx",
+    "order": 1
+  },
+  {
+    "id": "srv-apache",
+    "categoryId": "servers",
+    "title": "Apache",
+    "order": 2
+  },
+  {
+    "id": "srv-caddy",
+    "categoryId": "servers",
+    "title": "Caddy",
+    "order": 3
+  },
+  {
+    "id": "srv-envoy",
+    "categoryId": "servers",
+    "title": "Envoy",
+    "order": 4
+  },
+  {
+    "id": "srv-cache",
+    "categoryId": "servers",
+    "title": "Caching",
+    "order": 5
+  },
+  {
+    "id": "ctr-images",
+    "categoryId": "containers",
+    "title": "Images and layers",
+    "order": 1
+  },
+  {
+    "id": "ctr-dockerfile",
+    "categoryId": "containers",
+    "title": "Dockerfiles",
+    "order": 2
+  },
+  {
+    "id": "ctr-multistage",
+    "categoryId": "containers",
+    "title": "Multi-stage builds",
+    "order": 3
+  },
+  {
+    "id": "ctr-registries",
+    "categoryId": "containers",
+    "title": "Registries and tags",
+    "order": 4
+  },
+  {
+    "id": "ctr-volumes",
+    "categoryId": "containers",
+    "title": "Volumes and mounts",
+    "order": 5
+  },
+  {
+    "id": "ctr-networks",
+    "categoryId": "containers",
+    "title": "Container networks",
+    "order": 6
+  },
+  {
+    "id": "ctr-ports",
+    "categoryId": "containers",
+    "title": "Published ports",
+    "order": 7
+  },
+  {
+    "id": "ctr-compose",
+    "categoryId": "containers",
+    "title": "Compose",
+    "order": 8
+  },
+  {
+    "id": "ctr-runtime",
+    "categoryId": "containers",
+    "title": "Runtimes",
+    "order": 9
+  },
+  {
+    "id": "ctr-security",
+    "categoryId": "containers",
+    "title": "Docker security model",
+    "order": 10
+  },
+  {
+    "id": "ctr-secrets",
+    "categoryId": "containers",
+    "title": "Build secrets",
+    "order": 11
+  },
+  {
+    "id": "ctr-containerd",
+    "categoryId": "containers",
+    "title": "containerd and CRI",
+    "order": 12
+  },
+  {
+    "id": "ctr-rootless",
+    "categoryId": "containers",
+    "title": "Rootless and user namespaces",
+    "order": 13
+  },
+  {
+    "id": "ctr-debug",
+    "categoryId": "containers",
+    "title": "Debugging containers",
+    "order": 14
+  },
+  {
+    "id": "k8s-pods",
+    "categoryId": "kubernetes",
+    "title": "Pods",
+    "order": 1
+  },
+  {
+    "id": "k8s-workloads",
+    "categoryId": "kubernetes",
+    "title": "Workload types",
+    "order": 2
+  },
+  {
+    "id": "k8s-config",
+    "categoryId": "kubernetes",
+    "title": "ConfigMaps",
+    "order": 3
+  },
+  {
+    "id": "k8s-secrets",
+    "categoryId": "kubernetes",
+    "title": "Secrets",
+    "order": 4
+  },
+  {
+    "id": "k8s-services",
+    "categoryId": "kubernetes",
+    "title": "Services",
+    "order": 5
+  },
+  {
+    "id": "k8s-ingress",
+    "categoryId": "kubernetes",
+    "title": "Ingress and Gateway",
+    "order": 6
+  },
+  {
+    "id": "k8s-probes",
+    "categoryId": "kubernetes",
+    "title": "Probes",
+    "order": 7
+  },
+  {
+    "id": "k8s-resources",
+    "categoryId": "kubernetes",
+    "title": "Requests, limits, QoS",
+    "order": 8
+  },
+  {
+    "id": "k8s-scheduling",
+    "categoryId": "kubernetes",
+    "title": "Scheduling",
+    "order": 9
+  },
+  {
+    "id": "k8s-storage",
+    "categoryId": "kubernetes",
+    "title": "Storage",
+    "order": 10
+  },
+  {
+    "id": "k8s-rbac",
+    "categoryId": "kubernetes",
+    "title": "RBAC",
+    "order": 11
+  },
+  {
+    "id": "k8s-netpol",
+    "categoryId": "kubernetes",
+    "title": "NetworkPolicy",
+    "order": 12
+  },
+  {
+    "id": "k8s-psa",
+    "categoryId": "kubernetes",
+    "title": "Pod Security",
+    "order": 13
+  },
+  {
+    "id": "k8s-helm",
+    "categoryId": "kubernetes",
+    "title": "Helm",
+    "order": 14
+  },
+  {
+    "id": "k8s-gitops",
+    "categoryId": "kubernetes",
+    "title": "GitOps",
+    "order": 15
+  },
+  {
+    "id": "k8s-hpa",
+    "categoryId": "kubernetes",
+    "title": "Autoscaling",
+    "order": 16
+  },
+  {
+    "id": "k8s-debug",
+    "categoryId": "kubernetes",
+    "title": "Debugging workloads",
+    "order": 17
+  },
+  {
+    "id": "k8s-dns",
+    "categoryId": "kubernetes",
+    "title": "Cluster DNS and certs",
+    "order": 18
+  },
+  {
+    "id": "cicd-git",
+    "categoryId": "cicd",
+    "title": "Git",
+    "order": 1
+  },
+  {
+    "id": "cicd-actions",
+    "categoryId": "cicd",
+    "title": "GitHub Actions",
+    "order": 2
+  },
+  {
+    "id": "cicd-jenkins",
+    "categoryId": "cicd",
+    "title": "Jenkins",
+    "order": 3
+  },
+  {
+    "id": "cicd-artifacts",
+    "categoryId": "cicd",
+    "title": "Artifacts",
+    "order": 4
+  },
+  {
+    "id": "cicd-promotion",
+    "categoryId": "cicd",
+    "title": "Promotion",
+    "order": 5
+  },
+  {
+    "id": "cicd-runners",
+    "categoryId": "cicd",
+    "title": "Runners",
+    "order": 6
+  },
+  {
+    "id": "cicd-supply",
+    "categoryId": "cicd",
+    "title": "Pipeline supply chain",
+    "order": 7
+  },
+  {
+    "id": "iac-workflow",
+    "categoryId": "iac",
+    "title": "Terraform workflow",
+    "order": 1
+  },
+  {
+    "id": "iac-state",
+    "categoryId": "iac",
+    "title": "Terraform state",
+    "order": 2
+  },
+  {
+    "id": "iac-modules",
+    "categoryId": "iac",
+    "title": "Modules",
+    "order": 3
+  },
+  {
+    "id": "iac-plan",
+    "categoryId": "iac",
+    "title": "Plan and apply",
+    "order": 4
+  },
+  {
+    "id": "iac-policy",
+    "categoryId": "iac",
+    "title": "Policy as code",
+    "order": 5
+  },
+  {
+    "id": "iac-ansible",
+    "categoryId": "iac",
+    "title": "Ansible and config management",
+    "order": 6
+  },
+  {
+    "id": "iac-secrets",
+    "categoryId": "iac",
+    "title": "Secrets in automation",
+    "order": 7
+  },
+  {
+    "id": "cloud-iam",
+    "categoryId": "cloud",
+    "title": "Cloud IAM",
+    "order": 1
+  },
+  {
+    "id": "cloud-vpc",
+    "categoryId": "cloud",
+    "title": "VPC and subnets",
+    "order": 2
+  },
+  {
+    "id": "cloud-sg",
+    "categoryId": "cloud",
+    "title": "Security groups and NACLs",
+    "order": 3
+  },
+  {
+    "id": "cloud-compute",
+    "categoryId": "cloud",
+    "title": "Compute",
+    "order": 4
+  },
+  {
+    "id": "cloud-lb",
+    "categoryId": "cloud",
+    "title": "Cloud load balancers",
+    "order": 5
+  },
+  {
+    "id": "cloud-registry",
+    "categoryId": "cloud",
+    "title": "Cloud registries",
+    "order": 6
+  },
+  {
+    "id": "cloud-object",
+    "categoryId": "cloud",
+    "title": "Object storage",
+    "order": 7
+  },
+  {
+    "id": "cloud-regions",
+    "categoryId": "cloud",
+    "title": "Regions and failure",
+    "order": 8
+  },
+  {
+    "id": "obs-logs",
+    "categoryId": "observability",
+    "title": "Logs",
+    "order": 1
+  },
+  {
+    "id": "obs-metrics",
+    "categoryId": "observability",
+    "title": "Metrics",
+    "order": 2
+  },
+  {
+    "id": "obs-traces",
+    "categoryId": "observability",
+    "title": "Traces",
+    "order": 3
+  },
+  {
+    "id": "obs-prometheus",
+    "categoryId": "observability",
+    "title": "Prometheus and Grafana",
+    "order": 4
+  },
+  {
+    "id": "obs-otel",
+    "categoryId": "observability",
+    "title": "OpenTelemetry",
+    "order": 5
+  },
+  {
+    "id": "obs-alerts",
+    "categoryId": "observability",
+    "title": "Alerts",
+    "order": 6
+  },
+  {
+    "id": "sec-least",
+    "categoryId": "security",
+    "title": "Least privilege",
+    "order": 1
+  },
+  {
+    "id": "sec-secrets",
+    "categoryId": "security",
+    "title": "Secrets management",
+    "order": 2
+  },
+  {
+    "id": "sec-pki",
+    "categoryId": "security",
+    "title": "PKI and certificates",
+    "order": 3
+  },
+  {
+    "id": "sec-image",
+    "categoryId": "security",
+    "title": "Image and dependency scanning",
+    "order": 4
+  },
+  {
+    "id": "sec-sbom",
+    "categoryId": "security",
+    "title": "SBOM and signing",
+    "order": 5
+  },
+  {
+    "id": "sec-pipeline",
+    "categoryId": "security",
+    "title": "Pipeline hardening",
+    "order": 6
+  },
+  {
+    "id": "sec-runtime",
+    "categoryId": "security",
+    "title": "Runtime detection",
+    "order": 7
+  },
+  {
+    "id": "sec-audit",
+    "categoryId": "security",
+    "title": "Audit logs",
+    "order": 8
+  },
+  {
+    "id": "sec-incident",
+    "categoryId": "security",
+    "title": "Containment",
+    "order": 9
+  },
+  {
+    "id": "sec-zero",
+    "categoryId": "security",
+    "title": "Zero trust",
+    "order": 10
+  },
+  {
+    "id": "sec-threat",
+    "categoryId": "security",
+    "title": "Threat modeling",
+    "order": 11
+  },
+  {
+    "id": "sec-vault",
+    "categoryId": "security",
+    "title": "Vault and OpenBao",
+    "order": 12
+  },
+  {
+    "id": "sec-bench",
+    "categoryId": "security",
+    "title": "Benchmarks and host audit",
+    "order": 13
+  },
+  {
+    "id": "sec-cspm",
+    "categoryId": "security",
+    "title": "Cloud posture",
+    "order": 14
+  }
+]

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The launcher face in one colour for themed icons. The eyes and smile are cut out of the screen. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M54,35V30" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,27m-4.5,0a4.5,4.5 0,1 1,9 0a4.5,4.5 0,1 1,-9 0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M39,35h30a9,9 0,0 1,9 9v20a9,9 0,0 1,-9 9h-30a9,9 0,0 1,-9 -9v-20a9,9 0,0 1,9 -9zM44,51m-4.6,0a4.6,4.6 0,1 1,9.2 0a4.6,4.6 0,1 1,-9.2 0M64,51m-4.6,0a4.6,4.6 0,1 1,9.2 0a4.6,4.6 0,1 1,-9.2 0M47.5,58.5q6.5,6.5 13,0q-6.5,3.2 -13,0z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M44,81m-2.6,0a2.6,2.6 0,1 1,5.2 0a2.6,2.6 0,1 1,-5.2 0M54,81m-2.6,0a2.6,2.6 0,1 1,5.2 0a2.6,2.6 0,1 1,-5.2 0M64,81m-2.6,0a2.6,2.6 0,1 1,5.2 0a2.6,2.6 0,1 1,-5.2 0" />
+</vector>

@@ -1,0 +1,1410 @@
+[
+  {
+    "id": "ctr-images-01",
+    "skillId": "ctr-images",
+    "difficulty": "medium",
+    "prompt": "A tag and a digest on the same image differ because:",
+    "choices": [
+      "The tag moves. The digest names the exact bytes.",
+      "The digest moves and the tag cannot.",
+      "They are two hashes of the Dockerfile only, not the image.",
+      "Tags are required to be immutable by the OCI spec. They are not."
+    ],
+    "answer": 0,
+    "explanation": "Pin production by digest if you need the same bytes tomorrow.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/docker"
+  },
+  {
+    "id": "ctr-images-02",
+    "skillId": "ctr-images",
+    "difficulty": "medium",
+    "prompt": "An image is a stack of layers plus config. What does that buy a rebuild?",
+    "choices": [
+      "A layer can be edited in place after it is pushed.",
+      "Unchanged layers are reused. A change near the top does not resend the base.",
+      "Every build uploads the base OS again, always.",
+      "Layers are encrypted with the tag."
+    ],
+    "answer": 1,
+    "explanation": "Order the Dockerfile so the stable steps come first. The cache key is the instruction and its inputs.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-images-03",
+    "skillId": "ctr-images",
+    "difficulty": "easy",
+    "prompt": "What is the writable layer of a running container?",
+    "choices": [
+      "A thin layer on top of the image. It disappears with the container unless you commit it, which you should treat as a smell.",
+      "A copy of the host's root filesystem.",
+      "The registry.",
+      "The Kubernetes etcd key for the pod."
+    ],
+    "answer": 0,
+    "explanation": "Put durable data in a volume. The container filesystem is not a disk you meant to keep.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-images-04",
+    "skillId": "ctr-images",
+    "difficulty": "hard",
+    "prompt": "Two machines pull nginx:latest and run different code. How?",
+    "choices": [
+      "The tag moved between the pulls, or the platforms resolved to different manifests.",
+      "Images are built on pull from the Dockerfile in the registry. That is not how pull works.",
+      "latest is a digest.",
+      "The kernel recompiles the image."
+    ],
+    "answer": 0,
+    "explanation": "latest is a pointer. Record the digest you actually ran.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-dockerfile-01",
+    "skillId": "ctr-dockerfile",
+    "difficulty": "medium",
+    "prompt": "Which instruction adds a new layer that later instructions can invalidate?",
+    "choices": [
+      "RUN, COPY, and ADD. A changed COPY invalidates the steps after it.",
+      "ENV, which always busts every layer including the ones before it.",
+      "LABEL only.",
+      "WORKDIR, which sends the image to the registry."
+    ],
+    "answer": 0,
+    "explanation": "Keep volatile COPY commands late so the dependency install stays cached.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-dockerfile-02",
+    "skillId": "ctr-dockerfile",
+    "difficulty": "medium",
+    "prompt": "The process in the container is root and the Dockerfile never said USER. Why?",
+    "choices": [
+      "USER is implied by FROM.",
+      "Root inside a container is not root. That is only true with a user namespace.",
+      "The default user is root. A non-root user has to be created and selected.",
+      "The default user is nobody."
+    ],
+    "answer": 2,
+    "explanation": "Add a user and set USER. Otherwise you shipped root.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/tutorials/docker-security-introduction-a859718d"
+  },
+  {
+    "id": "ctr-dockerfile-03",
+    "skillId": "ctr-dockerfile",
+    "difficulty": "easy",
+    "prompt": "What does ENTRYPOINT versus CMD change when someone passes arguments to docker run?",
+    "choices": [
+      "Arguments replace CMD. They are appended to ENTRYPOINT unless the entrypoint is also overridden.",
+      "They replace both, always.",
+      "They are ignored.",
+      "They become environment variables automatically."
+    ],
+    "answer": 0,
+    "explanation": "Use ENTRYPOINT for the binary and CMD for default arguments if you want extra args to be natural.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-dockerfile-04",
+    "skillId": "ctr-dockerfile",
+    "difficulty": "hard",
+    "prompt": "A shell form RUN pipes to another command and the build succeeds even when the first command fails. Why?",
+    "choices": [
+      "The first command never runs.",
+      "The shell's default pipeline status is the last command. Enable pipefail in that RUN.",
+      "Docker ignores exit codes.",
+      "Pipes are not allowed in Dockerfiles, so this cannot happen."
+    ],
+    "answer": 1,
+    "explanation": "RUN is a shell unless you use the exec form. The shell's rules apply, including pipeline status.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-multistage-01",
+    "skillId": "ctr-multistage",
+    "difficulty": "medium",
+    "prompt": "Why is a multi-stage build smaller and safer than shipping the compiler in the runtime image?",
+    "choices": [
+      "The final stage always includes every previous stage.",
+      "Multi-stage disables layer caching.",
+      "It encrypts the binary.",
+      "The final stage copies only the artifact. The toolchain and its vulnerabilities stay in the build stage."
+    ],
+    "answer": 3,
+    "explanation": "Build tools are an attack surface and a size cost. Leave them behind.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-multistage-02",
+    "skillId": "ctr-multistage",
+    "difficulty": "easy",
+    "prompt": "What does COPY --from=build /out/app /app do?",
+    "choices": [
+      "It pushes the image.",
+      "It copies a path out of a named earlier stage into the current image.",
+      "It copies from the host's /out.",
+      "It starts a container named build."
+    ],
+    "answer": 1,
+    "explanation": "The build stage can be a fat SDK image. The last stage can be distroless or a tiny base.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-multistage-03",
+    "skillId": "ctr-multistage",
+    "difficulty": "medium",
+    "prompt": "A Go binary built in Alpine fails in a distroless or scratch image with a dynamic linker error. What happened?",
+    "choices": [
+      "The binary is not static, and the runtime image has no libc or linker.",
+      "scratch includes glibc.",
+      "Go cannot be compiled statically.",
+      "The error means the registry is down."
+    ],
+    "answer": 0,
+    "explanation": "Either build with the right static flags or use a runtime base that has the libraries you linked.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-multistage-04",
+    "skillId": "ctr-multistage",
+    "difficulty": "hard",
+    "prompt": "You copied a CA bundle into the runtime stage and HTTPS calls still fail. What else is easy to forget?",
+    "choices": [
+      "HTTPS does not use CA bundles.",
+      "Multi-stage builds cannot copy files smaller than 1K.",
+      "The scratch image updates CA bundles on boot.",
+      "The application may expect the certs at a distro-specific path, or it may be using a copy you did not include."
+    ],
+    "answer": 3,
+    "explanation": "Know where that binary looks for trust. A file in the wrong directory is the same as a missing file.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-registries-01",
+    "skillId": "ctr-registries",
+    "difficulty": "medium",
+    "prompt": "docker pull and a later deploy disagree about the image. You used a tag. What should the deploy record?",
+    "choices": [
+      "The tag only. Digests are local.",
+      "The Dockerfile line number.",
+      "The container id, which is the same across hosts.",
+      "The digest the pull resolved to."
+    ],
+    "answer": 3,
+    "explanation": "The registry maps a tag to a digest at a moment in time. The digest is the identity.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-registries-02",
+    "skillId": "ctr-registries",
+    "difficulty": "medium",
+    "prompt": "A private registry pull works on your laptop and fails in the cluster with ImagePullBackOff. What does the cluster need?",
+    "choices": [
+      "Your laptop's docker login, which nodes inherit automatically.",
+      "A public registry. Private registries cannot be pulled.",
+      "The Dockerfile in the pod spec.",
+      "Credentials the node or the pod can use, typically an imagePullSecret, and a tag that exists there."
+    ],
+    "answer": 3,
+    "explanation": "The cluster does not share your ~/.docker/config.json.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-registries-03",
+    "skillId": "ctr-registries",
+    "difficulty": "easy",
+    "prompt": "What is a registry, as opposed to a repository?",
+    "choices": [
+      "A repository is the running container.",
+      "A registry is a Kubernetes Service type.",
+      "The registry is the service. A repository is a named image inside it, with tags.",
+      "They are the same word."
+    ],
+    "answer": 2,
+    "explanation": "ghcr.io is a registry. ghcr.io/org/app is a repository.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-registries-04",
+    "skillId": "ctr-registries",
+    "difficulty": "hard",
+    "prompt": "You copied an image to an air-gapped registry and the signature no longer verifies. Why might that be?",
+    "choices": [
+      "Signatures travel inside the layer tar and cannot be separated.",
+      "Air-gapped registries rewrite every digest on purpose, always.",
+      "Verification does not use the digest.",
+      "The signature refers to the digest in the original registry, or you copied a tag and not the signed manifest."
+    ],
+    "answer": 3,
+    "explanation": "Copy the manifest you signed, and re-check the digest on the far side. A retag can point at something else.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-volumes-01",
+    "skillId": "ctr-volumes",
+    "difficulty": "medium",
+    "prompt": "A container writes to /data and the writes are gone after a recreate. There was no volume. Why?",
+    "choices": [
+      "The writable layer is tied to that container. A new container gets a new layer from the image.",
+      "Images are edited in place by container writes.",
+      "Docker persists every directory under /data by default.",
+      "The registry stores container writes."
+    ],
+    "answer": 0,
+    "explanation": "Mount a volume at /data if the bytes need to outlive the container.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-volumes-02",
+    "skillId": "ctr-volumes",
+    "difficulty": "medium",
+    "prompt": "A bind mount of a host directory and a named volume differ because:",
+    "choices": [
+      "The bind mount is a host path you manage. The named volume is Docker's directory, easier to move with the daemon and less obvious to back up.",
+      "They are stored in the image.",
+      "Named volumes cannot be read.",
+      "Bind mounts work only on macOS."
+    ],
+    "answer": 0,
+    "explanation": "Know which one you are debugging. A bind mount shows host permissions. A named volume hides in the Docker data root.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-volumes-03",
+    "skillId": "ctr-volumes",
+    "difficulty": "hard",
+    "prompt": "The app in the container cannot write the bind-mounted directory. The directory is 755 root:root. What is the mismatch?",
+    "choices": [
+      "The container's user is not root and not the owner. Namespaces may also map the UID.",
+      "Bind mounts ignore permissions.",
+      "755 means world writable.",
+      "The kernel remounts bind mounts as noexec always."
+    ],
+    "answer": 0,
+    "explanation": "Align the UID or the mode. Rootless and user namespaces make the host UID and the container UID different numbers.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-volumes-04",
+    "skillId": "ctr-volumes",
+    "difficulty": "easy",
+    "prompt": "What does a tmpfs mount give a container?",
+    "choices": [
+      "A registry mirror.",
+      "A second network namespace.",
+      "A memory filesystem that vanishes when the container stops.",
+      "A disk snapshot."
+    ],
+    "answer": 2,
+    "explanation": "Use it for secrets you do not want on disk, knowing a crash dump or a process listing can still leak them.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-networks-01",
+    "skillId": "ctr-networks",
+    "difficulty": "medium",
+    "prompt": "Two containers on the default bridge cannot reach each other by container name, and two on a user-defined bridge can. Why the difference?",
+    "choices": [
+      "The default bridge disables IP.",
+      "Names only work on the host network.",
+      "DNS for containers requires Kubernetes.",
+      "User-defined bridges get DNS for container names. The default bridge does not."
+    ],
+    "answer": 3,
+    "explanation": "Put cooperating containers on a network you created. Do not rely on the default bridge for service discovery.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-networks-02",
+    "skillId": "ctr-networks",
+    "difficulty": "medium",
+    "prompt": "A container cannot reach a service bound to 127.0.0.1 on the host. Why?",
+    "choices": [
+      "127.0.0.1 inside the container is the container, not the host. The host's loopback is a different network namespace.",
+      "Docker blocks every connection to the host.",
+      "Localhost is routed to the registry.",
+      "The host firewall does not apply to 127.0.0.1, so this cannot be a bind issue."
+    ],
+    "answer": 0,
+    "explanation": "Publish the service on an address the container's network can route to, or run the client in the host namespace on purpose.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/challenges/docker-networking-reach-host-service-bound-to-localhost"
+  },
+  {
+    "id": "ctr-networks-03",
+    "skillId": "ctr-networks",
+    "difficulty": "hard",
+    "prompt": "host network mode removes which isolation?",
+    "choices": [
+      "The container shares the host's network namespace. It sees the host's interfaces and ports.",
+      "The container gets its own kernel.",
+      "It disables the filesystem.",
+      "It encrypts all traffic."
+    ],
+    "answer": 0,
+    "explanation": "Use it deliberately. Port clashes and a missing network boundary are the cost.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-networks-04",
+    "skillId": "ctr-networks",
+    "difficulty": "easy",
+    "prompt": "What is the veth pair's role in bridge networking?",
+    "choices": [
+      "It stores image layers.",
+      "One end is in the container namespace and the other is plugged into the bridge on the host.",
+      "It is a TLS certificate.",
+      "It replaces the default route on the laptop."
+    ],
+    "answer": 1,
+    "explanation": "That pair is the cable between the container and docker0.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-ports-01",
+    "skillId": "ctr-ports",
+    "difficulty": "medium",
+    "prompt": "docker run -p 127.0.0.1:8080:80 does what a bare -p 8080:80 does not?",
+    "choices": [
+      "It disables the port.",
+      "It requires host networking.",
+      "It publishes the container port only on the host's loopback, so other machines cannot open it.",
+      "It publishes on every interface, including the public one. That is the bare form."
+    ],
+    "answer": 2,
+    "explanation": "Bind the address on purpose. The default publish is a wide listen.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-ports-02",
+    "skillId": "ctr-ports",
+    "difficulty": "medium",
+    "prompt": "Several dev servers need the same container port and must run together. What avoids the clash?",
+    "choices": [
+      "Use the same host port twice. Docker will load balance.",
+      "Disable the bridge.",
+      "Publish the container port on an ephemeral host port, or on different host ports, and discover the mapping.",
+      "They cannot run on one host."
+    ],
+    "answer": 2,
+    "explanation": "docker port or the inspect output tells you where each one landed.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/challenges/docker-101-container-publish-random-port"
+  },
+  {
+    "id": "ctr-ports-03",
+    "skillId": "ctr-ports",
+    "difficulty": "hard",
+    "prompt": "You published a port on the internal IP only, and it is still reachable from the external network. Why is that a firewall problem and not a Docker bind problem?",
+    "choices": [
+      "Linux cannot have two NICs.",
+      "The internal IP is always public.",
+      "Docker's NAT and filter rules can accept the traffic in a chain your host policy does not see first.",
+      "Published ports are Unix sockets and ignore addresses."
+    ],
+    "answer": 2,
+    "explanation": "Look at DOCKER-USER and the ingress interface, not only at the -p address.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/challenges/docker-networking-prevent-unexpected-access-to-published-port"
+  },
+  {
+    "id": "ctr-ports-04",
+    "skillId": "ctr-ports",
+    "difficulty": "easy",
+    "prompt": "EXPOSE in a Dockerfile does what at runtime by itself?",
+    "choices": [
+      "It documents the port. It does not publish it on the host.",
+      "It is identical to -p.",
+      "It opens the port on the public internet.",
+      "It creates a Service."
+    ],
+    "answer": 0,
+    "explanation": "Publish is a run or compose decision.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-compose-01",
+    "skillId": "ctr-compose",
+    "difficulty": "medium",
+    "prompt": "depends_on without a health check condition means:",
+    "choices": [
+      "Compose starts the dependency first. It does not wait until the dependency can serve.",
+      "The app waits until the dependency's port answers.",
+      "The dependency is restarted when the app exits.",
+      "The networks are not created."
+    ],
+    "answer": 0,
+    "explanation": "Add a healthcheck and a condition if the race matters. A database process existing is not a database accepting connections.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-compose-02",
+    "skillId": "ctr-compose",
+    "difficulty": "easy",
+    "prompt": "What file is the usual Compose definition?",
+    "choices": [
+      "The Kubernetes manifest. Compose cannot have its own file.",
+      "/etc/shadow.",
+      "compose.yaml or docker-compose.yml in the project directory.",
+      "Dockerfile only."
+    ],
+    "answer": 2,
+    "explanation": "The Dockerfile builds images. Compose runs the set.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-compose-03",
+    "skillId": "ctr-compose",
+    "difficulty": "medium",
+    "prompt": "A compose service name is useful on the project network because:",
+    "choices": [
+      "Other services can resolve it as a DNS name.",
+      "It becomes the image tag in every registry.",
+      "It disables the bridge.",
+      "It is the Linux username."
+    ],
+    "answer": 0,
+    "explanation": "The name is the internal hostname. Do not hard-code container IPs.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-compose-04",
+    "skillId": "ctr-compose",
+    "difficulty": "hard",
+    "prompt": "You changed a build argument and compose up did not rebuild. What do you add?",
+    "choices": [
+      "A reboot.",
+      "There is no way to rebuild.",
+      "A build, or up --build. Compose will reuse an existing image when it thinks nothing relevant changed.",
+      "down -v, which only removes volumes and always rebuilds."
+    ],
+    "answer": 2,
+    "explanation": "Be explicit when the cache or the image name is lying to you.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-runtime-01",
+    "skillId": "ctr-runtime",
+    "difficulty": "medium",
+    "prompt": "dockerd, containerd, and runc divide the work as:",
+    "choices": [
+      "containerd is a Dockerfile linter.",
+      "They are three names for the same binary.",
+      "dockerd is the API you talk to, containerd supervises containers, and runc is the OCI runtime that creates the process.",
+      "runc is the registry."
+    ],
+    "answer": 2,
+    "explanation": "A container is still a process. The stack is who sets up the namespaces and keeps the shim.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/tutorials/docker-security-introduction-a859718d"
+  },
+  {
+    "id": "ctr-runtime-02",
+    "skillId": "ctr-runtime",
+    "difficulty": "medium",
+    "prompt": "crictl and docker see different containers on a Kubernetes node. Why?",
+    "choices": [
+      "crictl is a log viewer.",
+      "Kubernetes talks to the CRI runtime, often containerd. docker talks to dockerd. They are different inventories unless one is driving the other.",
+      "crictl shows images only.",
+      "The kubelet uses Docker's socket on every modern cluster."
+    ],
+    "answer": 1,
+    "explanation": "Debug cluster containers with the CRI tool. docker ps can be an empty lie on a containerd node.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/courses/containerd-cli"
+  },
+  {
+    "id": "ctr-runtime-03",
+    "skillId": "ctr-runtime",
+    "difficulty": "easy",
+    "prompt": "What is the OCI runtime spec about?",
+    "choices": [
+      "TLS ciphers.",
+      "How a runtime creates a container process from a bundle: config plus rootfs.",
+      "How to write a Dockerfile.",
+      "The Kubernetes API."
+    ],
+    "answer": 1,
+    "explanation": "runc implements that spec. Other runtimes can too.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-runtime-04",
+    "skillId": "ctr-runtime",
+    "difficulty": "hard",
+    "prompt": "A Kata or other VM-based runtime is chosen over runc when:",
+    "choices": [
+      "The CVE class you care about is only application logic.",
+      "You want a guest kernel boundary, not only namespaces on the host kernel.",
+      "You want faster startup than any namespace runtime and no isolation.",
+      "You need to share the host kernel's memory pages on purpose."
+    ],
+    "answer": 1,
+    "explanation": "Namespace escapes are host-kernel bugs. A separate kernel changes that trade.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-security-01",
+    "skillId": "ctr-security",
+    "difficulty": "medium",
+    "prompt": "The Docker socket is mode 660 root:docker. What did you grant the docker group?",
+    "choices": [
+      "Nothing, because the daemon authorizes each API call by default. It does not.",
+      "Full control of the daemon, which is enough to become root on the host.",
+      "Read-only access to container logs.",
+      "Permission to run rootless containers only."
+    ],
+    "answer": 1,
+    "explanation": "There is no authorization plugin in a default install. The socket is the authorization.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/tutorials/docker-security-introduction-a859718d"
+  },
+  {
+    "id": "ctr-security-02",
+    "skillId": "ctr-security",
+    "difficulty": "hard",
+    "prompt": "Which published daemon port is the unsafe one, and why?",
+    "choices": [
+      "2376, because TLS is weaker than an open port.",
+      "22, which is the daemon API.",
+      "Neither. Both require a client certificate by default.",
+      "2375, because it is plain TCP with no client auth. 2376 is the TLS port."
+    ],
+    "answer": 3,
+    "explanation": "An open 2375 on a network is a remote root shell. Prefer SSH to the host over exposing the API.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/tutorials/docker-security-introduction-a859718d"
+  },
+  {
+    "id": "ctr-security-03",
+    "skillId": "ctr-security",
+    "difficulty": "hard",
+    "prompt": "docker run --privileged --pid=host --net=host -v /:/host is a breakout because:",
+    "choices": [
+      "Privileged only adds a GPU.",
+      "The host mount is read-only unless you pass a second flag. It is not.",
+      "PID host hides the host processes.",
+      "It removes the isolation and mounts the host root in a place the container can chroot into."
+    ],
+    "answer": 3,
+    "explanation": "Anyone who can pass those flags is an administrator. Do not give them the socket.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/tutorials/docker-security-introduction-a859718d"
+  },
+  {
+    "id": "ctr-security-04",
+    "skillId": "ctr-security",
+    "difficulty": "medium",
+    "prompt": "Mounting /var/run/docker.sock into a container is:",
+    "choices": [
+      "The same power as the docker group, from inside the container. It is a breakout path.",
+      "A supported way to give a container read-only metrics with no risk.",
+      "Required for every build.",
+      "Blocked by the default seccomp profile."
+    ],
+    "answer": 0,
+    "explanation": "A CI helper that mounts the socket is a root shell that happens to live in a container.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/tutorials/docker-security-introduction-a859718d"
+  },
+  {
+    "id": "ctr-secrets-01",
+    "skillId": "ctr-secrets",
+    "difficulty": "medium",
+    "prompt": "A private module must be fetched during docker build. The token is in an ARG. What is wrong?",
+    "choices": [
+      "ARG values leak into image history and cache. A build secret mount is the mechanism that does not bake the token into a layer.",
+      "ARG values are deleted from the image automatically and never appear in history.",
+      "Secrets cannot be used at build time at all.",
+      "The token should be COMMITTED into the Dockerfile."
+    ],
+    "answer": 0,
+    "explanation": "Use BuildKit --mount=type=secret or the equivalent. Do not leave the credential in a layer.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/challenges/docker-build-using-secrets-private-go-module"
+  },
+  {
+    "id": "ctr-secrets-02",
+    "skillId": "ctr-secrets",
+    "difficulty": "hard",
+    "prompt": "The secret mount is available in one RUN and gone in the next. Is that a bug?",
+    "choices": [
+      "Yes. Secrets should persist in the final image so the app can rebuild itself.",
+      "The mount writes the secret into the layer metadata on purpose.",
+      "RUN cannot see mounts.",
+      "No. The mount lasts for that instruction so the secret is not copied into the filesystem you commit."
+    ],
+    "answer": 3,
+    "explanation": "Fetch what you need while the mount is there. The final image should run without the build token.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/challenges/docker-build-using-secrets-private-go-module"
+  },
+  {
+    "id": "ctr-secrets-03",
+    "skillId": "ctr-secrets",
+    "difficulty": "easy",
+    "prompt": "Where should a runtime database password live, relative to the image?",
+    "choices": [
+      "In the image label.",
+      "In the public registry description.",
+      "Outside the image: a secret store, a Kubernetes Secret, or a file mounted at start. Not in ENV of the Dockerfile.",
+      "In the Dockerfile ENV, so it is versioned."
+    ],
+    "answer": 2,
+    "explanation": "Images get copied. Treat them as public even when the registry is private.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-secrets-04",
+    "skillId": "ctr-secrets",
+    "difficulty": "medium",
+    "prompt": "A multi-stage build copied a .netrc into the runtime stage by habit. What did you ship?",
+    "choices": [
+      "Only the username. Tokens are stripped.",
+      "The credentials. The runtime stage is the image you run.",
+      "Nothing. Later stages cannot copy dotfiles.",
+      ".netrc is ignored by COPY."
+    ],
+    "answer": 1,
+    "explanation": "Copy the artifact, not the home directory of the build.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-containerd-01",
+    "skillId": "ctr-containerd",
+    "difficulty": "medium",
+    "prompt": "On a containerd node, which CLI talks the same API the kubelet uses?",
+    "choices": [
+      "kubectl exec, which lists images.",
+      "systemctl, which is the CRI.",
+      "crictl, via the CRI socket. ctr talks containerd's own API and can show a different view.",
+      "docker, always."
+    ],
+    "answer": 2,
+    "explanation": "Use the CRI tool when the question is 'what the kubelet sees'.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-containerd-02",
+    "skillId": "ctr-containerd",
+    "difficulty": "easy",
+    "prompt": "nerdctl exists because:",
+    "choices": [
+      "It is the OCI runtime that replaces runc.",
+      "It stores images in git.",
+      "People want a Docker-like CLI aimed at containerd.",
+      "Kubernetes removed containers."
+    ],
+    "answer": 2,
+    "explanation": "It is a client. containerd is still the daemon.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-containerd-03",
+    "skillId": "ctr-containerd",
+    "difficulty": "medium",
+    "prompt": "A pod is Running in kubectl and crictl ps shows no such container. What should you suspect?",
+    "choices": [
+      "The container is a kernel thread and has no id.",
+      "You are on the wrong node, the wrong namespace in the runtime, or you are querying a different socket than the kubelet.",
+      "kubectl invents pods that have no processes.",
+      "crictl cannot see Running pods."
+    ],
+    "answer": 1,
+    "explanation": "The runtime is local to the node. Point the tool at the socket the kubelet uses, on the node that actually runs the pod.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-containerd-04",
+    "skillId": "ctr-containerd",
+    "difficulty": "hard",
+    "prompt": "Why can ctr and crictl disagree about namespaces?",
+    "choices": [
+      "They share one flat list and cannot disagree.",
+      "crictl shows host processes.",
+      "Namespaces were removed in cgroup v2.",
+      "containerd has its own namespaces, and the CRI plugin uses one of them. A default ctr invocation may be looking at another."
+    ],
+    "answer": 3,
+    "explanation": "Pass the k8s namespace when you use ctr, or prefer crictl for cluster debugging.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-rootless-01",
+    "skillId": "ctr-rootless",
+    "difficulty": "medium",
+    "prompt": "Rootless Docker runs the daemon as a normal user. A container that thinks it is root shows up on the host as:",
+    "choices": [
+      "UID 0 on the host. Rootless does not change that.",
+      "nobody, always, with no mapping.",
+      "The docker group, which is still host root.",
+      "That normal user, because user namespaces map container UID 0 to the user's UID."
+    ],
+    "answer": 3,
+    "explanation": "id inside says root. ps outside says the unprivileged account. That is the point.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/tutorials/docker-security-introduction-a859718d"
+  },
+  {
+    "id": "ctr-rootless-02",
+    "skillId": "ctr-rootless",
+    "difficulty": "hard",
+    "prompt": "What host package does rootless mode need so the user can allocate subordinate UIDs?",
+    "choices": [
+      "The Docker socket left at mode 666. That is the opposite of the goal.",
+      "uidmap, so newuidmap can set up the user namespace range.",
+      "nfs-kernel-server.",
+      "A public IP."
+    ],
+    "answer": 1,
+    "explanation": "Without a subordinate UID range the mapping cannot be installed.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/tutorials/docker-security-introduction-a859718d"
+  },
+  {
+    "id": "ctr-rootless-03",
+    "skillId": "ctr-rootless",
+    "difficulty": "medium",
+    "prompt": "Rootless mode does not make a privileged container safe to hand to strangers. What is still true?",
+    "choices": [
+      "The user who owns the daemon can still harm everything that user can harm, including their files and their other containers.",
+      "Rootless means the process has no permissions on the host at all.",
+      "User namespaces disable volume mounts.",
+      "It replaces image scanning."
+    ],
+    "answer": 0,
+    "explanation": "It shrinks the blast radius from host root to that user. It is not a sandbox for untrusted code by itself.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-rootless-04",
+    "skillId": "ctr-rootless",
+    "difficulty": "easy",
+    "prompt": "Why prefer rootless or a rootless runtime for a developer daemon on a laptop?",
+    "choices": [
+      "It disables networking.",
+      "It removes the need for images.",
+      "A compromise of the socket is no longer instant host root.",
+      "It makes containers faster than processes."
+    ],
+    "answer": 2,
+    "explanation": "The daemon is the trust boundary. Do not run it as root if you do not need to.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/tutorials/docker-security-introduction-a859718d"
+  },
+  {
+    "id": "ctr-debug-01",
+    "skillId": "ctr-debug",
+    "difficulty": "medium",
+    "prompt": "A distroless container has no shell and you need to see a file. What is the Kubernetes-shaped answer?",
+    "choices": [
+      "Rebuild the image with bash and redeploy to production as the fix.",
+      "The file is on the host at the same path.",
+      "nsenter cannot attach to a container.",
+      "An ephemeral debug container that shares the pod's namespaces, via kubectl debug, instead of assuming kubectl exec has a shell."
+    ],
+    "answer": 3,
+    "explanation": "exec only works if the image has the binary. A debug container brings the tools with it.",
+    "source": "iximiuz",
+    "url": "https://labs.iximiuz.com/skill-paths/master-kubectl-debug"
+  },
+  {
+    "id": "ctr-debug-02",
+    "skillId": "ctr-debug",
+    "difficulty": "medium",
+    "prompt": "The process is running and you want its view of the mounts without restarting it. What do you read?",
+    "choices": [
+      "/proc/<pid>/mountinfo, from the host or from a namespace that can see that pid.",
+      "The Dockerfile.",
+      "The registry manifest. It lists live mounts.",
+      "dmesg only."
+    ],
+    "answer": 0,
+    "explanation": "The live mount table is in proc. The image history will not mention a volume added at run time.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-debug-03",
+    "skillId": "ctr-debug",
+    "difficulty": "hard",
+    "prompt": "A container can resolve DNS and cannot open TCP to one address. Where do you split the fault?",
+    "choices": [
+      "Restart the registry.",
+      "The image tag is the only cause of a TCP timeout.",
+      "DNS worked, so compare a route and a filter and a connect from inside the same network namespace.",
+      "DNS success proves every port is open."
+    ],
+    "answer": 2,
+    "explanation": "Use the container's netns: ip route, a connect to the IP, and a capture. Do not confuse name lookup with reachability.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-debug-04",
+    "skillId": "ctr-debug",
+    "difficulty": "easy",
+    "prompt": "docker logs shows nothing and the app is quiet. What else carries output?",
+    "choices": [
+      "Only the registry.",
+      "The Kubernetes scheduler log, for every app log.",
+      "BIOS.",
+      "A file the process writes, which may be on a volume or only inside the writable layer, and the supervisor if one wraps the process."
+    ],
+    "answer": 3,
+    "explanation": "stdout is a choice the process makes. Many servers log to a file instead.",
+    "source": "roadmap.sh",
+    "url": "https://roadmap.sh/devops"
+  },
+  {
+    "id": "ctr-security-05",
+    "skillId": "ctr-security",
+    "difficulty": "medium",
+    "prompt": "A container mounts /var/run/docker.sock read-only so it can inspect neighbors. What can it still do?",
+    "choices": [
+      "Read container details, including environment variables such as a database password passed with -e.",
+      "Nothing. Read-only on the socket removes every API call.",
+      "Only list container names. Inspect is blocked when the mount is :ro.",
+      "Restart the daemon, but not read secrets."
+    ],
+    "answer": 0,
+    "explanation": "The Docker API has no real authorization. Inspect is a read, and env vars are how many images take passwords.",
+    "source": "raesene",
+    "url": "https://raesene.github.io/blog/2016/03/06/The-Dangers-Of-Docker.sock/"
+  },
+  {
+    "id": "ctr-security-06",
+    "skillId": "ctr-security",
+    "difficulty": "hard",
+    "prompt": "Why is handing a container the Docker socket a host breakout even before you pass --privileged?",
+    "choices": [
+      "The socket is a log file.",
+      "Read-only mounts cannot call the API.",
+      "The daemon refuses creates from a mounted socket.",
+      "The socket is the daemon's API, and a default daemon runs as root and will start any container you ask for."
+    ],
+    "answer": 3,
+    "explanation": "Projects such as automatic reverse proxies mount this socket. That is the privilege.",
+    "source": "raesene",
+    "url": "https://raesene.github.io/blog/2016/03/06/The-Dangers-Of-Docker.sock/"
+  },
+  {
+    "id": "ctr-security-07",
+    "skillId": "ctr-security",
+    "difficulty": "medium",
+    "prompt": "no-new-privileges on a non-root container stops what?",
+    "choices": [
+      "A process inside from gaining more privileges, including through a setuid binary in the image.",
+      "The container from opening any socket.",
+      "The daemon from running as root. That is rootless mode.",
+      "Image pulls."
+    ],
+    "answer": 0,
+    "explanation": "A setuid bash in the image is the demonstration. The flag blocks the extra privilege.",
+    "source": "raesene",
+    "url": "https://raesene.github.io/blog/2019/06/01/docker-capabilities-and-no-new-privs/"
+  },
+  {
+    "id": "ctr-security-08",
+    "skillId": "ctr-security",
+    "difficulty": "hard",
+    "prompt": "Docker starts a container as root and still withholds some capabilities. What does that mean?",
+    "choices": [
+      "The default set is empty.",
+      "Container root is not host root. It gets a subset of capabilities unless you add them or pass --privileged.",
+      "Container root has every capability the host root has.",
+      "Capabilities are ignored when USER is root."
+    ],
+    "answer": 1,
+    "explanation": "The default set is a boundary. --privileged removes it.",
+    "source": "raesene",
+    "url": "https://raesene.github.io/blog/2019/06/01/docker-capabilities-and-no-new-privs/"
+  },
+  {
+    "id": "ctr-rootless-05",
+    "skillId": "ctr-rootless",
+    "difficulty": "medium",
+    "prompt": "Rootless Docker's socket is not /var/run/docker.sock. Where does the post put it?",
+    "choices": [
+      "It reuses the root socket and drops privileges per request.",
+      "Under /run/user/<uid>/docker.sock, owned by that user.",
+      "On TCP 2375.",
+      "In the container image."
+    ],
+    "answer": 1,
+    "explanation": "The daemon is a user process. uidmap is the package the install needs for the user namespace.",
+    "source": "raesene",
+    "url": "https://raesene.github.io/blog/2020/12/19/rootless_docker/"
+  },
+  {
+    "id": "ctr-rootless-06",
+    "skillId": "ctr-rootless",
+    "difficulty": "hard",
+    "prompt": "A rootless install on Docker 20.10 still had a sharp edge the post called out. Which one?",
+    "choices": [
+      "The CLI is a different binary with different commands.",
+      "User namespaces are disabled in rootless mode.",
+      "cgroup limits needed cgroup v2 on the host, and low ports and ping had extra limits.",
+      "Rootless containers cannot pull images."
+    ],
+    "answer": 2,
+    "explanation": "It removes host-root from the daemon. It does not remove every Linux privilege quirk.",
+    "source": "raesene",
+    "url": "https://raesene.github.io/blog/2020/12/19/rootless_docker/"
+  },
+  {
+    "id": "ctr-ports-05",
+    "skillId": "ctr-ports",
+    "difficulty": "medium",
+    "prompt": "A non-root container can bind port 80 on current Docker without CAP_NET_BIND_SERVICE. What sysctl makes that possible?",
+    "choices": [
+      "vm.overcommit_memory.",
+      "net.ipv4.ip_unprivileged_port_start set to 0, inside the container network namespace.",
+      "net.ipv4.ip_forward set to 0.",
+      "kernel.unprivileged_userns_clone."
+    ],
+    "answer": 1,
+    "explanation": "Docker sets it in the container's netns, not on the host. Podman can set the same sysctl per container. It is safer than running the process as root to grab a low port.",
+    "source": "raesene",
+    "url": "https://raesene.github.io/blog/2021/07/03/containers-and-low-ports/"
+  },
+  {
+    "id": "ctr-ports-06",
+    "skillId": "ctr-ports",
+    "difficulty": "easy",
+    "prompt": "Historically, binding a port below 1024 required:",
+    "choices": [
+      "Membership in the docker group.",
+      "A Kubernetes Service.",
+      "Root, a setuid binary, or CAP_NET_BIND_SERVICE.",
+      "Only a route."
+    ],
+    "answer": 2,
+    "explanation": "That rule is why images ran as root. The sysctl is the way out.",
+    "source": "raesene",
+    "url": "https://raesene.github.io/blog/2021/07/03/containers-and-low-ports/"
+  },
+  {
+    "id": "ctr-security-09",
+    "skillId": "ctr-security",
+    "difficulty": "hard",
+    "prompt": "A privileged container on cgroup v2 can still break out by:",
+    "choices": [
+      "Loading a kernel module. Privileged includes that right, and a module can leave the mount namespace.",
+      "Reading its own environment variables.",
+      "Opening a ClusterIP.",
+      "Writing to its writable layer."
+    ],
+    "answer": 0,
+    "explanation": "The cgroup-v1 release_agent trick is not the only path. Privileged means the host kernel is in reach.",
+    "source": "raesene",
+    "url": "https://raesene.github.io/blog/2023/08/06/fun-with-privileged-container-breakout/"
+  },
+  {
+    "id": "ctr-multistage-05",
+    "skillId": "ctr-multistage",
+    "difficulty": "easy",
+    "prompt": "The multi-stage Docker exercise exists so the runtime image:",
+    "choices": [
+      "Is the SDK image, tagged latest.",
+      "Has a shell and the source tree for debugging in production.",
+      "Is rebuilt on the server with docker build at container start.",
+      "Contains the built artifact and not the compiler, package indexes, and build credentials."
+    ],
+    "answer": 3,
+    "explanation": "The final FROM is a small base. COPY --from brings the binary across.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/tree/main/devops-challenges"
+  },
+  {
+    "id": "ctr-compose-05",
+    "skillId": "ctr-compose",
+    "difficulty": "medium",
+    "prompt": "An advanced Compose exercise with several services fails on first up because the app starts before the database accepts connections. depends_on alone:",
+    "choices": [
+      "Waits for the TCP port.",
+      "Creates the Kubernetes Services.",
+      "Shares one network namespace.",
+      "Starts containers in order. It does not wait for ready unless you add a healthcheck condition."
+    ],
+    "answer": 3,
+    "explanation": "Add the healthcheck. A process that has a PID is not a database that has finished init.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/tree/main/devops-challenges"
+  },
+  {
+    "id": "ctr-rootless-07",
+    "skillId": "ctr-rootless",
+    "difficulty": "medium",
+    "prompt": "Docker 1.10 could remap container root off host root with user namespaces. What did a stock upgrade not do?",
+    "choices": [
+      "Turn user namespaces on. The daemon config had to be changed, in a systemd drop-in so package upgrades would not wipe it.",
+      "Enable them by default on every existing install.",
+      "Remove the need for a subordinate UID map.",
+      "Disable the bridge network."
+    ],
+    "answer": 0,
+    "explanation": "An extra isolation layer that is off until you enable it is not protecting you.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2016-02-04-Docker-User-Namespaces.markdown"
+  },
+  {
+    "id": "ctr-rootless-08",
+    "skillId": "ctr-rootless",
+    "difficulty": "hard",
+    "prompt": "User namespaces make a container root harder to turn into host root because:",
+    "choices": [
+      "They disable CAP_SYS_ADMIN inside the kernel for every process on the machine.",
+      "They replace seccomp.",
+      "The container's UID 0 is a different UID on the host.",
+      "They encrypt the image."
+    ],
+    "answer": 2,
+    "explanation": "The mapping is the control. Privileged mode and a mounted runtime socket throw it away.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2016-02-04-Docker-User-Namespaces.markdown"
+  },
+  {
+    "id": "ctr-networks-05",
+    "skillId": "ctr-networks",
+    "difficulty": "medium",
+    "prompt": "Docker's default 'bridge' is, in the macvlan post's words, really:",
+    "choices": [
+      "A macvlan. The default already shares the host subnet.",
+      "A direct attach to eth0 with no translation.",
+      "An overlay across a Swarm.",
+      "NAT off a private bridge. Containers are not on the host LAN until you choose a mode that puts them there."
+    ],
+    "answer": 3,
+    "explanation": "Inbound services need an explicit publish because the container addresses are not the host LAN.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2016-02-07-Exploration-in-Docker-bridging.markdown"
+  },
+  {
+    "id": "ctr-networks-06",
+    "skillId": "ctr-networks",
+    "difficulty": "hard",
+    "prompt": "Macvlan was added so a container can:",
+    "choices": [
+      "Replace the registry.",
+      "Sit on the same L2 network as the host, without the NAT hop of the default bridge.",
+      "Share the host PID namespace.",
+      "Avoid a network namespace."
+    ],
+    "answer": 1,
+    "explanation": "What Docker calls bridged is NAT. What operators call bridged is closer to macvlan.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2016-07-23-Docker-MacVLAN.markdown"
+  },
+  {
+    "id": "ctr-networks-07",
+    "skillId": "ctr-networks",
+    "difficulty": "easy",
+    "prompt": "A service inside a container that picks ports at runtime is a poor fit for published ports because:",
+    "choices": [
+      "Bridge networking has no NAT.",
+      "The container can bind the host IP without a publish.",
+      "You must name the host port when the container starts. A port chosen later is not forwarded.",
+      "Docker forwards every container port automatically."
+    ],
+    "answer": 2,
+    "explanation": "Dynamic ports need host networking or a proxy that learns the port, not a static -p you guessed.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2016-02-07-Exploration-in-Docker-bridging.markdown"
+  },
+  {
+    "id": "ctr-compose-06",
+    "skillId": "ctr-compose",
+    "difficulty": "medium",
+    "prompt": "Early Compose could not declare a shared data directory for every service. The feature that fixed that is:",
+    "choices": [
+      "docker links, which share disks.",
+      "A Kubernetes PersistentVolume.",
+      "The image layer, which all containers write.",
+      "A named volume or bind mount in the compose file, shared by the services that need it."
+    ],
+    "answer": 3,
+    "explanation": "Links gave DNS names. They did not give a common writable directory.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2016-02-14-New-Docker-Compose-Features.markdown"
+  },
+  {
+    "id": "ctr-images-05",
+    "skillId": "ctr-images",
+    "difficulty": "medium",
+    "prompt": "Docker Hub automated builds exist so an image stays fresh because:",
+    "choices": [
+      "A tag named latest is rebuilt hourly by the registry itself.",
+      "Hub rebuilds from the git repo you connected, instead of a tarball you pushed once and forgot.",
+      "Hub patches CVEs inside an existing image without a rebuild.",
+      "Official images are the only ones Hub will build."
+    ],
+    "answer": 1,
+    "explanation": "An unmaintained community image is a frozen set of packages. Automated build is how the author keeps it moving.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2017-07-09-Keeping-your-Docker-Builds-Fresh.markdown"
+  },
+  {
+    "id": "ctr-images-06",
+    "skillId": "ctr-images",
+    "difficulty": "hard",
+    "prompt": "Outside the official images, Docker Hub's stance is:",
+    "choices": [
+      "The publisher owns maintenance. Hub does not patch or vouch for community images.",
+      "Hub rescans and rebuilds every public repo weekly.",
+      "A high pull count means the image is current.",
+      "docker search sorts by CVE count."
+    ],
+    "answer": 0,
+    "explanation": "Check the age and the Dockerfile before you run a search hit.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2018-08-12-Docker-Hub-Watch-Out-For-Old-Images.markdown"
+  },
+  {
+    "id": "ctr-security-10",
+    "skillId": "ctr-security",
+    "difficulty": "medium",
+    "prompt": "OpenShift-style clusters refuse containers that run as root. Network tools such as ping still work if:",
+    "choices": [
+      "The binary has CAP_NET_RAW via setcap, and that capability is in the runtime's allowed set.",
+      "You add --privileged. There is no narrower option.",
+      "You set the sysctl on the host.",
+      "You run them from the host namespace only."
+    ],
+    "answer": 0,
+    "explanation": "setcap does not follow a symlink. Point it at the real binary.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2017-07-23-network-tools-in-nonroot-docker-images.markdown"
+  },
+  {
+    "id": "ctr-containerd-05",
+    "skillId": "ctr-containerd",
+    "difficulty": "easy",
+    "prompt": "containerd plus runc can run a container with no dockerd. ctr is:",
+    "choices": [
+      "containerd's own CLI, shipped beside the daemon.",
+      "A Dockerfile compiler.",
+      "The CRI socket.",
+      "A Kubernetes scheduler."
+    ],
+    "answer": 0,
+    "explanation": "You do not need the Docker daemon to have an OCI container. You do need to know which CLI owns the socket you are debugging.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2018-08-05-Docker-Containers-Without-Docker.markdown"
+  },
+  {
+    "id": "ctr-security-11",
+    "skillId": "ctr-security",
+    "difficulty": "medium",
+    "prompt": "Docker 18.09 lets a client reach a remote daemon over SSH so you can avoid:",
+    "choices": [
+      "Opening the daemon's TCP port and managing a TLS client CA for it.",
+      "Using container images.",
+      "User namespaces.",
+      "A local socket on the daemon host."
+    ],
+    "answer": 0,
+    "explanation": "SSH reuses host login and the daemon's local permissions. It is the better remote default.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2018-11-11-Docker-18-09-SSH.markdown"
+  },
+  {
+    "id": "ctr-security-12",
+    "skillId": "ctr-security",
+    "difficulty": "hard",
+    "prompt": "A reverse proxy in front of the Docker API is how you give a monitor stats without root, because:",
+    "choices": [
+      "Read-only on the socket already blocks inspect.",
+      "Docker's authorization plugins are on by default.",
+      "The daemon itself has no per-call authorization. The proxy can allow GET of container JSON and refuse everything else.",
+      "The proxy encrypts layers."
+    ],
+    "answer": 2,
+    "explanation": "The API is HTTP. A proxy is a policy the daemon does not have.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2021-09-05-restricting-docker-access-with-a-proxy.markdown"
+  },
+  {
+    "id": "ctr-runtime-05",
+    "skillId": "ctr-runtime",
+    "difficulty": "medium",
+    "prompt": "Podman and Docker can both use runc. The operational difference the comparison post cares about is:",
+    "choices": [
+      "They share one image store even across sudo.",
+      "Podman always uses a root daemon named podman.sock in /var/run.",
+      "Podman can run as an ordinary user with no root daemon. Images and containers are per user.",
+      "Podman cannot pull from OCI registries."
+    ],
+    "answer": 2,
+    "explanation": "sudo podman is a different store from podman. Rootless and rootful do not see each other's images.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2020-02-01-Comparing-Docker-And-Podman.markdown"
+  },
+  {
+    "id": "ctr-ports-07",
+    "skillId": "ctr-ports",
+    "difficulty": "easy",
+    "prompt": "Rootful Podman is sometimes chosen over rootless because:",
+    "choices": [
+      "Rootless Podman cannot run OCI images.",
+      "sudo shares the user image cache.",
+      "Binding ports under 1024 and the rootful network behave differently, and the image store is separate.",
+      "Rootful Podman disables capabilities."
+    ],
+    "answer": 2,
+    "explanation": "Know which one you are debugging before you conclude an image 'is not there'.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2020-02-23-More-Podman.markdown"
+  },
+  {
+    "id": "ctr-images-07",
+    "skillId": "ctr-images",
+    "difficulty": "easy",
+    "prompt": "You patch a containerized app by:",
+    "choices": [
+      "Editing the layer in the registry.",
+      "Building a new image, pushing it, and rolling out new pods. You do not apt upgrade the running container.",
+      "docker exec and apt, then commit.",
+      "Restarting the pod so it re-pulls the same digest and applies updates."
+    ],
+    "answer": 1,
+    "explanation": "The running container is disposable. The image is the patch.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2022-12-03-PCI-Kubernetes-Section10%20-%20Patching.markdown"
+  },
+  {
+    "id": "ctr-images-08",
+    "skillId": "ctr-images",
+    "difficulty": "hard",
+    "prompt": "An OCI image can be built so a pull notifies an external URL. The maintainers treated it as:",
+    "choices": [
+      "Part of the spec, not a vulnerability they would remove. A pull is not a purely local operation.",
+      "A critical RCE.",
+      "Impossible. Pulls never make outbound calls.",
+      "Blocked by cosign."
+    ],
+    "answer": 0,
+    "explanation": "Know what a pull is allowed to do in your network. A registry mirror is also a place you can see pulls.",
+    "source": "raesene",
+    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2023-02-11-Fun%20with%20Containers%20-%20adding%20tracking%20to%20your%20images.markdown"
+  },
+  {
+    "id": "ctr-multistage-06",
+    "skillId": "ctr-multistage",
+    "difficulty": "easy",
+    "prompt": "A multi-stage Docker exercise fails review when the runtime stage:",
+    "choices": [
+      "Uses a slim base.",
+      "Sets a non-root USER.",
+      "Still contains the compiler, the source, or the build credentials.",
+      "Copies a single binary from the build stage."
+    ],
+    "answer": 2,
+    "explanation": "The point of the second stage is what you leave behind.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+  },
+  {
+    "id": "ctr-compose-07",
+    "skillId": "ctr-compose",
+    "difficulty": "medium",
+    "prompt": "An advanced Compose file is wrong when the app and its database:",
+    "choices": [
+      "Declare a volume for the database.",
+      "Share no network, or the app has no healthcheck wait and crashes on a connection refused.",
+      "Use service DNS names.",
+      "Have separate Dockerfiles."
+    ],
+    "answer": 1,
+    "explanation": "Service names resolve on the compose network. depends_on does not mean ready.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+  },
+  {
+    "id": "ctr-debug-05",
+    "skillId": "ctr-debug",
+    "difficulty": "medium",
+    "prompt": "A Compose stack that used to work and now fails is debugged by:",
+    "choices": [
+      "Reading which service exited, its logs, and whether a published port or a volume path changed.",
+      "Rebuilding with --no-cache before you look.",
+      "Deleting the Docker data root.",
+      "Converting it to Kubernetes first."
+    ],
+    "answer": 0,
+    "explanation": "One exited container with a log line is the usual answer. The rest of the stack is waiting on it.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+  },
+  {
+    "id": "ctr-compose-08",
+    "skillId": "ctr-compose",
+    "difficulty": "easy",
+    "prompt": "A second Compose challenge is still about:",
+    "choices": [
+      "A single container with no ports.",
+      "Replacing Docker with Podman in the same file with no changes. The file is still a compose file.",
+      "Building the image on every request in production.",
+      "More than one service, a shared network, and data that survives a recreate."
+    ],
+    "answer": 3,
+    "explanation": "Name the volume if the database files matter.",
+    "source": "tech-vault",
+    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+  },
+  {
+    "id": "ctr-security-13",
+    "skillId": "ctr-security",
+    "difficulty": "medium",
+    "prompt": "Container isolation, image contents, dependencies, and runtime are four different failures. Build, ship, and run means:",
+    "choices": [
+      "One Trivy job covers admission.",
+      "Runtime policy rewrites the image.",
+      "Ship is just docker push with no identity.",
+      "A Dockerfile mistake, a registry mistake, and a running-pod mistake are not caught by one scan."
+    ],
+    "answer": 3,
+    "explanation": "Pin the digest you scanned. Admit only that digest. Watch the process that runs.",
+    "source": "devsec blueprint",
+    "url": "https://devsecblueprint.com/curriculum"
+  }
+]
