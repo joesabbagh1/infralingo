@@ -230,12 +230,6 @@ fun SparkleIcon(modifier: Modifier = Modifier, tint: Color) = Glyph(modifier) {
 }
 
 @Composable
-fun LinkIcon(modifier: Modifier = Modifier, tint: Color) = Glyph(modifier) {
-    line(tint, 2.6f, 9.4f to 6.4f, 17.6f to 6.4f, 17.6f to 14.6f)
-    line(tint, 2.6f, 17.2f to 6.8f, 6.6f to 17.4f)
-}
-
-@Composable
 fun ChevronIcon(modifier: Modifier = Modifier, tint: Color) = Glyph(modifier) {
     line(tint, 2.8f, 9f to 5.6f, 15.4f to 12f, 9f to 18.4f)
 }

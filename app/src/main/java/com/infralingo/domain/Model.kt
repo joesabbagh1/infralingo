@@ -38,8 +38,6 @@ data class Question(
     val choices: List<String>,
     val answerIndex: Int,
     val explanation: String,
-    val source: String,
-    val url: String,
 )
 
 data class Bank(

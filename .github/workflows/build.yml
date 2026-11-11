@@ -1,4 +1,4 @@
-name: Build APK
+name: Build
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  android:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -46,3 +46,30 @@ jobs:
           else
             gh release create latest Infralingo-latest.apk --title "Latest build" --notes "$NOTES"
           fi
+
+  ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Regenerate project if xcodegen output is missing
+        run: |
+          if [ ! -d ios/Infralingo.xcodeproj ]; then
+            brew install xcodegen
+            xcodegen -s ios/project.yml
+          fi
+
+      - name: Run iOS unit tests
+        run: |
+          xcodebuild -project ios/Infralingo.xcodeproj -scheme Infralingo \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -derivedDataPath ios/build/DerivedData \
+            test | tail -30
+
+      - name: Build simulator app
+        run: |
+          xcodebuild -project ios/Infralingo.xcodeproj -scheme Infralingo \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -derivedDataPath ios/build/DerivedData \
+            build | tail -5

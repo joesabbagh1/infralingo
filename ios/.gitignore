@@ -1,0 +1,11 @@
+# The Xcode project is generated with xcodegen (xcodegen -s ios/project.yml) and committed
+# so the repo can be opened without installing anything.
+
+# Build output
+DerivedData/
+build/
+*.ipa
+*.dSYM.zip
+
+# macOS
+.DS_Store

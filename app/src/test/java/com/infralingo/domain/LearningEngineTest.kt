@@ -30,8 +30,6 @@ class LearningEngineTest {
         choices = listOf("right", "wrong one", "wrong two", "wrong three"),
         answerIndex = 0,
         explanation = "because",
-        source = "test",
-        url = "",
     )
 
     private fun attempt(id: String, skill: String, streak: Int, dueAt: Long) = AttemptState(

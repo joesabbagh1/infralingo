@@ -3,49 +3,43 @@
     "id": "net-osi-01",
     "skillId": "net-osi",
     "difficulty": "medium",
-    "prompt": "A colleague says the office LAN is one IP subnet. What did the networking course actually say a LAN is?",
+    "prompt": "A colleague says the office LAN is one IP subnet. What actually defines a LAN?",
     "choices": [
-      "A LAN cannot contain a router.",
-      "A LAN is defined by locality. It can contain several IP networks joined by routers.",
-      "A LAN is exactly one /24.",
-      "A LAN is any traffic that uses TCP."
+      "Every host that shares one default gateway on the router.",
+      "A network defined by locality, which can hold several subnets.",
+      "A single broadcast domain, which maps to exactly one subnet.",
+      "Every host reachable without passing through a NAT device."
     ],
     "answer": 1,
-    "explanation": "Proximity defines the LAN, not the L3 topology. One building can hold many subnets.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/courses/computer-networking-fundamentals/from-lan-to-vxlan"
+    "explanation": "Proximity defines the LAN, not the L3 topology. One building can hold many subnets joined by routers."
   },
   {
     "id": "net-osi-02",
     "skillId": "net-osi",
     "difficulty": "medium",
-    "prompt": "Two hosts in one broadcast domain can exchange frames without a router. Which layer is that?",
+    "prompt": "Two hosts in one broadcast domain exchange frames without a router. Which layer is that?",
     "choices": [
-      "Layer 2. A router is what joins separate L3 networks.",
-      "Layer 4. Broadcast domains are TCP connections.",
-      "Layer 7.",
-      "Layer 1 only. MAC addresses are not used."
+      "Layer 2, switched by MAC address.",
+      "Layer 3, routed on the connected subnet.",
+      "Layer 1, repeated by the hub or cable.",
+      "Layer 4, carried by the TCP session."
     ],
     "answer": 0,
-    "explanation": "Bridges and switches forward frames inside an L2 segment. Routing starts when the IP networks differ.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/courses/computer-networking-fundamentals/bridge-vs-switch"
+    "explanation": "Bridges and switches forward frames inside an L2 segment. Routing starts when the IP networks differ."
   },
   {
     "id": "net-osi-03",
     "skillId": "net-osi",
     "difficulty": "easy",
-    "prompt": "What does a transparent bridge do from the host's point of view?",
+    "prompt": "What does a transparent bridge look like from a host's point of view?",
     "choices": [
-      "It requires each host to configure the bridge as a default gateway.",
-      "Nothing visible. Hosts send frames, and the bridge learns which MAC is behind which port.",
-      "It rewrites every IP address.",
-      "It terminates TLS."
+      "A device that rewrites the source MAC of frames.",
+      "Invisible. Hosts address each other, not the bridge.",
+      "A next hop the host must set as its gateway.",
+      "An ARP proxy that answers with its own MAC."
     ],
     "answer": 1,
-    "explanation": "Transparency means the endpoints do not address the bridge. They address each other.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/courses/computer-networking-fundamentals/bridge-vs-switch"
+    "explanation": "Transparency means the endpoints do not address the bridge. It learns which MAC is behind which port and forwards frames unchanged."
   },
   {
     "id": "net-osi-04",
@@ -53,63 +47,55 @@
     "difficulty": "hard",
     "prompt": "Why do operators avoid one giant L2 domain across a data center?",
     "choices": [
-      "Broadcasts are unicast and therefore free.",
-      "Switches drop every broadcast, so size does not matter.",
-      "A huge broadcast domain is brittle. A loop or a storm takes a lot of machines with it.",
-      "L2 cannot carry IP, so a large domain cannot route."
+      "Switches cannot forward frames across more than one hop.",
+      "ARP stops working once a subnet is larger than a /16.",
+      "A loop or broadcast storm takes down the whole domain.",
+      "MAC addresses run out beyond a few thousand hosts."
     ],
     "answer": 2,
-    "explanation": "The practical design is smaller L2 segments joined by L3, which is what a top-of-rack switch is doing for the rack.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/courses/computer-networking-fundamentals/bridge-vs-switch"
+    "explanation": "The practical design is smaller L2 segments joined by L3, which is what a top-of-rack switch does for the rack. Failure blast radius is the reason."
   },
   {
     "id": "net-ip-01",
     "skillId": "net-ip",
     "difficulty": "medium",
-    "prompt": "10.0.0.0/8 and 10.1.0.0/16. Does the second sit inside the first?",
+    "prompt": "Does 10.1.0.0/16 sit inside 10.0.0.0/8?",
     "choices": [
-      "No. Different prefix lengths can never nest.",
-      "Only if both are public.",
-      "Only on IPv6.",
-      "Yes. /16 is a longer prefix inside /8."
+      "No. The second octet differs, so they are disjoint.",
+      "No. A /8 only contains the 10.0.0.0/16 network.",
+      "Only if both are configured on the same router.",
+      "Yes. The /16 is a longer prefix within the /8."
     ],
     "answer": 3,
-    "explanation": "A longer prefix is a subset when the bits match. 10.1.0.0/16 is inside 10.0.0.0/8.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "A longer prefix is a subset when the leading bits match. The /8 fixes only the first octet, so 10.1.0.0/16 is inside 10.0.0.0/8."
   },
   {
     "id": "net-ip-02",
     "skillId": "net-ip",
     "difficulty": "medium",
-    "prompt": "A host is 10.1.4.20/24. Which address is the typical subnet broadcast, and who hears it?",
+    "prompt": "A host is 10.1.4.20/24. Which address is the subnet broadcast, and who hears it?",
     "choices": [
-      "10.1.4.255, and only hosts in 10.1.4.0/24.",
-      "10.1.255.255, because the second octet decides.",
-      "255.255.255.255, and the whole internet.",
-      "10.1.4.0, which is the usual host address."
+      "10.1.4.255, heard by hosts in 10.1.4.0/24.",
+      "10.1.255.255, heard by hosts in 10.1.0.0/16.",
+      "10.1.4.0, heard by hosts in 10.1.4.0/24.",
+      "255.255.255.255, heard by the whole VPC."
     ],
     "answer": 0,
-    "explanation": "For a /24 the last address of the range is the directed broadcast. The network address is the bottom of the range, not a host you should use.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "For a /24 the last address of the range is the directed broadcast. The network address is the bottom of the range. Routers do not forward the limited broadcast."
   },
   {
     "id": "net-ip-03",
     "skillId": "net-ip",
     "difficulty": "hard",
-    "prompt": "Two hosts have addresses in the same subnet on the diagram, but a ping says no route to host. What is still possible?",
+    "prompt": "Two hosts are in the same subnet on the diagram, but ping fails. What is still possible?",
     "choices": [
-      "Ping does not use the routing table.",
-      "Same subnet always means the packets leave via the default gateway.",
-      "They are not actually on a shared L2 segment, or one of them has the wrong mask and never ARPs.",
-      "IP never needs ARP."
+      "Same-subnet traffic goes via the gateway, which has no route.",
+      "Their ARP caches are full, so neither one can send frames.",
+      "They are on different L2 segments, or one has the wrong mask.",
+      "ICMP is blocked by default between hosts on the same subnet."
     ],
     "answer": 2,
-    "explanation": "Same numbers on a slide are not a cable. Check the mask, the neighbor table, and whether a VLAN split them.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Same numbers on a slide are not a cable. Check the mask, the neighbor table, and whether a VLAN split them. Same-subnet traffic does not use the gateway."
   },
   {
     "id": "net-ip-04",
@@ -117,63 +103,55 @@
     "difficulty": "easy",
     "prompt": "What is the point of a private range such as 10.0.0.0/8?",
     "choices": [
-      "It cannot be NATed.",
-      "IANA assigns one 10/8 per company.",
-      "It is not routed on the public internet. You can reuse it inside networks you control.",
-      "It is faster than a public address."
+      "It cannot be reached from outside, even through NAT.",
+      "It is reserved for loopback and container networks.",
+      "It is not routed on the internet, so you can reuse it.",
+      "It is encrypted on the wire, so it is safe to expose."
     ],
     "answer": 2,
-    "explanation": "Private addresses need NAT or a tunnel to reach the public internet. They are not secret by themselves.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Private addresses need NAT or a tunnel to reach the internet. They are not secret or encrypted by themselves, and inbound access through NAT is possible when configured."
   },
   {
     "id": "net-routing-01",
     "skillId": "net-routing",
     "difficulty": "medium",
-    "prompt": "A host has a default route and a more specific route to 10.20.0.0/24. A packet to 10.20.0.10 uses which?",
+    "prompt": "A host has a default route and a route to 10.20.0.0/24. A packet to 10.20.0.10 uses which?",
     "choices": [
-      "The default route, because it is listed first in the textbook.",
-      "Whichever interface is eth0.",
-      "Both, and the kernel picks at random.",
-      "The more specific route. Longest prefix wins."
+      "The default, because it has the lowest metric.",
+      "The one that was added to the table first.",
+      "Both, with flows hashed between them.",
+      "The /24, because the longest prefix wins."
     ],
     "answer": 3,
-    "explanation": "Specific beats general. That is how a VPN route overrides the default for an internal range.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Specific beats general. That is how a VPN route overrides the default for an internal range. Metric only breaks ties between equal prefixes."
   },
   {
     "id": "net-routing-02",
     "skillId": "net-routing",
     "difficulty": "medium",
-    "prompt": "ip route get 1.1.1.1 is useful because:",
+    "prompt": "Why is ip route get 1.1.1.1 useful?",
     "choices": [
-      "It shows the route the kernel would use for that destination, including the device and gateway.",
-      "It sends a traceroute.",
-      "It edits the default route.",
-      "It prints only IPv6."
+      "It shows the route, device and source the kernel would use.",
+      "It prints the full table, with the matching entry first.",
+      "It sends a probe and reports the first hop's latency.",
+      "It shows which routes were learned via DHCP or BGP."
     ],
     "answer": 0,
-    "explanation": "Ask the kernel what it would do before you assume the table matches the diagram.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Ask the kernel what it would do before you assume the table matches the diagram. It does not send traffic."
   },
   {
     "id": "net-routing-03",
     "skillId": "net-routing",
     "difficulty": "hard",
-    "prompt": "A packet arrives on eth0 destined to an address that lives on eth1 of the same host. The service is bound to the eth1 address. What does a weak end host do?",
+    "prompt": "A packet arrives on eth0 for an address that lives on eth1 of the same host. What does a weak end host do?",
     "choices": [
-      "It forwards it back out eth0.",
-      "It rewrites the destination to eth0's address.",
-      "It accepts the packet. Local delivery does not require the arrival interface to own that address.",
-      "It drops the packet as a routing error."
+      "Forwards it to eth1 if ip_forward is enabled.",
+      "Replies with an ICMP redirect to the eth1 address.",
+      "Accepts it, since the address is local to the host.",
+      "Drops it, since eth0 does not own that address."
     ],
     "answer": 2,
-    "explanation": "Binding to one address does not stop another interface from delivering that address. Filter on the ingress interface if the split matters.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/challenges/networking-block-unexpected-access-on-dual-homed-server"
+    "explanation": "Local delivery does not require the arrival interface to own the address. Binding to one address does not stop another interface from delivering it. Filter on the ingress interface if the split matters."
   },
   {
     "id": "net-routing-04",
@@ -181,47 +159,41 @@
     "difficulty": "easy",
     "prompt": "What does a default route mean?",
     "choices": [
-      "The MAC table.",
+      "The route the kernel prefers over all others.",
       "Where to send packets that match nothing more specific.",
-      "The route used for packets to the host itself.",
-      "A route that always wins."
+      "Where to send packets for hosts on the local subnet.",
+      "The route used when every other route is down."
     ],
     "answer": 1,
-    "explanation": "0.0.0.0/0 or ::/0 is the catch-all. Without it, only connected and explicit routes work.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "0.0.0.0/0 or ::/0 is the catch-all. Without it, only connected and explicit routes work. It never beats a more specific match."
   },
   {
     "id": "net-dns-01",
     "skillId": "net-dns",
     "difficulty": "medium",
-    "prompt": "A pod resolves some short names and not others. ndots is 5. What is going on?",
+    "prompt": "A pod resolves some short names slowly and others wrongly. ndots is 5. What is going on?",
     "choices": [
-      "ndots is a TLS setting.",
-      "A name with fewer than 5 dots is tried against every search domain first, which multiplies queries and can hit the wrong suffix.",
-      "ndots disables DNS.",
-      "Short names skip search domains."
+      "Only names with 5 labels are cached by CoreDNS.",
+      "Names with under 5 dots try every search domain first.",
+      "Names with under 5 dots skip the search domains entirely.",
+      "Names with 5 or more dots are sent to the node's resolver."
     ],
     "answer": 1,
-    "explanation": "cluster.local search plus a high ndots is why a typo becomes several slow lookups. Absolute names with a trailing dot skip the search list.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "cluster.local search plus a high ndots is why a typo becomes several slow lookups and can match the wrong suffix. A trailing dot skips the search list."
   },
   {
     "id": "net-dns-02",
     "skillId": "net-dns",
     "difficulty": "medium",
-    "prompt": "dig +trace and dig @ns both exist. What is the difference you care about when a record looks wrong?",
+    "prompt": "A record looks wrong. What is the difference between dig +trace and dig @server?",
     "choices": [
-      "@ns sends email.",
-      "+trace walks from the root. Querying a specific server shows what that server says, which may be a cache or a different view.",
-      "They always print the same answer.",
-      "+trace edits the zone."
+      "+trace shows the TTLs, while @server hides them.",
+      "+trace walks from the root. @server asks that one server.",
+      "+trace queries every resolver in resolv.conf in turn.",
+      "@server bypasses caching, while +trace uses the cache."
     ],
     "answer": 1,
-    "explanation": "Decide whether the bug is delegation, the authoritative server, or a recursive cache in the middle.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Decide whether the bug is delegation, the authoritative server, or a recursive cache in the middle. A specific server may be a cache or have a different view."
   },
   {
     "id": "net-dns-03",
@@ -229,31 +201,27 @@
     "difficulty": "hard",
     "prompt": "You changed a record and some clients still see the old value. What is the usual reason?",
     "choices": [
-      "DNS never caches.",
-      "UDP cannot carry a new record on the same day.",
-      "The zone serial is decorative and unused.",
-      "TTL. Resolvers are allowed to keep the previous answer until it expires."
+      "The zone serial was not bumped on the secondaries.",
+      "The new record has not propagated to the root servers.",
+      "Clients cache negative answers until they reboot.",
+      "Resolvers cache the old answer until its TTL expires."
     ],
     "answer": 3,
-    "explanation": "Lower the TTL before the change if you need a fast cut. After the change, wait out the old TTL.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Lower the TTL before the change if you need a fast cut, then wait out the old TTL. Root servers hold delegations, not your records."
   },
   {
     "id": "net-dns-04",
     "skillId": "net-dns",
     "difficulty": "easy",
-    "prompt": "What does /etc/resolv.conf nameserver mean?",
+    "prompt": "What does a nameserver line in /etc/resolv.conf mean?",
     "choices": [
-      "The host's own zone.",
-      "A static ARP entry.",
-      "The default route.",
-      "The recursive resolver this host will ask. It is not the list of every authoritative server on the internet."
+      "The authoritative server for this host.",
+      "The server this host registers its name with.",
+      "The resolver used only for the search domain.",
+      "The recursive resolver this host asks."
     ],
     "answer": 3,
-    "explanation": "Get that resolver wrong and every name fails while IP addresses still work.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Get that resolver wrong and every name fails while IP addresses still work."
   },
   {
     "id": "net-tcp-01",
@@ -261,31 +229,27 @@
     "difficulty": "medium",
     "prompt": "A connection is stuck in SYN_SENT. What did not happen?",
     "choices": [
-      "The handshake did not complete. You sent a SYN and did not get a SYN-ACK you accepted.",
-      "The application finished the HTTP response.",
-      "The socket is in TIME_WAIT after a clean close.",
-      "TLS has already negotiated."
+      "A SYN-ACK never came back from the server.",
+      "The client never sent its final ACK.",
+      "The server never accepted it from the queue.",
+      "The server never sent its first data byte."
     ],
     "answer": 0,
-    "explanation": "SYN_SENT is early. Think filter, route, or the other side not listening. It is not an application bug yet.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "SYN_SENT is the first state. Think filter, route, or nothing listening on the other side. It is not an application bug yet."
   },
   {
     "id": "net-tcp-02",
     "skillId": "net-tcp",
     "difficulty": "medium",
-    "prompt": "TIME_WAIT on the end that closed first is there to:",
+    "prompt": "TIME_WAIT on the side that closed first is there to:",
     "choices": [
-      "Hold the port forever. The only fix is a reboot.",
-      "Mean the remote host crashed.",
-      "Reserve memory for UDP.",
-      "Absorb delayed packets so they are not delivered to a new connection that reused the tuple."
+      "Wait for the peer's application to finish reading.",
+      "Hold the port until the peer sends its own FIN.",
+      "Keep the connection open in case it is reused.",
+      "Absorb delayed packets from the old connection."
     ],
     "answer": 3,
-    "explanation": "A pile of TIME_WAIT is often normal after many short connections. It is not, by itself, a leak.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "TIME_WAIT keeps late segments from being delivered to a new connection on the same tuple. A pile of it is often normal after many short connections."
   },
   {
     "id": "net-tcp-03",
@@ -293,31 +257,27 @@
     "difficulty": "hard",
     "prompt": "UDP 'worked in dev' and drops updates under load. Why is that unsurprising?",
     "choices": [
-      "UDP has the same handshake and retry as TCP.",
-      "The kernel always upgrades UDP to TCP when a packet is lost.",
-      "UDP cannot be filtered.",
-      "UDP does not retransmit or keep order. The application has to notice loss."
+      "UDP is rate-limited by the kernel under load.",
+      "UDP has no checksum, so corrupt packets pass.",
+      "UDP needs a handshake that times out under load.",
+      "UDP has no retransmission or ordering."
     ],
     "answer": 3,
-    "explanation": "If the protocol needed reliability, it had to build it, or it should have been TCP.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "If the protocol needed reliability, the application had to build it, or it should have been TCP. UDP does have a checksum and no handshake."
   },
   {
     "id": "net-tcp-04",
     "skillId": "net-tcp",
     "difficulty": "easy",
-    "prompt": "ss -ltn versus ss -lnt. What are you looking at with listening TCP sockets?",
+    "prompt": "What does ss -ltn show?",
     "choices": [
-      "The ARP cache.",
-      "Firewall counters.",
-      "Sockets in LISTEN, with addresses and ports, not the established client connections.",
-      "Only UDP."
+      "All TCP sockets, including TIME_WAIT.",
+      "Listening TCP and UDP sockets together.",
+      "Listening TCP sockets, with numeric ports.",
+      "Established TCP sessions, with process names."
     ],
     "answer": 2,
-    "explanation": "A service that is not listening is not a DNS problem. Confirm the bind address, not just that the process exists.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "-l is listening, -t is TCP, -n skips name resolution. A service that is not listening is not a DNS problem. Confirm the bind address."
   },
   {
     "id": "net-http-01",
@@ -325,111 +285,97 @@
     "difficulty": "medium",
     "prompt": "An ingress returns 503 and the pods are Running but not Ready. What does 503 mean here?",
     "choices": [
-      "DNS for the cluster is down. 503 is the DNS code.",
-      "The client sent a bad header. That is 503.",
-      "The proxy has no usable upstream. Readiness removed the pods from the Service endpoints.",
-      "The TLS certificate is expired. That is always 503."
+      "The ingress could not reach the API server for routes.",
+      "The upstream accepted the request but timed out.",
+      "No ready endpoints remain for the proxy to send to.",
+      "The pods answered but returned a malformed response."
     ],
     "answer": 2,
-    "explanation": "503 from an ingress is often 'zero ready endpoints'. Fix readiness before you rewrite the Ingress.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "503 from an ingress is often 'zero ready endpoints'. Readiness removed the pods from the Service. A bad response is 502, and a timeout is 504."
   },
   {
     "id": "net-http-02",
     "skillId": "net-http",
     "difficulty": "medium",
-    "prompt": "502 from a reverse proxy usually means:",
+    "prompt": "A 502 from a reverse proxy usually means:",
     "choices": [
-      "The proxy reached something, but the upstream response was invalid or the connection failed mid-attempt.",
-      "The proxy has no configuration at all, which is 404.",
-      "The client timed out before sending a byte. That is 499 only, and never 502.",
-      "Authentication failed."
+      "The upstream sent a bad response or dropped the connection.",
+      "There are no healthy upstreams configured to send to.",
+      "The upstream took longer than the proxy timeout.",
+      "The client closed the connection before a reply."
     ],
     "answer": 0,
-    "explanation": "502 is a bad gateway: the next hop misbehaved. 503 is 'I have nobody healthy to call'.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "502 is a bad gateway: the next hop misbehaved. 503 is 'nobody healthy to call', 504 is a timeout, and 499 is Nginx's code for a client close."
   },
   {
     "id": "net-http-03",
     "skillId": "net-http",
     "difficulty": "easy",
-    "prompt": "What does a Host header let one IP do?",
+    "prompt": "What does the Host header let one IP do?",
     "choices": [
-      "Encrypt the body.",
-      "Replace DNS.",
-      "Set the TCP window.",
-      "Serve many sites. The name in Host, or SNI for HTTPS, picks the site."
+      "Redirect clients to a different IP.",
+      "Skip DNS lookups for that site.",
+      "Tell the server the client's IP.",
+      "Serve many sites, picked by name."
     ],
     "answer": 3,
-    "explanation": "Virtual hosting is the Host header. The IP alone is not the site.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Virtual hosting is the Host header, or SNI for HTTPS. The IP alone is not the site. X-Forwarded-For carries the client address."
   },
   {
     "id": "net-http-04",
     "skillId": "net-http",
     "difficulty": "hard",
-    "prompt": "A health check uses HTTP and the app only speaks HTTP/2 cleartext on that port. The check fails. What is the mismatch?",
+    "prompt": "A health check uses HTTP/1.1, and the app speaks only cleartext HTTP/2 on that port. The check fails. Why?",
     "choices": [
-      "HTTP/2 disables status codes.",
-      "The checker spoke HTTP/1.1 and the server did not. The protocol on the health port has to be what the checker sends.",
-      "HTTP/2 cannot listen on a port.",
-      "Health checks are UDP."
+      "The checker sees an HTTP/2 status code it cannot parse.",
+      "The server does not speak the protocol the checker sends.",
+      "HTTP/2 needs TLS, so the port refuses the TCP handshake.",
+      "HTTP/2 health checks need a gRPC service on that port."
     ],
     "answer": 1,
-    "explanation": "Match the probe to the protocol the process actually speaks. A TCP probe would only prove the port accepts a handshake.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Match the probe to the protocol the process actually speaks. The TCP handshake succeeds, and a TCP probe would only prove that."
   },
   {
     "id": "net-tls-01",
     "skillId": "net-tls",
     "difficulty": "medium",
-    "prompt": "A client says certificate signed by unknown authority. The certificate is not expired. What is missing?",
+    "prompt": "A client says 'certificate signed by unknown authority'. The certificate is not expired. What is missing?",
     "choices": [
-      "The server's private key is supposed to be installed on the client.",
-      "TLS does not use CAs.",
-      "The clock is irrelevant and so is the trust store.",
-      "The client does not trust the CA that signed the server certificate, or the chain was not sent."
+      "A SAN on the certificate matching the hostname.",
+      "An OCSP response stapled by the server.",
+      "The client's own certificate for mutual TLS.",
+      "Trust in the issuing CA, or the intermediate chain."
     ],
     "answer": 3,
-    "explanation": "Trust is the CA bundle. Sending the leaf without intermediates, or using a private CA the client has never seen, produces this error.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Trust is the CA bundle. Sending the leaf without intermediates, or using a private CA the client has never seen, produces this error. A name mismatch gives a different error."
   },
   {
     "id": "net-tls-02",
     "skillId": "net-tls",
     "difficulty": "medium",
-    "prompt": "You terminated TLS at the ingress and the app still redirects to https forever. What did the app fail to learn?",
+    "prompt": "You terminated TLS at the ingress and the app redirects to https forever. What did the app fail to learn?",
     "choices": [
-      "The certificate's SAN. Redirects do not care about the scheme.",
-      "That the original request was HTTPS. It only sees HTTP from the proxy unless you pass X-Forwarded-Proto or use a trusted header.",
-      "That TLS 1.3 forbids redirects.",
-      "That port 443 is UDP."
+      "That port 443 is mapped to its port 80.",
+      "That the client's request was already HTTPS.",
+      "That the ingress holds the certificate for it.",
+      "That HSTS is set on the ingress already."
     ],
     "answer": 1,
-    "explanation": "The app's view of the scheme is the connection in front of it. Tell it the external scheme, and only trust that header from the proxy.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The app sees HTTP from the proxy unless you pass X-Forwarded-Proto. Tell it the external scheme, and only trust that header from the proxy."
   },
   {
     "id": "net-tls-03",
     "skillId": "net-tls",
     "difficulty": "hard",
-    "prompt": "mTLS is required, and the server certificate verifies, but the connection still fails. What else has to be true?",
+    "prompt": "mTLS is required and the server certificate verifies, but the connection still fails. What else has to be true?",
     "choices": [
-      "Only the client needs a certificate. The server uses a password.",
-      "mTLS is a DNS record.",
-      "The client certificate has to be presented and accepted by the server's trust and policy.",
-      "mTLS means the server skips certificate checks."
+      "Both sides must use certs from the same leaf.",
+      "The server cert must have the clientAuth EKU.",
+      "The server must accept the client's certificate.",
+      "The client must pin the server's public key."
     ],
     "answer": 2,
-    "explanation": "Both sides authenticate. A missing or untrusted client cert fails after the server cert succeeds.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Both sides authenticate. A missing or untrusted client cert fails after the server cert succeeds. The clientAuth usage belongs on the client certificate."
   },
   {
     "id": "net-tls-04",
@@ -437,63 +383,55 @@
     "difficulty": "easy",
     "prompt": "Where does the server's private key belong?",
     "choices": [
-      "In the certificate's SAN field.",
-      "On every client.",
-      "In DNS.",
-      "On the server, unreadable to everyone else. It is not sent during the handshake."
+      "In the certificate, so clients can verify it.",
+      "With the CA, which signs each handshake.",
+      "In the chain file, after the intermediates.",
+      "On the server only, readable by the service."
     ],
     "answer": 3,
-    "explanation": "The certificate is public. The key stays put. A key in git is a compromise, not a convenience.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The certificate is public. The key stays put and is never sent during the handshake. A key in git is a compromise."
   },
   {
     "id": "net-tunnels-01",
     "skillId": "net-tunnels",
     "difficulty": "medium",
-    "prompt": "You need the laptop to reach a database port that only the bastion can see. Which SSH form is that?",
+    "prompt": "The laptop must reach a database port that only the bastion can see. Which SSH form is that?",
     "choices": [
-      "Remote forward, -R. That publishes your laptop on the bastion.",
-      "-D is only a local forward of one port.",
-      "ProxyJump cannot be combined with a forward.",
-      "Local forward, -L. The laptop listens, and the bastion connects onward."
+      "Remote forward, -R",
+      "Dynamic SOCKS, -D",
+      "Agent forward, -A",
+      "Local forward, -L"
     ],
     "answer": 3,
-    "explanation": "-L laptopPort:db:5432 jumps through the bastion. -R is the other direction.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/skill-paths/master-ssh-tunnels"
+    "explanation": "-L laptopPort:db:5432 listens on the laptop and connects onward from the bastion. -R is the other direction. -D works but is general purpose."
   },
   {
     "id": "net-tunnels-02",
     "skillId": "net-tunnels",
     "difficulty": "medium",
-    "prompt": "A developer must show a local port to the internet through a host they can SSH to. Which direction is the forward?",
+    "prompt": "A developer must show a local port to the internet through a host they can SSH to. Which forward is it?",
     "choices": [
-      "SCP.",
-      "Remote forward, -R. The remote host listens and sends the bytes back down the SSH connection.",
-      "Local forward, -L.",
-      "A SOCKS proxy on the remote host, which does not listen."
+      "ProxyJump, -J",
+      "Remote forward, -R",
+      "Local forward, -L",
+      "Dynamic SOCKS, -D"
     ],
     "answer": 1,
-    "explanation": "-R is how a NATed laptop publishes a dev server. The listening socket is on the far side.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/skill-paths/master-ssh-tunnels"
+    "explanation": "-R makes the remote host listen and send the bytes back down the SSH connection. It is how a NATed laptop publishes a dev server."
   },
   {
     "id": "net-tunnels-03",
     "skillId": "net-tunnels",
     "difficulty": "hard",
-    "prompt": "kubectl must reach a private API server through a bastion, and you do not want a one-port -L. What does a SOCKS proxy plus the client give you?",
+    "prompt": "kubectl must reach a private API server through a bastion, without a one-port -L. What works?",
     "choices": [
-      "SOCKS replaces the kubeconfig.",
-      "-D opens the API server to the internet.",
-      "A SOCKS proxy only carries UDP.",
-      "ssh -D makes a local SOCKS listener, and ALL_PROXY or the client's proxy setting sends the API calls through it."
+      "ssh -R so the API server can reach your kubeconfig.",
+      "ssh -J with the API server as the final hop.",
+      "ssh -w to create a tun device to the bastion.",
+      "ssh -D for a local SOCKS proxy that kubectl uses."
     ],
     "answer": 3,
-    "explanation": "One SSH connection becomes a general TCP proxy for the tools that can use it, including kubectl.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/challenges/access-kubernetes-api-through-ssh-socks-proxy"
+    "explanation": "One SSH connection becomes a general TCP proxy for the tools that can use it, including kubectl through proxy-url or ALL_PROXY. -J needs sshd on the target."
   },
   {
     "id": "net-tunnels-04",
@@ -501,63 +439,55 @@
     "difficulty": "easy",
     "prompt": "What is ProxyJump for, compared with -L?",
     "choices": [
-      "They are identical.",
-      "ProxyJump forwards UDP only.",
-      "ProxyJump copies the private key onto the bastion.",
-      "Getting an interactive or command SSH session onto the far host via a bastion. -L is for one TCP port."
+      "Forwarding one port, with no shell on the bastion.",
+      "Forwarding your agent so the far host can use it.",
+      "Keeping the session alive across network changes.",
+      "A full SSH session on the far host, not one port."
     ],
     "answer": 3,
-    "explanation": "Use -J when you want a shell or git over SSH. Use -L when you want a single TCP service.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Use -J when you want a shell or git over SSH on the far host. Use -L when you want a single TCP service."
   },
   {
     "id": "net-firewall-01",
     "skillId": "net-firewall",
     "difficulty": "medium",
-    "prompt": "A security group and a subnet NACL both exist. The instance still cannot be reached. What is a property people forget about NACLs?",
+    "prompt": "A security group and a subnet NACL both exist. The instance still cannot be reached. What do people forget about NACLs?",
     "choices": [
-      "NACLs replace routes.",
-      "Security groups can only allow, so they cannot be the problem. That part is true of the rule direction, but the NACL can still drop the return.",
-      "NACLs are stateless. Return traffic needs its own allow. Security groups are stateful.",
-      "NACLs are stateful and security groups are not."
+      "They apply only to traffic that crosses the VPC edge.",
+      "They allow everything until a deny rule is added.",
+      "They are stateless, so return traffic needs its own rule.",
+      "They are evaluated after the security group, not before."
     ],
     "answer": 2,
-    "explanation": "An allow on inbound port 443 with a stateless NACL still needs the ephemeral return ports outbound, and the reverse on the way back.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "An inbound allow on 443 with a stateless NACL still needs the ephemeral return ports outbound. Security groups are stateful. Custom NACLs deny by default."
   },
   {
     "id": "net-firewall-02",
     "skillId": "net-firewall",
     "difficulty": "medium",
-    "prompt": "You want Node Exporter on the management NIC to be unreachable from the corporate NIC. The process already listens only on the management IP. What actually enforces the split?",
+    "prompt": "Node Exporter listens only on the management IP, yet the corporate NIC can reach it. What enforces the split?",
     "choices": [
-      "Moving the process to a different UID. UID selects the NIC.",
-      "A filter on the ingress interface, or a per-service interface restriction. The listen address does not, on a weak end host.",
-      "Binding to the management IP is sufficient on Linux.",
-      "Deleting the default route."
+      "Enabling rp_filter on both interfaces.",
+      "A filter on the ingress interface.",
+      "Binding to the management IP only.",
+      "Turning off IP forwarding on the host."
     ],
     "answer": 1,
-    "explanation": "Match iif and the destination, or use RestrictNetworkInterfaces=. Do not expect bind() to be a firewall.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/challenges/networking-block-unexpected-access-on-dual-homed-server"
+    "explanation": "On a weak end host, bind() is not a firewall. Match the input interface and port, or use RestrictNetworkInterfaces=. Forwarding is not involved in local delivery."
   },
   {
     "id": "net-firewall-03",
     "skillId": "net-firewall",
     "difficulty": "hard",
-    "prompt": "Docker published a port and your careful INPUT drop never sees the packets. Where did they go?",
+    "prompt": "Docker published a port and your INPUT drop never sees the packets. Where did they go?",
     "choices": [
-      "Docker does not use iptables.",
-      "Published ports are Unix sockets.",
-      "INPUT is always the first hook for forwarded container traffic.",
-      "Docker puts forwarding and DNAT rules in its own chains. Traffic can be accepted in FORWARD or DOCKER-USER before your INPUT policy matters."
+      "Docker inserts an ACCEPT at the top of INPUT.",
+      "docker-proxy accepts them before netfilter does.",
+      "They are routed through the docker0 raw table.",
+      "DNAT sends them through FORWARD, not INPUT."
     ],
     "answer": 3,
-    "explanation": "The fix belongs in DOCKER-USER or the equivalent nft hook, not only in the host's INPUT chain.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Published traffic is DNATed to the container, so it is forwarded, not delivered locally. Put the filter in DOCKER-USER or the equivalent nft hook."
   },
   {
     "id": "net-firewall-04",
@@ -565,15 +495,13 @@
     "difficulty": "easy",
     "prompt": "An allow rule that never matches is often explained by:",
     "choices": [
-      "Allow rules are ignored on Tuesdays.",
-      "The kernel only reads the first rule in the table and skips the rest always.",
-      "Ports above 1024 cannot be matched.",
-      "The rule is after a final drop, or it matches the wrong interface, address, or connection state."
+      "The rule needing a restart of the firewall service.",
+      "The rule being on the OUTPUT chain's default policy.",
+      "Rules taking effect only after connections time out.",
+      "An earlier rule matching first, or wrong match fields."
     ],
     "answer": 3,
-    "explanation": "Order and match criteria are the whole game. Read the counter. A counter that stays at zero is not the rule that is saving you.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Order and match criteria are the whole game. Read the counter. A counter that stays at zero is not the rule that is saving you."
   },
   {
     "id": "net-nat-01",
@@ -581,31 +509,27 @@
     "difficulty": "medium",
     "prompt": "A private subnet reaches the internet through a NAT gateway. What does the NAT change?",
     "choices": [
-      "The MAC address only.",
-      "The source address of outbound connections, so replies can come back to the gateway and be mapped to the instance.",
-      "The destination of every inbound connection from the internet, automatically, to every instance.",
-      "Nothing. NAT is a DNS feature."
+      "The route table of the private subnet.",
+      "The source address of outbound connections.",
+      "The destination address of inbound connections.",
+      "The source port only, never the address."
     ],
     "answer": 1,
-    "explanation": "Source NAT gives many private instances one public path out. It is not, by itself, an inbound allow.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Source NAT gives many private instances one public path out and maps the replies back. It is not, by itself, an inbound allow."
   },
   {
     "id": "net-nat-02",
     "skillId": "net-nat",
     "difficulty": "medium",
-    "prompt": "Hairpin or NAT loopback pain shows up when:",
+    "prompt": "When does hairpin NAT (NAT loopback) cause trouble?",
     "choices": [
-      "You use IPv6 only, which always hairpins.",
-      "A client inside the NAT tries to reach the network's public address and the translation does not cover that path.",
-      "Two public hosts ping each other.",
-      "You add a default route."
+      "An inside client connects to a public site through the NAT.",
+      "An inside client connects to the network's own public IP.",
+      "An outside client connects to an inside service by its private IP.",
+      "Two inside clients connect to each other by private IP."
     ],
     "answer": 1,
-    "explanation": "Internal clients often need the private address or split DNS. The public IP is the outside view.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Internal clients often need the private address or split DNS. The public IP is the outside view, and the router may not translate that path back inside."
   },
   {
     "id": "net-nat-03",
@@ -613,31 +537,27 @@
     "difficulty": "hard",
     "prompt": "SNAT and DNAT answer different questions. Which pairing is right?",
     "choices": [
-      "DNAT is only for ICMP.",
-      "SNAT requires a load balancer and DNAT cannot be done in iptables.",
-      "SNAT rewrites the source, typically for egress. DNAT rewrites the destination, typically to publish an internal service.",
-      "Both rewrite the source."
+      "SNAT for TCP, DNAT for UDP and ICMP.",
+      "SNAT on the input chain, DNAT on output.",
+      "SNAT for egress, DNAT to publish a service.",
+      "SNAT to publish a service, DNAT for egress."
     ],
     "answer": 2,
-    "explanation": "Docker's published ports are DNAT into the container. A NAT gateway is SNAT out.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "SNAT rewrites the source. DNAT rewrites the destination. Docker's published ports are DNAT into the container. A NAT gateway is SNAT out."
   },
   {
     "id": "net-nat-04",
     "skillId": "net-nat",
     "difficulty": "easy",
-    "prompt": "Why can an instance in a private subnet download packages after you add a NAT gateway and a default route to it?",
+    "prompt": "After you add a NAT gateway and a default route, can the internet now reach the private instance?",
     "choices": [
-      "The instance's private address becomes globally routable.",
-      "Outbound connections are translated and the replies are mapped back. Inbound unsolicited connections are still not admitted.",
-      "The NAT gateway gives the instance a public SSH listener.",
-      "NAT disables the need for a route."
+      "No, and it cannot reach the internet either.",
+      "No. Only replies to its outbound traffic return.",
+      "Yes, on any port its security group allows.",
+      "Yes, but only on ports above 1024."
     ],
     "answer": 1,
-    "explanation": "Egress and ingress are different. Do not treat a working apt install as proof that the instance is exposed.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Egress and ingress are different. Do not treat a working apt install as proof that the instance is exposed."
   },
   {
     "id": "net-proxy-01",
@@ -645,47 +565,41 @@
     "difficulty": "medium",
     "prompt": "A forward proxy and a reverse proxy sit on opposite sides of a connection. Which is which?",
     "choices": [
-      "They are two names for NAT.",
-      "A reverse proxy is always a TCP dump.",
-      "A forward proxy terminates the site's TLS certificate for the world.",
-      "A forward proxy acts for clients leaving a network. A reverse proxy acts for servers receiving traffic."
+      "Forward acts for servers. Reverse acts for clients.",
+      "Forward handles HTTP. Reverse handles TCP.",
+      "Forward terminates TLS. Reverse passes it.",
+      "Forward acts for clients. Reverse acts for servers."
     ],
     "answer": 3,
-    "explanation": "Egress filtering uses a forward proxy. An ingress, Nginx, or Envoy in front of an app is a reverse proxy.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Egress filtering uses a forward proxy. An ingress, Nginx, or Envoy in front of an app is a reverse proxy."
   },
   {
     "id": "net-proxy-02",
     "skillId": "net-proxy",
     "difficulty": "medium",
-    "prompt": "You put Nginx in front of an app and the app logs every request as coming from Nginx. What do you pass if you need the client?",
+    "prompt": "You put Nginx in front of an app and the app logs every request as coming from Nginx. How does the app get the client IP?",
     "choices": [
-      "Nothing. The TCP source is always the original client through a proxy.",
-      "The server's private key.",
-      "A DNS CNAME. That restores the address.",
-      "The real client address in a header such as X-Forwarded-For, and the app must trust it only from the proxy."
+      "From the TCP source, once Nginx enables keepalive.",
+      "From the Via header that Nginx adds by default.",
+      "From X-Real-IP, which clients cannot spoof.",
+      "From X-Forwarded-For, trusted only from the proxy."
     ],
     "answer": 3,
-    "explanation": "The connection the app accepts is from the proxy. Headers restore the rest, and they are spoofable if you trust them from anywhere.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The connection the app accepts is from the proxy. Headers restore the rest, and any of them can be spoofed if you trust them from anywhere."
   },
   {
     "id": "net-proxy-03",
     "skillId": "net-proxy",
     "difficulty": "hard",
-    "prompt": "An explicit forward proxy is set, and a program ignores it. What is a common reason?",
+    "prompt": "An explicit forward proxy is set in the environment, and a program ignores it. What is a common reason?",
     "choices": [
-      "HTTPS cannot use a proxy.",
-      "The variable only works for ping.",
-      "The program does not read http_proxy, or it was told to use a SOCKS proxy and the variable is an HTTP proxy.",
-      "Proxies are applied by the kernel to every socket automatically."
+      "The proxy variable must be set in /etc/hosts too.",
+      "HTTPS traffic cannot pass through a forward proxy.",
+      "That client does not read http_proxy or https_proxy.",
+      "Proxies only apply to programs started by root."
     ],
     "answer": 2,
-    "explanation": "Know which clients honor which variables. A Go binary, Java, and curl do not all behave the same.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Know which clients honor which variables. Go, Java, and curl do not all behave the same, and casing and NO_PROXY differ too. CONNECT carries HTTPS fine."
   },
   {
     "id": "net-proxy-04",
@@ -693,31 +607,27 @@
     "difficulty": "easy",
     "prompt": "What is the job of a reverse proxy in front of several services on one host?",
     "choices": [
-      "It stores the git history.",
-      "It is a packet capture.",
-      "It accepts the public connection and picks a backend from the name or the path.",
-      "It replaces the need for IP addresses."
+      "Give each service its own public IP address.",
+      "Encrypt traffic between the services themselves.",
+      "Accept the connection and route it by host or path.",
+      "Cache every response so the services can stay off."
     ],
     "answer": 2,
-    "explanation": "One listener, many apps. That is virtual hosting plus routing.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "One listener, many apps. That is virtual hosting plus routing."
   },
   {
     "id": "net-lb-01",
     "skillId": "net-lb",
     "difficulty": "medium",
-    "prompt": "L4 and L7 load balancing differ because:",
+    "prompt": "How do L4 and L7 load balancing differ?",
     "choices": [
-      "L4 balances TCP or UDP connections without reading the HTTP. L7 can route on host, path, and headers.",
-      "L7 cannot terminate TLS.",
-      "L4 rewrites HTTP paths.",
-      "They are the same once the packet is IP."
+      "L7 reads HTTP and can route on host, path and headers.",
+      "L4 reads HTTP but can only route on the host header.",
+      "L7 balances packets, while L4 balances connections.",
+      "L4 terminates TLS, while L7 passes it through untouched."
     ],
     "answer": 0,
-    "explanation": "Pick L4 when you want simplicity and preserved connections. Pick L7 when the URL decides the backend.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "L4 balances TCP or UDP connections without reading the payload. Pick L4 for simplicity and preserved connections, L7 when the URL decides the backend."
   },
   {
     "id": "net-lb-02",
@@ -725,31 +635,27 @@
     "difficulty": "medium",
     "prompt": "A balancer with no health check keeps sending users to a dead server. What does the check add?",
     "choices": [
-      "It reboots the instance.",
-      "It disables the need for readiness.",
-      "It encrypts the backend.",
-      "The balancer stops choosing targets that fail the check, so one bad instance is removed from rotation."
+      "Failing targets are restarted automatically.",
+      "Failing targets get a lower weight, not zero.",
+      "Failing targets are sent only retry traffic.",
+      "Failing targets are taken out of rotation."
     ],
     "answer": 3,
-    "explanation": "The check has to speak the protocol you care about. A TCP check stays green while the app returns 500.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The check has to speak the protocol you care about. A TCP check stays green while the app returns 500."
   },
   {
     "id": "net-lb-03",
     "skillId": "net-lb",
     "difficulty": "hard",
-    "prompt": "Session affinity is on, and one backend is hot while others idle. Why can that happen?",
+    "prompt": "Session affinity is on, and one backend is hot while others idle. Why?",
     "choices": [
-      "Affinity always spreads evenly.",
-      "Load balancers ignore weights when affinity is on, and they send everything to the newest pod.",
-      "Affinity is a DNS TTL.",
-      "Affinity pins clients to one target. A few heavy clients, or a proxy that looks like one client, stick to one server."
+      "Affinity disables health checks, so load is uneven.",
+      "Affinity sends all new sessions to the oldest target.",
+      "Affinity pins by port, so one port gets all traffic.",
+      "A few heavy clients, or one NAT, stick to one target."
     ],
     "answer": 3,
-    "explanation": "Affinity is a trade. A source-IP sticky rule behind one NAT sends an entire office to one pod.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Affinity pins clients to a target. A source-IP sticky rule behind one NAT sends an entire office to one pod."
   },
   {
     "id": "net-lb-04",
@@ -757,15 +663,13 @@
     "difficulty": "easy",
     "prompt": "What does a round-robin balancer ignore?",
     "choices": [
-      "Health checks, if you configured them.",
-      "New connections.",
-      "The cost of each request. It counts connections or picks in turn, unless you configured a smarter policy.",
-      "The list of targets."
+      "Targets that fail health checks.",
+      "The order targets were added.",
+      "How expensive each request is.",
+      "Which targets are in the pool."
     ],
     "answer": 2,
-    "explanation": "Round robin is fair by count, not by CPU. A few expensive requests make it look unfair.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Round robin is fair by count, not by CPU. A few expensive requests make it look unfair. Least-connections or weighted policies account for more."
   },
   {
     "id": "net-cloud-01",
@@ -773,31 +677,27 @@
     "difficulty": "medium",
     "prompt": "A public subnet and a private subnet in the same VPC differ by:",
     "choices": [
-      "The route table. The public one has a route to the internet gateway. The private one does not.",
-      "The fact that private subnets cannot run compute.",
-      "The CIDR. Private subnets must be /32.",
-      "DNS. Private subnets cannot resolve names."
+      "Their route table: only one routes to the internet gateway.",
+      "Their security group: only one allows inbound from 0.0.0.0/0.",
+      "Their CIDR: public subnets must use a public address range.",
+      "Their NACL: only one has a deny rule for outside traffic."
     ],
     "answer": 0,
-    "explanation": "Public means routable to the IGW, not 'safe' or 'unsafe' by itself. The security group still matters.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Public means a route to the IGW. It is not 'safe' or 'unsafe' by itself. Security groups and NACLs still decide what is allowed."
   },
   {
     "id": "net-cloud-02",
     "skillId": "net-cloud",
     "difficulty": "medium",
-    "prompt": "Instances in a private subnet need software updates. You do not want them to have public IPs. What is the usual egress path?",
+    "prompt": "Instances in a private subnet need updates without public IPs. What is the usual egress path?",
     "choices": [
-      "VPC peering to the internet.",
+      "An Elastic IP attached to the private route table.",
       "A route to a NAT gateway in a public subnet.",
-      "A second internet gateway directly on the private route table, which would make it public.",
-      "Public IPs are required for any outbound packet."
+      "A route to the internet gateway with SNAT on.",
+      "A route to a NAT gateway in the same private subnet."
     ],
     "answer": 1,
-    "explanation": "The NAT lives where the IGW is reachable. The instances keep private addresses.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The NAT lives where the IGW is reachable, and the instances keep private addresses. A NAT gateway in the private subnet has no path out."
   },
   {
     "id": "net-cloud-03",
@@ -805,79 +705,69 @@
     "difficulty": "hard",
     "prompt": "Two VPCs are peered. A ping works and the application still times out. What did peering not do?",
     "choices": [
-      "It assigns public IPs.",
-      "It did not open the security groups, the NACLs, or the target's listening port. Peering is a route.",
-      "It automatically allows all ports both ways.",
-      "It provides DNS for both VPCs with no extra setup in every design."
+      "Resolve private DNS names across the peer.",
+      "Open the security groups for the app's port.",
+      "Add routes for each VPC's CIDR to the other.",
+      "Allow ICMP between the two VPCs."
     ],
     "answer": 1,
-    "explanation": "Add the route, then allow the actual port. People stop after the route and blame the peer.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The ping working proves routes exist. Peering is a route, and the security group must still allow the actual port. People stop after the route and blame the peer."
   },
   {
     "id": "net-cloud-04",
     "skillId": "net-cloud",
     "difficulty": "easy",
-    "prompt": "A VPN into a cloud VPC is for:",
+    "prompt": "What is a VPN into a cloud VPC for?",
     "choices": [
-      "Replacing IAM.",
-      "Disabling security groups.",
-      "Extending a private network so your side can reach private addresses, with crypto on the path.",
-      "Publishing every instance to the internet."
+      "Letting users skip IAM when they use the console.",
+      "Replacing security groups for traffic over it.",
+      "Reaching private addresses over an encrypted path.",
+      "Giving the VPC's instances public addresses."
     ],
     "answer": 2,
-    "explanation": "The VPN is a private path. It is not an authorization policy.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The VPN is a private path. It is not an authorization policy, and security groups still apply."
   },
   {
     "id": "net-dual-01",
     "skillId": "net-dual",
     "difficulty": "medium",
-    "prompt": "Node Exporter listens on 10.20.0.10:9100. A laptop on another NIC's subnet can still open it. What model allows that?",
+    "prompt": "Node Exporter listens on 10.20.0.10:9100. A laptop on the other NIC's subnet can still open it. What allows that?",
     "choices": [
-      "The weak end host model. The kernel treats every local IP as local on every interface.",
-      "The strong end host model, which accepts any local IP on any NIC. That description is the weak model.",
-      "ARP proxy, which is required for this and cannot be disabled.",
-      "Only if IP forwarding is off. Forwarding off prevents local delivery."
+      "The weak end host model.",
+      "The strong end host model.",
+      "Proxy ARP on the router.",
+      "Reverse path filtering."
     ],
     "answer": 0,
-    "explanation": "Confirm with a capture on the unexpected NIC. Then filter that ingress, or constrain the service's interfaces.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/challenges/networking-block-unexpected-access-on-dual-homed-server"
+    "explanation": "Linux treats every local IP as local on every interface. Confirm with a capture on the unexpected NIC, then filter that ingress or constrain the service's interfaces."
   },
   {
     "id": "net-dual-02",
     "skillId": "net-dual",
     "difficulty": "hard",
-    "prompt": "You fixed the dual-homed leak with a firewall rule. What must the rule match to keep management working?",
+    "prompt": "You fix the dual-homed leak with a firewall rule. What must the rule match to keep management working?",
     "choices": [
-      "Allow the corporate interface to every port and drop management.",
-      "Drop the exporter's port when it arrives on the corporate interface. Leave the same flow alone when it arrives on the management interface.",
-      "Drop every packet to the host.",
-      "Drop the management interface entirely."
+      "The exporter port leaving through the corporate NIC.",
+      "The exporter port when it arrives on the corporate NIC.",
+      "The exporter port from any source not in management.",
+      "The corporate subnet as source, on any interface."
     ],
     "answer": 1,
-    "explanation": "Interface plus destination is the split. A blanket drop of the port removes the legitimate clients too.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/challenges/networking-block-unexpected-access-on-dual-homed-server"
+    "explanation": "Interface plus destination port is the split. Source-based rules miss routed paths, and an output rule does not stop the request arriving."
   },
   {
     "id": "net-dual-03",
     "skillId": "net-dual",
     "difficulty": "medium",
-    "prompt": "Changing the listen address did not close the unexpected path. Why does the lesson say that?",
+    "prompt": "Why did changing the listen address not close the unexpected path?",
     "choices": [
-      "The packet is delivered locally before the listen address can express 'only from this NIC'.",
-      "ss cannot show a listen address.",
-      "Linux ignores bind().",
-      "The application rewrites its own listen address every minute."
+      "Delivery is by destination IP, not arrival NIC.",
+      "The service ignored the new listen address.",
+      "The old socket stayed open until a reboot.",
+      "The kernel routed the reply out the wrong NIC."
     ],
     "answer": 0,
-    "explanation": "Check ss to prove the bind, then filter the interface anyway.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/challenges/networking-block-unexpected-access-on-dual-homed-server"
+    "explanation": "The packet is delivered locally before the listen address can express 'only from this NIC'. Check ss to prove the bind, then filter the interface anyway."
   },
   {
     "id": "net-dual-04",
@@ -885,31 +775,27 @@
     "difficulty": "easy",
     "prompt": "A dual-homed server has a corporate NIC and a management NIC. Where should administration run?",
     "choices": [
-      "On the management network, with the corporate NIC unable to reach those ports.",
-      "On every interface, so you have a backup.",
-      "Only on the public internet.",
-      "On a random high port with no filter, because high ports are safe."
+      "Only on the management NIC, filtered from corporate.",
+      "On both NICs, so you still have access if one fails.",
+      "On the corporate NIC, where the admins' laptops are.",
+      "On whichever NIC holds the host's default route."
     ],
     "answer": 0,
-    "explanation": "Management on the data NIC is how a network incident becomes a host incident.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Management on the data NIC is how a network incident becomes a host incident."
   },
   {
     "id": "net-l2-01",
     "skillId": "net-l2",
     "difficulty": "medium",
-    "prompt": "In the data center tour, a top-of-rack switch in front of one rack behaves as:",
+    "prompt": "In a typical data center, how does a top-of-rack switch behave?",
     "choices": [
-      "A TLS terminator.",
-      "A bridge for the servers in the rack, and a router on the uplink toward the distribution layer.",
-      "A pure router with no L2 at all.",
-      "A hub that floods every frame out every port including the ones it has learned."
+      "Routes everything, with each server in a /31.",
+      "Bridges the rack's servers, routes on the uplink.",
+      "Routes between servers, bridges on the uplink.",
+      "Bridges everything, including the uplink."
     ],
     "answer": 1,
-    "explanation": "Same hardware can bridge some ports and route others. The rack is one L2 segment. The uplink is L3.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/courses/computer-networking-fundamentals/bridge-vs-switch"
+    "explanation": "Same hardware can bridge some ports and route others. The rack is one L2 segment. The uplink is L3."
   },
   {
     "id": "net-l2-02",
@@ -917,110 +803,96 @@
     "difficulty": "medium",
     "prompt": "Why is the out-of-band port on a switch not just another bridged port?",
     "choices": [
-      "It stays a routed management interface so a bad bridge or ACL cannot lock you out of the device.",
-      "It only carries broadcasts.",
-      "It is electrically the same as disabling SSH.",
-      "It is required to be in the same VLAN as the servers or management does not work."
+      "So a bad bridge config cannot lock you out.",
+      "So management traffic gets higher priority.",
+      "So it can reach every VLAN on the switch.",
+      "So it stays up when the switch reboots."
     ],
     "answer": 0,
-    "explanation": "Configure the device on a path that does not depend on the forwarding plane you are editing.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/courses/computer-networking-fundamentals/bridge-vs-switch"
+    "explanation": "Configure the device on a path that does not depend on the forwarding plane you are editing."
   },
   {
     "id": "net-l2-03",
     "skillId": "net-l2",
     "difficulty": "hard",
-    "prompt": "You want one broadcast domain across racks that are already separate L3 networks. What overlay did the course point at?",
+    "prompt": "You want one broadcast domain across racks that are separate L3 networks. Which overlay is the usual answer?",
     "choices": [
-      "HTTP.",
-      "VXLAN. It carries the L2 frame over the L3 underlay.",
-      "A larger subnet mask on the physical NICs only. That does not cross a router.",
-      "NAT."
+      "Proxy ARP, answering for hosts in other racks.",
+      "VXLAN, carrying L2 frames over the L3 underlay.",
+      "802.1Q trunks, carrying VLAN tags across routers.",
+      "GRE, carrying IP packets between the racks."
     ],
     "answer": 1,
-    "explanation": "The physical network stays L3 between racks. The overlay paints the broadcast domain the workload wanted.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/courses/computer-networking-fundamentals/bridge-vs-switch"
+    "explanation": "The physical network stays L3 between racks. The overlay paints the broadcast domain the workload wanted. VLAN tags do not cross a router."
   },
   {
     "id": "net-l2-04",
     "skillId": "net-l2",
     "difficulty": "easy",
-    "prompt": "A Linux bridge in a container host is playing which role?",
+    "prompt": "On a container host, what role does a Linux bridge like docker0 play?",
     "choices": [
-      "The same logical bridge a switch plays: it forwards frames between the container veths and the uplink.",
-      "A router only.",
-      "A userspace TCP proxy.",
-      "A DNS server."
+      "A switch between the container veths.",
+      "A router between the container subnets.",
+      "A NAT device for container traffic.",
+      "A firewall for container traffic."
     ],
     "answer": 0,
-    "explanation": "docker0 and friends are bridges. The containers are just ports.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/courses/computer-networking-fundamentals/bridge-vs-switch"
+    "explanation": "docker0 and friends forward frames between ports. The containers are just ports. Routing and NAT to the outside happen in the host's stack."
   },
   {
     "id": "net-cloud-05",
     "skillId": "net-cloud",
     "difficulty": "easy",
-    "prompt": "The node address you see with ip addr inside a kind node is:",
+    "prompt": "Inside a kind node, what is the address shown by ip addr?",
     "choices": [
-      "Always 10.96.0.1.",
-      "The Ingress external IP.",
-      "The address of the node on the Docker network the kind node is attached to, not a pod IP.",
-      "The cluster IP of kubernetes.default."
+      "The first pod IP in the CNI range.",
+      "The host machine's LAN address.",
+      "The node's IP on its Docker network.",
+      "The Service IP of kubernetes.default."
     ],
     "answer": 2,
-    "explanation": "Pod IPs come from the CNI range. Service IPs come from the service CIDR. Do not debug one with the other's range.",
-    "source": "raesene",
-    "url": "https://raesene.github.io/blog/2024/11/01/The-Many-IP-Addresses-Of-Kubernetes/"
+    "explanation": "Pod IPs come from the CNI range. Service IPs come from the service CIDR. Do not debug one with the other's range."
   },
   {
     "id": "net-tunnels-05",
     "skillId": "net-tunnels",
     "difficulty": "easy",
-    "prompt": "Developers reach production only through a jump host. What is the host for?",
+    "prompt": "Developers reach production only through a jump host. What is the host?",
     "choices": [
-      "An SSH bastion. They authenticate there, then onward, and it is the machine you harden and audit.",
-      "A Kubernetes Ingress.",
-      "A public bind of port 22 on every production box.",
-      "A VPN that disables SSH."
+      "An SSH bastion you harden and audit.",
+      "A VPN concentrator for the whole team.",
+      "A NAT gateway for outbound SSH.",
+      "A proxy that records the screen."
     ],
     "answer": 0,
-    "explanation": "Direct SSH to every production address is the thing this exercise is replacing.",
-    "source": "tech-vault",
-    "url": "https://github.com/moabukar/tech-vault/tree/main/devops-challenges"
+    "explanation": "Direct SSH to every production address is the thing a jump host replaces."
   },
   {
     "id": "net-cloud-06",
     "skillId": "net-cloud",
     "difficulty": "medium",
-    "prompt": "Kubernetes networking is delegated to a CNI, so an assessment has to name the plugin. Overlay mode means:",
+    "prompt": "Kubernetes networking is delegated to a CNI. What does overlay mode mean?",
     "choices": [
-      "Pod IPs are a separate range, encapsulated between nodes, not the LAN addresses of the hosts.",
-      "Pods share the node IP.",
-      "There is no Service CIDR.",
-      "NetworkPolicy cannot exist."
+      "Pod traffic is encapsulated between nodes.",
+      "Pods get IPs from the node's own subnet.",
+      "Pods share the IP address of their node.",
+      "Pod traffic is routed with BGP to the LAN."
     ],
     "answer": 0,
-    "explanation": "Underlay mode puts pods on the physical network. The packet path, and the firewall you need, changes with that choice.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2022-10-23-PCI-Kubernetes-Section4%20-%20network%20security.markdown"
+    "explanation": "Pod IPs are a separate range, not host LAN addresses. Underlay mode puts pods on the physical network, which changes the packet path and the firewall you need."
   },
   {
     "id": "net-tunnels-06",
     "skillId": "net-tunnels",
     "difficulty": "medium",
-    "prompt": "The jump host is hardened and minimal because:",
+    "prompt": "Why is the jump host hardened and minimal?",
     "choices": [
-      "Every production login passes through it. Extra services on it are extra ways in.",
-      "It should run the production database so the path is short.",
-      "Password auth is easier to automate than keys.",
-      "Ansible should open it to the world."
+      "Every production login passes through it.",
+      "It holds the private keys for production.",
+      "It runs the production monitoring stack.",
+      "It is the only host with internet access."
     ],
     "answer": 0,
-    "explanation": "Adding a key is a playbook run. Removing a key is the same playbook, not an edit you forget.",
-    "source": "tech-vault",
-    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+    "explanation": "Extra services on it are extra ways in. Access is a playbook run, both to add and to remove keys."
   }
 ]

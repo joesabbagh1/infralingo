@@ -1,0 +1,14 @@
+{
+  "questionFiles": [
+    "linux.json",
+    "networking.json",
+    "servers.json",
+    "containers.json",
+    "kubernetes.json",
+    "cicd.json",
+    "iac.json",
+    "cloud.json",
+    "observability.json",
+    "security.json"
+  ]
+}

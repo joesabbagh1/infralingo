@@ -4,7 +4,7 @@ from questions.linux import QUESTIONS as LINUX
 from questions.networking import QUESTIONS as NETWORKING
 from questions.platform import QUESTIONS as PLATFORM
 from questions.security import QUESTIONS as SECURITY
-from questions.sources import QUESTIONS as SOURCES
-from questions.bone import QUESTIONS as BONE
+from questions.advanced import QUESTIONS as ADVANCED
+from questions.scenarios import QUESTIONS as SCENARIOS
 
-ALL = LINUX + NETWORKING + CONTAINERS + KUBERNETES + PLATFORM + SECURITY + SOURCES + BONE
+ALL = LINUX + NETWORKING + CONTAINERS + KUBERNETES + PLATFORM + SECURITY + ADVANCED + SCENARIOS

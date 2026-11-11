@@ -1,0 +1,604 @@
+[
+  {
+    "id": "cloud-iam-01",
+    "skillId": "cloud-iam",
+    "difficulty": "medium",
+    "prompt": "Why should a human and a workload not share an access key?",
+    "choices": [
+      "The workload's calls would count against the human's MFA.",
+      "Keys used by two clients are disabled automatically.",
+      "Revocation breaks both, and audit cannot tell them apart.",
+      "Cloud IAM limits each key to one source IP address."
+    ],
+    "answer": 2,
+    "explanation": "Give the human SSO and the workload a role it assumes. No long-lived shared key."
+  },
+  {
+    "id": "cloud-iam-02",
+    "skillId": "cloud-iam",
+    "difficulty": "medium",
+    "prompt": "Why is an instance profile or workload identity better than a key on disk?",
+    "choices": [
+      "Its calls are exempt from the audit trail.",
+      "It works across every cloud account by default.",
+      "Its credentials are short-lived and never stored.",
+      "It gets broader permissions than a user key."
+    ],
+    "answer": 2,
+    "explanation": "There is no secret to commit, and the credential rotates. Scope the role to the API calls that instance actually makes."
+  },
+  {
+    "id": "cloud-iam-03",
+    "skillId": "cloud-iam",
+    "difficulty": "easy",
+    "prompt": "What does least privilege mean for a deploy role?",
+    "choices": [
+      "It is admin, but only in CI runs.",
+      "It is admin, with MFA required.",
+      "It can deploy to every account.",
+      "It can deploy and nothing more."
+    ],
+    "answer": 3,
+    "explanation": "Start from the API calls the pipeline makes. Add those. Do not start from admin and hope."
+  },
+  {
+    "id": "cloud-iam-04",
+    "skillId": "cloud-iam",
+    "difficulty": "hard",
+    "prompt": "A bucket policy and a role's identity policy both exist, across accounts. When is access allowed?",
+    "choices": [
+      "The role allows it, whatever the bucket says.",
+      "Both allow it, and nothing denies it.",
+      "Either allows it, unless SCPs deny it.",
+      "The bucket policy allows it, whatever the role says."
+    ],
+    "answer": 1,
+    "explanation": "Cross-account access needs both sides. An explicit deny anywhere wins. When access fails, read both documents and look for the deny."
+  },
+  {
+    "id": "cloud-vpc-01",
+    "skillId": "cloud-vpc",
+    "difficulty": "medium",
+    "prompt": "What makes a public subnet public?",
+    "choices": [
+      "Its instances are given public IPs by default.",
+      "Its network ACL allows inbound traffic from 0.0.0.0/0.",
+      "Its CIDR comes from a public address range.",
+      "Its route table points 0.0.0.0/0 at an internet gateway."
+    ],
+    "answer": 3,
+    "explanation": "The route is the definition. Instances still need a public address to be reachable, and many public subnets do not auto-assign one."
+  },
+  {
+    "id": "cloud-vpc-02",
+    "skillId": "cloud-vpc",
+    "difficulty": "easy",
+    "prompt": "What does VPC peering connect?",
+    "choices": [
+      "Two regions' DNS, for failover.",
+      "Two private networks, by private IP.",
+      "A VPC to the internet, through NAT.",
+      "Two accounts' IAM, for shared roles."
+    ],
+    "answer": 1,
+    "explanation": "Add routes both ways for the prefixes you need. Classic peering is not transitive."
+  },
+  {
+    "id": "cloud-vpc-03",
+    "skillId": "cloud-vpc",
+    "difficulty": "medium",
+    "prompt": "You put a database in a private subnet and a bastion in a public one. What did you gain?",
+    "choices": [
+      "No public route to the database.",
+      "No route from the app tier to it.",
+      "No need for a security group on it.",
+      "No way for it to make outbound calls."
+    ],
+    "answer": 0,
+    "explanation": "Administration goes through a host you can lock down. Private does not mean isolated from the VPC. Security groups still have to allow the app tier."
+  },
+  {
+    "id": "cloud-vpc-04",
+    "skillId": "cloud-vpc",
+    "difficulty": "hard",
+    "prompt": "Your only NAT gateway is in one availability zone, and that zone fails. What fails with it?",
+    "choices": [
+      "Inbound traffic to the load balancer.",
+      "Traffic between instances in other zones.",
+      "DNS resolution inside the whole VPC.",
+      "Egress from private subnets routed to it."
+    ],
+    "answer": 3,
+    "explanation": "A single NAT is a single egress path. Multi-AZ egress costs more and fails less."
+  },
+  {
+    "id": "cloud-sg-01",
+    "skillId": "cloud-sg",
+    "difficulty": "medium",
+    "prompt": "A security group is stateful. You allow inbound 443. What do you not have to add?",
+    "choices": [
+      "An inbound rule for health checks on 443.",
+      "An outbound rule to the clients' subnets.",
+      "A NACL rule for the inbound requests.",
+      "An outbound rule for that connection's replies."
+    ],
+    "answer": 3,
+    "explanation": "Statefulness is the difference from a NACL, which needs the return path spelled out."
+  },
+  {
+    "id": "cloud-sg-02",
+    "skillId": "cloud-sg",
+    "difficulty": "easy",
+    "prompt": "What does 0.0.0.0/0 on port 22 in a security group mean?",
+    "choices": [
+      "Any address in the VPC may try SSH.",
+      "Any address the NACL allows may try SSH.",
+      "Any IPv4 or IPv6 address may try SSH.",
+      "Any IPv4 address may try SSH."
+    ],
+    "answer": 3,
+    "explanation": "Use a VPN, a bastion, or SSM. Do not leave administration on the internet. IPv6 needs ::/0."
+  },
+  {
+    "id": "cloud-sg-03",
+    "skillId": "cloud-sg",
+    "difficulty": "hard",
+    "prompt": "The security group allows the port and the connection times out. A NACL is on the subnet. What is a likely gap?",
+    "choices": [
+      "The NACL overrides the group's allow.",
+      "The group needs an outbound rule too.",
+      "The group applies only after the NACL.",
+      "The NACL drops the return traffic."
+    ],
+    "answer": 3,
+    "explanation": "The stateless NACL may allow the request and drop the ephemeral-port reply. Check both directions. A timeout is often a drop."
+  },
+  {
+    "id": "cloud-sg-04",
+    "skillId": "cloud-sg",
+    "difficulty": "medium",
+    "prompt": "Why reference another security group as the source instead of a CIDR?",
+    "choices": [
+      "It follows members as their IPs change.",
+      "It also allows the return traffic both ways.",
+      "It applies across regions and accounts.",
+      "It is evaluated before any CIDR rules."
+    ],
+    "answer": 0,
+    "explanation": "Autoscaling changes IPs. Group membership is the stable name."
+  },
+  {
+    "id": "cloud-compute-01",
+    "skillId": "cloud-compute",
+    "difficulty": "medium",
+    "prompt": "An autoscaling group replaces instances that fail health checks. What must be true for that to be safe?",
+    "choices": [
+      "The instances use a launch template.",
+      "The instances are in at least two AZs.",
+      "The instances have detailed monitoring.",
+      "The instances hold no state you need."
+    ],
+    "answer": 3,
+    "explanation": "Treat instances as cattle, with state elsewhere. A health check that matches the real failure is part of the design."
+  },
+  {
+    "id": "cloud-compute-02",
+    "skillId": "cloud-compute",
+    "difficulty": "easy",
+    "prompt": "What is EC2 user data?",
+    "choices": [
+      "An encrypted store for instance secrets.",
+      "Per-user settings for SSH logins.",
+      "Metadata about who launched the instance.",
+      "A script or config run at first boot."
+    ],
+    "answer": 3,
+    "explanation": "It is readable from the metadata service and often logged. Do not put a long-lived password in it."
+  },
+  {
+    "id": "cloud-compute-03",
+    "skillId": "cloud-compute",
+    "difficulty": "medium",
+    "prompt": "ECS, a VM and Kubernetes can all run a container. What is the platform choice really about?",
+    "choices": [
+      "Which one can attach an IAM role to tasks.",
+      "Which one can pull from a private registry.",
+      "How much scheduling and rollout you run.",
+      "Which one supports your container format."
+    ],
+    "answer": 2,
+    "explanation": "Pick the control plane your team can run at 2 a.m. All of them can run OCI images with cloud identities."
+  },
+  {
+    "id": "cloud-compute-04",
+    "skillId": "cloud-compute",
+    "difficulty": "hard",
+    "prompt": "You baked a secret into an AMI. What is true after you rotate it in the secret manager?",
+    "choices": [
+      "Running instances update on their next reboot.",
+      "Every instance from that AMI has the old value.",
+      "New instances fetch the new value at launch.",
+      "The AMI is invalidated by the rotation event."
+    ],
+    "answer": 1,
+    "explanation": "Secrets in images outlive the rotation until you rebake and replace. Inject them at boot instead."
+  },
+  {
+    "id": "cloud-lb-01",
+    "skillId": "cloud-lb",
+    "difficulty": "medium",
+    "prompt": "How do an application and a network load balancer differ?",
+    "choices": [
+      "NLB terminates TLS. ALB cannot terminate it.",
+      "ALB routes HTTP by host and path. NLB forwards TCP/UDP.",
+      "NLB routes HTTP by host and path. ALB forwards TCP/UDP.",
+      "ALB has static IPs. NLB uses only DNS names."
+    ],
+    "answer": 1,
+    "explanation": "Choose from the protocol you need to see. NLB is the one with static IPs, and both can terminate TLS."
+  },
+  {
+    "id": "cloud-lb-02",
+    "skillId": "cloud-lb",
+    "difficulty": "easy",
+    "prompt": "What does a health check on /healthz do if the app does not serve that path?",
+    "choices": [
+      "Is ignored after a minute.",
+      "Marks every target unhealthy.",
+      "Falls back to a TCP check.",
+      "Uses / as the health path."
+    ],
+    "answer": 1,
+    "explanation": "The check has to match a path the app actually answers. A 404 is a failed check."
+  },
+  {
+    "id": "cloud-lb-03",
+    "skillId": "cloud-lb",
+    "difficulty": "medium",
+    "prompt": "When do sticky sessions on a load balancer hurt?",
+    "choices": [
+      "When the cookie is set by the app.",
+      "When one NAT hides a whole office.",
+      "When targets use connection draining.",
+      "When the balancer spans three AZs."
+    ],
+    "answer": 1,
+    "explanation": "Source-IP affinity sends a NATed office to one target. Affinity is a workaround for state in the process. Moving the state out avoids it."
+  },
+  {
+    "id": "cloud-lb-04",
+    "skillId": "cloud-lb",
+    "difficulty": "hard",
+    "prompt": "TLS terminates at the load balancer and the backend sees HTTP. What do you still verify?",
+    "choices": [
+      "The backend sends HSTS on every response.",
+      "The backend validates the client's cert.",
+      "The backend cannot be reached around it.",
+      "The backend has a copy of the certificate."
+    ],
+    "answer": 2,
+    "explanation": "A private path that bypasses the balancer bypasses the policy you thought you had."
+  },
+  {
+    "id": "cloud-registry-01",
+    "skillId": "cloud-registry",
+    "difficulty": "medium",
+    "prompt": "Who controls push and pull on a cloud registry such as ECR?",
+    "choices": [
+      "The registry's own user accounts.",
+      "The image signer's public key.",
+      "Cloud IAM, not the cluster's RBAC.",
+      "The cluster's RBAC, not cloud IAM."
+    ],
+    "answer": 2,
+    "explanation": "The node role needs pull. The CI role needs push. Those are different principals."
+  },
+  {
+    "id": "cloud-registry-02",
+    "skillId": "cloud-registry",
+    "difficulty": "easy",
+    "prompt": "What does scanning an image on push tell you?",
+    "choices": [
+      "Whether the image is safe to run.",
+      "Whether the image was signed.",
+      "Which CVEs are exploitable here.",
+      "Known CVEs in its layers right now."
+    ],
+    "answer": 3,
+    "explanation": "Scan is a signal, true at that moment. Admission or a rebuild is the control."
+  },
+  {
+    "id": "cloud-registry-03",
+    "skillId": "cloud-registry",
+    "difficulty": "medium",
+    "prompt": "Production must pull only from your registry, not Docker Hub. What enforces it?",
+    "choices": [
+      "Admission policy or egress rules.",
+      "A pull-through cache in front of it.",
+      "IAM policies on your own registry.",
+      "A registry mirror in the daemon config."
+    ],
+    "answer": 0,
+    "explanation": "Block the other path. A mirror or cache is used when available, but a manifest naming docker.io can still pull directly."
+  },
+  {
+    "id": "cloud-registry-04",
+    "skillId": "cloud-registry",
+    "difficulty": "hard",
+    "prompt": "How do immutable tags on the registry help?",
+    "choices": [
+      "A tag must be signed before it is pulled.",
+      "A tag cannot be pushed over with new bytes.",
+      "A tag can no longer be deleted by anyone.",
+      "A tag is converted into a digest on push."
+    ],
+    "answer": 1,
+    "explanation": "Combine it with a digest pin if the tag is a version you will trust."
+  },
+  {
+    "id": "cloud-object-01",
+    "skillId": "cloud-object",
+    "difficulty": "medium",
+    "prompt": "What does object storage for Terraform state need?",
+    "choices": [
+      "Lifecycle rules that expire old state versions.",
+      "Replication to a second bucket in the region.",
+      "Versioning, encryption, tight IAM, and locking.",
+      "Public read for CI, with write limited by IAM."
+    ],
+    "answer": 2,
+    "explanation": "State contains IDs and often secrets. Treat the bucket as production data and keep the old versions for recovery."
+  },
+  {
+    "id": "cloud-object-02",
+    "skillId": "cloud-object",
+    "difficulty": "easy",
+    "prompt": "How do a bucket and an object differ?",
+    "choices": [
+      "The bucket is one large stored file.",
+      "The object holds the access policy.",
+      "The bucket is the policy boundary.",
+      "The object sets the bucket's region."
+    ],
+    "answer": 2,
+    "explanation": "Block public access at the bucket. One object ACL should not be the only control."
+  },
+  {
+    "id": "cloud-object-03",
+    "skillId": "cloud-object",
+    "difficulty": "hard",
+    "prompt": "You enabled versioning after a ransomware-style overwrite. What does it give you?",
+    "choices": [
+      "Prior versions back to the bucket's creation.",
+      "Protection from deletes by any user.",
+      "Write-once storage for existing objects.",
+      "Prior versions of later overwrites only."
+    ],
+    "answer": 3,
+    "explanation": "The overwrite that already happened is not undone. Turn it on before the incident. Object Lock is the write-once feature."
+  },
+  {
+    "id": "cloud-object-04",
+    "skillId": "cloud-object",
+    "difficulty": "medium",
+    "prompt": "A lifecycle rule moves old build artifacts to cold storage. What must it not do to the current release?",
+    "choices": [
+      "Expire it while you might roll back.",
+      "Move it to a cheaper storage class.",
+      "Change its key prefix in the bucket.",
+      "Add a tag recording its age."
+    ],
+    "answer": 0,
+    "explanation": "Lifecycle is a cost tool. Exclude the versions your rollback story needs."
+  },
+  {
+    "id": "cloud-regions-01",
+    "skillId": "cloud-regions",
+    "difficulty": "medium",
+    "prompt": "How do an availability zone and a region differ?",
+    "choices": [
+      "A zone is a group of nearby regions.",
+      "A region is one data center building.",
+      "A zone is a region's backup location.",
+      "A region is a group of isolated zones."
+    ],
+    "answer": 3,
+    "explanation": "A zone is a failure domain with its own power and network. One zone failing should not take down a regional service designed for it."
+  },
+  {
+    "id": "cloud-regions-02",
+    "skillId": "cloud-regions",
+    "difficulty": "easy",
+    "prompt": "When does running a copy of a service in a second region help?",
+    "choices": [
+      "When data and DNS can actually fail over.",
+      "When the copy shares the first one's database.",
+      "When the copy runs in the same city as users.",
+      "When the copy is created after the outage."
+    ],
+    "answer": 0,
+    "explanation": "A region pair is a project: data, identity, and the switch. A second VPC with no data is a diagram."
+  },
+  {
+    "id": "cloud-regions-03",
+    "skillId": "cloud-regions",
+    "difficulty": "hard",
+    "prompt": "A regional managed database fails over while the app is multi-AZ. What do the app instances see?",
+    "choices": [
+      "A new endpoint name for the database.",
+      "Each zone keeps its own primary.",
+      "A short break, then the same endpoint.",
+      "No break, since the app is multi-AZ."
+    ],
+    "answer": 2,
+    "explanation": "The DNS name moves to the new primary. Test reconnects. A failover your connection pool cannot survive is still an outage."
+  },
+  {
+    "id": "cloud-regions-04",
+    "skillId": "cloud-regions",
+    "difficulty": "medium",
+    "prompt": "The only NAT, bastion, and CI runner are in one zone. What does that mean?",
+    "choices": [
+      "That zone is your real availability.",
+      "The region absorbs that zone failing.",
+      "Zone failures only affect compute.",
+      "The load balancer covers for them."
+    ],
+    "answer": 0,
+    "explanation": "Count the things that exist once. Those are the failure domains."
+  },
+  {
+    "id": "cloud-iam-05",
+    "skillId": "cloud-iam",
+    "difficulty": "medium",
+    "prompt": "Why does IAM separate users and roles?",
+    "choices": [
+      "People and workloads assume roles for tasks.",
+      "Users hold policies. Roles cannot hold them.",
+      "Roles are for people. Users are for workloads.",
+      "Users work across accounts. Roles cannot."
+    ],
+    "answer": 0,
+    "explanation": "A long-lived user key is not how a workload should call an API. Policy is the allow. The principal is who presents it."
+  },
+  {
+    "id": "cloud-compute-05",
+    "skillId": "cloud-compute",
+    "difficulty": "medium",
+    "prompt": "Many managed Kubernetes products put the API server on the internet by default. What should you do?",
+    "choices": [
+      "Turn public access off if you don't need it.",
+      "Rely on RBAC, since anonymous calls fail.",
+      "Move the API server to a non-standard port.",
+      "Hide the version banner from responses."
+    ],
+    "answer": 0,
+    "explanation": "The certificate and version banner are enough for the internet to find you. Exposure is the common case, not the exception."
+  },
+  {
+    "id": "cloud-registry-05",
+    "skillId": "cloud-registry",
+    "difficulty": "medium",
+    "prompt": "In a Kubernetes patch path, what is the registry?",
+    "choices": [
+      "A cache of the images built in CI.",
+      "Where the cluster stores its manifests.",
+      "Where new images must land before rollout.",
+      "Optional, since nodes keep old images."
+    ],
+    "answer": 2,
+    "explanation": "Losing the registry stops updates. Authenticate push and pull separately. A cluster that can push to its own registry can replace what it runs."
+  },
+  {
+    "id": "cloud-vpc-05",
+    "skillId": "cloud-vpc",
+    "difficulty": "easy",
+    "prompt": "A Terraform VPC uses 10.0.0.0/16 and a subnet 10.0.1.0/24. What else must hold?",
+    "choices": [
+      "The subnet has an internet gateway.",
+      "The subnet's mask is larger than /16.",
+      "The subnet's CIDR is inside the VPC's.",
+      "The subnet is in the default VPC too."
+    ],
+    "answer": 2,
+    "explanation": "The subnet is a slice of the VPC, and its dependency is the VPC ID. A CIDR outside the VPC will not create."
+  },
+  {
+    "id": "cloud-compute-06",
+    "skillId": "cloud-compute",
+    "difficulty": "easy",
+    "prompt": "When is a Terraform EC2 instance actually running Amazon Linux 2?",
+    "choices": [
+      "When it is tagged with the OS name.",
+      "When no AMI is set, as that is the default.",
+      "When its AMI ID is that image in that region.",
+      "When instance_type is a t2 or t3 family."
+    ],
+    "answer": 2,
+    "explanation": "AMI IDs are regional. A hard-coded ID from a blog is often wrong or old. Look it up with a data source."
+  },
+  {
+    "id": "cloud-sg-05",
+    "skillId": "cloud-sg",
+    "difficulty": "medium",
+    "prompt": "What do baseline security setups on AWS, Azure, and GCP share?",
+    "choices": [
+      "Separate accounts, regions and VPCs per team.",
+      "Least privilege, private storage, tight network rules.",
+      "Encryption at rest, MFA, and logging for each user.",
+      "A bastion, a VPN, and a WAF in front of each app."
+    ],
+    "answer": 1,
+    "explanation": "Translate the control across clouds. Do not memorize three consoles and miss the idea."
+  },
+  {
+    "id": "cloud-iam-06",
+    "skillId": "cloud-iam",
+    "difficulty": "easy",
+    "prompt": "A serverless to-do API runs on Lambda and DynamoDB. Where do the permissions go?",
+    "choices": [
+      "On an IAM user whose keys the Lambda uses.",
+      "On the API Gateway stage as a resource policy.",
+      "On the DynamoDB table as a public policy.",
+      "On the Lambda's role, scoped to the table."
+    ],
+    "answer": 3,
+    "explanation": "API Gateway is the front door. The function's role is the cloud permission, not an admin user key."
+  },
+  {
+    "id": "cloud-compute-07",
+    "skillId": "cloud-compute",
+    "difficulty": "hard",
+    "prompt": "A Lambda can't read its S3 bucket, and Terraform is already applied. What is it usually?",
+    "choices": [
+      "The Lambda's memory or timeout limit.",
+      "The function's role or the bucket policy.",
+      "The provider block's region setting.",
+      "The bucket's versioning configuration."
+    ],
+    "answer": 1,
+    "explanation": "A console fix would drift from the code, and the provider block is not the issue. The role and policy belong in Terraform."
+  },
+  {
+    "id": "cloud-compute-08",
+    "skillId": "cloud-compute",
+    "difficulty": "medium",
+    "prompt": "What does Packer followed by Terraform mean?",
+    "choices": [
+      "Terraform installs Nginx over SSH.",
+      "Packer launches the instances it bakes.",
+      "Each boot rebuilds the AMI from scratch.",
+      "Bake Nginx into an AMI, then launch it."
+    ],
+    "answer": 3,
+    "explanation": "Replace the instance to patch. Do not patch the running one and call it immutable."
+  },
+  {
+    "id": "cloud-lb-05",
+    "skillId": "cloud-lb",
+    "difficulty": "medium",
+    "prompt": "Traefik on ECS is the edge router. When does it fail?",
+    "choices": [
+      "The Traefik config uses Docker labels.",
+      "The target group, task port or SG don't match.",
+      "The ECS task has a container HEALTHCHECK.",
+      "The service runs more than one task."
+    ],
+    "answer": 1,
+    "explanation": "The route, the task, and the security group are three configs that must agree."
+  },
+  {
+    "id": "cloud-compute-09",
+    "skillId": "cloud-compute",
+    "difficulty": "medium",
+    "prompt": "Why do serverless permission boundaries matter?",
+    "choices": [
+      "Functions run as the account's root user by default.",
+      "API Gateway policies replace the role.",
+      "The function role is all the code should hold.",
+      "Functions cannot be given IAM roles."
+    ],
+    "answer": 2,
+    "explanation": "A too-wide role turns one bug into every bucket. Keep the event source narrow too."
+  }
+]

@@ -155,7 +155,7 @@ def main() -> None:
     built = []
     counts: dict[str, int] = {}
     for raw in ALL:
-        skill, diff, prompt, correct, wrongs, why, source, url = raw
+        skill, diff, prompt, correct, wrongs, why = raw
         if skill not in skill_ids:
             raise SystemExit(f"unknown skill {skill}")
         if diff not in {"easy", "medium", "hard"}:
@@ -172,8 +172,6 @@ def main() -> None:
                 "choices": choices,
                 "answer": answer,
                 "explanation": why,
-                "source": source,
-                "url": url,
             }
         )
 

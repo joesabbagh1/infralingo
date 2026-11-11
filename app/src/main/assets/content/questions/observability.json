@@ -3,33 +3,29 @@
     "id": "obs-logs-01",
     "skillId": "obs-logs",
     "difficulty": "medium",
-    "prompt": "A request id in every log line is useful because:",
+    "prompt": "Why put a request ID in every log line?",
     "choices": [
-      "It replaces traces.",
-      "It makes the log smaller.",
-      "It is the HTTP status.",
-      "You can collect one request across services. Without it you have timestamps and a guess."
+      "To sort log lines in the right order.",
+      "To deduplicate retries of the same line.",
+      "To sample logs at a consistent rate.",
+      "To follow one request across services."
     ],
     "answer": 3,
-    "explanation": "Generate it at the edge and pass it. Searching by time across five services is how incidents get long.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Generate it at the edge and pass it on. Searching by time across five services is how incidents get long."
   },
   {
     "id": "obs-logs-02",
     "skillId": "obs-logs",
     "difficulty": "easy",
-    "prompt": "stdout from a container is a better default than a file in the container because:",
+    "prompt": "Why log to stdout in a container rather than to a file?",
     "choices": [
-      "stdout cannot be structured.",
-      "The kubelet deletes stdout.",
-      "The node or the platform can ship it without you execing in to read a file that vanishes with the container.",
-      "Files are shipped automatically and stdout is dropped."
+      "Files cannot hold structured JSON logs.",
+      "stdout is kept after the pod is deleted.",
+      "The platform can collect it without exec.",
+      "stdout is buffered, so logging is faster."
     ],
     "answer": 2,
-    "explanation": "Log to stdout unless you have a reason. Then make sure something reads it.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Log to stdout unless you have a reason. A file in the container vanishes with it and needs something else to ship it."
   },
   {
     "id": "obs-logs-03",
@@ -37,143 +33,125 @@
     "difficulty": "medium",
     "prompt": "A log pipeline dropped messages during a deploy. What did you fail to budget?",
     "choices": [
-      "Disk or memory at the shipper, and a decision about whether you drop, block, or sample.",
-      "The certificate expiry of the API server.",
-      "The number of Kubernetes namespaces, which caps log volume.",
-      "CPU requests, which do not affect logging."
+      "Shipper buffer, and a drop or block policy.",
+      "Log retention days in the storage backend.",
+      "Index fields in the log search cluster.",
+      "Log level settings across all services."
     ],
     "answer": 0,
-    "explanation": "Logging has a failure mode. Decide it before the incident produces more logs than the pipeline can hold.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Logging has a failure mode. Decide it before the incident produces more logs than the pipeline can hold."
   },
   {
     "id": "obs-logs-04",
     "skillId": "obs-logs",
     "difficulty": "hard",
-    "prompt": "You logged a full HTTP header set and now a token is in the log store. What is true?",
+    "prompt": "You logged full HTTP headers and now a token is in the log store. What is true?",
     "choices": [
-      "Tokens in headers are automatically masked by every agent.",
-      "The token is compromised to everyone who can read logs. Rotate it. Redact next time.",
-      "Logs are encrypted so the token is safe.",
-      "Retention does not matter."
+      "It is safe if you delete those log lines.",
+      "It is exposed to every log reader. Rotate it.",
+      "It is safe once retention deletes the logs.",
+      "It is safe if the log store is encrypted."
     ],
     "answer": 1,
-    "explanation": "Treat log access like secret access. Do not write secrets in the first place.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Treat log access like secret access. Copies may already be in indexes and backups. Redact, and do not write secrets in the first place."
   },
   {
     "id": "obs-metrics-01",
     "skillId": "obs-metrics",
     "difficulty": "medium",
-    "prompt": "A Prometheus label with a user id on every request will:",
+    "prompt": "What does a Prometheus label with a user ID on every request do?",
     "choices": [
-      "Explode cardinality and the memory of the server.",
-      "Make queries faster.",
-      "Be required for a RED dashboard.",
-      "Replace logs."
+      "Explodes cardinality and server memory.",
+      "Slows scrapes, but only for that target.",
+      "Gets dropped by Prometheus at ingestion.",
+      "Turns the counter into a histogram."
     ],
     "answer": 0,
-    "explanation": "Labels are an index. Unbounded labels are an outage.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Each label value is a new series. Unbounded labels are an outage."
   },
   {
     "id": "obs-metrics-02",
     "skillId": "obs-metrics",
     "difficulty": "easy",
-    "prompt": "A counter and a gauge differ because:",
+    "prompt": "How do a counter and a gauge differ?",
     "choices": [
-      "They are scraped differently.",
-      "A counter resets every scrape.",
-      "A counter only goes up, aside from a restart. A gauge moves up and down.",
-      "A gauge is always an integer and a counter is a string."
+      "A counter is per second. A gauge is a total.",
+      "A counter is a float. A gauge is an integer.",
+      "A counter only rises. A gauge goes up and down.",
+      "A counter goes up and down. A gauge only rises."
     ],
     "answer": 2,
-    "explanation": "Use a counter for requests. Use a gauge for queue depth or temperature.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Counters reset only on restart, so use rate() on them. Use a counter for requests and a gauge for queue depth."
   },
   {
     "id": "obs-metrics-03",
     "skillId": "obs-metrics",
     "difficulty": "medium",
-    "prompt": "An average latency hides:",
+    "prompt": "What does an average latency hide?",
     "choices": [
-      "Nothing. The average is the SLO.",
       "The request rate.",
-      "Errors.",
-      "The slow tail. A histogram or a percentile is what tells you the bad requests."
+      "The error count.",
+      "The median.",
+      "The slow tail."
     ],
     "answer": 3,
-    "explanation": "A p99 and a count tell an incident story. An average can stay flat while a slice of users time out.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "A p99 and a count tell an incident story. An average can stay flat while a slice of users time out."
   },
   {
     "id": "obs-metrics-04",
     "skillId": "obs-metrics",
     "difficulty": "hard",
-    "prompt": "USE for a resource and RED for a service mean:",
+    "prompt": "What do USE and RED stand for?",
     "choices": [
-      "Utilization, saturation, errors for the resource. Rate, errors, duration for the service.",
-      "The same three graphs for both.",
-      "User, system, and disk.",
-      "They are log levels."
+      "Utilization, saturation, errors. Rate, errors, duration.",
+      "Usage, saturation, errors. Requests, errors, delay.",
+      "Utilization, speed, errors. Rate, errors, duration.",
+      "Usage, scale, efficiency. Rate, errors, delay."
     ],
     "answer": 0,
-    "explanation": "Pick the method that matches the thing. A CPU and an HTTP API are not the same shape.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "USE is for resources, RED for services. A CPU and an HTTP API are not the same shape."
   },
   {
     "id": "obs-traces-01",
     "skillId": "obs-traces",
     "difficulty": "medium",
-    "prompt": "A trace is more than a log because:",
+    "prompt": "What makes a trace more than a log?",
     "choices": [
-      "It cannot cross a network.",
-      "It connects spans across processes with a shared trace id, including timing.",
-      "It replaces metrics.",
-      "It is a single line."
+      "A guaranteed record of every request.",
+      "Spans linked across services by a trace ID.",
+      "Timestamps with nanosecond precision.",
+      "Structured fields instead of free text."
     ],
     "answer": 1,
-    "explanation": "You want one trace when a request is slow and you do not know which hop.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "You want one trace when a request is slow and you do not know which hop. Traces are usually sampled."
   },
   {
     "id": "obs-traces-02",
     "skillId": "obs-traces",
     "difficulty": "easy",
-    "prompt": "Sampling traces exists because:",
+    "prompt": "Why does trace sampling exist?",
     "choices": [
-      "Traces are useless at low volume.",
-      "The collector requires sampling of 100 percent.",
-      "Sampling makes them more accurate.",
-      "Recording every span of every request can cost more than the request."
+      "Unsampled traces lose their timing.",
+      "Collectors reject full-rate traces.",
+      "Sampling removes duplicate spans.",
+      "Keeping every span costs too much."
     ],
     "answer": 3,
-    "explanation": "Sample enough to debug. Do not assume you can keep everything.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Sample enough to debug. Do not assume you can keep everything."
   },
   {
     "id": "obs-traces-03",
     "skillId": "obs-traces",
     "difficulty": "medium",
-    "prompt": "A span without the parent id from the incoming request is:",
+    "prompt": "A service starts a span without the incoming request's parent ID. What is it?",
     "choices": [
-      "A health check.",
-      "A broken trace. The hop looks like a new, unrelated request.",
-      "A metric.",
-      "A log level."
+      "A dropped span the collector discards.",
+      "A broken trace that starts afresh at that hop.",
+      "A sibling span under the same parent.",
+      "A child span with an estimated parent ID."
     ],
     "answer": 1,
-    "explanation": "Propagate the trace context. The header you forgot is why the picture stops at the proxy.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Propagate the trace context. The header you forgot is why the picture stops at the proxy."
   },
   {
     "id": "obs-traces-04",
@@ -181,175 +159,153 @@
     "difficulty": "hard",
     "prompt": "You have traces and no metrics. What is painful?",
     "choices": [
-      "Alerting and capacity. Traces explain one request. They are a poor counter of all requests.",
-      "Nothing. Traces include a complete RED dashboard for free.",
-      "Deploying.",
-      "Authentication."
+      "Alerting and capacity planning.",
+      "Finding which hop was slow.",
+      "Seeing a single request's path.",
+      "Measuring one request's latency."
     ],
     "answer": 0,
-    "explanation": "Keep a cheap metric for the alert and a trace for the example.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Traces explain one request. Sampled, they are a poor counter of all requests. Keep a cheap metric for the alert and a trace for the example."
   },
   {
     "id": "obs-prometheus-01",
     "skillId": "obs-prometheus",
     "difficulty": "medium",
-    "prompt": "Prometheus scrapes. The application:",
+    "prompt": "Prometheus scrapes. What does the application do in the basic setup?",
     "choices": [
-      "Writes to a local CSV that Prometheus tails.",
-      "Uses syslog.",
-      "Exposes a metrics endpoint. Prometheus pulls it. The app does not push, in the basic setup.",
-      "Must ship metrics to a vendor directly."
+      "Writes metrics to a log file.",
+      "Sends metrics to Pushgateway.",
+      "Exposes an HTTP metrics endpoint.",
+      "Pushes its metrics to Prometheus."
     ],
     "answer": 2,
-    "explanation": "If the target is down, the scrape fails and you see the gap. That is a feature.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Prometheus pulls. If the target is down, the scrape fails and you see the gap. Pushgateway is for batch jobs."
   },
   {
     "id": "obs-prometheus-02",
     "skillId": "obs-prometheus",
     "difficulty": "easy",
-    "prompt": "Grafana in front of Prometheus is:",
+    "prompt": "What is Grafana's role in front of Prometheus?",
     "choices": [
-      "A second database that scrapes targets itself by default.",
-      "An alert router only.",
-      "A log store.",
-      "The dashboard. Prometheus is the store and the query language."
+      "Scraping targets for Prometheus.",
+      "Long-term storage of the scraped samples.",
+      "Routing and silencing the alerts.",
+      "Dashboards and queries over its data."
     ],
     "answer": 3,
-    "explanation": "Do not expect Grafana to have the samples if Prometheus never scraped them.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Do not expect Grafana to have samples Prometheus never scraped. Alertmanager routes alerts."
   },
   {
     "id": "obs-prometheus-03",
     "skillId": "obs-prometheus",
     "difficulty": "medium",
-    "prompt": "Alertmanager's job is:",
+    "prompt": "What is Alertmanager's job?",
     "choices": [
-      "To scrape targets.",
-      "To store raw logs.",
-      "To deploy Helm charts.",
-      "To route, group, and silence alerts. The alert rule lives in Prometheus."
+      "Evaluating alert rules on a schedule.",
+      "Storing alert history for dashboards.",
+      "Scraping targets that raise alerts.",
+      "Routing, grouping and silencing alerts."
     ],
     "answer": 3,
-    "explanation": "A rule with no route is a rule nobody sees. A route with no rule is silence.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The rule lives in Prometheus. A rule with no route is a rule nobody sees."
   },
   {
     "id": "obs-prometheus-04",
     "skillId": "obs-prometheus",
     "difficulty": "hard",
-    "prompt": "A recording rule helps when:",
+    "prompt": "When does a recording rule help?",
     "choices": [
-      "You need traces.",
-      "The scrape is failing.",
-      "The same expensive query is used on every dashboard and you would rather compute it once.",
-      "You want to drop labels to increase cardinality."
+      "A metric needs a label added at scrape time.",
+      "An alert needs to wait before it fires.",
+      "An expensive query runs on every dashboard.",
+      "A target is too slow to scrape in time."
     ],
     "answer": 2,
-    "explanation": "Record the aggregation you always ask for. Do not record every raw series again.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Record the aggregation you always ask for. Relabeling adds labels at scrape, and for: delays alerts."
   },
   {
     "id": "obs-otel-01",
     "skillId": "obs-otel",
     "difficulty": "medium",
-    "prompt": "OpenTelemetry is the point where:",
+    "prompt": "What does OpenTelemetry give an application?",
     "choices": [
-      "The SDK replaces the application.",
-      "The application emits signals in a vendor-neutral way, and a collector exports them to wherever you store them.",
-      "You must run Prometheus and nothing else.",
-      "Logs are forbidden."
+      "An agent that profiles code automatically.",
+      "Vendor-neutral signals, exported anywhere.",
+      "A storage backend for traces and metrics.",
+      "A dashboard for traces, metrics and logs."
     ],
     "answer": 1,
-    "explanation": "Instrument once. Change the exporter when you change vendors.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Instrument once. Change the exporter when you change vendors."
   },
   {
     "id": "obs-otel-02",
     "skillId": "obs-otel",
     "difficulty": "easy",
-    "prompt": "A collector in the path lets you:",
+    "prompt": "What does a collector in the path let you do?",
     "choices": [
-      "Skip instrumentation.",
-      "Remove the need for a trace id.",
-      "Encrypt the disk.",
-      "Batch, filter, and fan out, without shipping a vendor SDK in every binary."
+      "Store telemetry for months on disk.",
+      "Generate traces without instrumentation.",
+      "Query telemetry across all backends.",
+      "Batch, filter, and fan out telemetry."
     ],
     "answer": 3,
-    "explanation": "The collector is a process you operate. It is also the place a bad config drops data.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The collector is a process you operate. It is also the place a bad config drops data."
   },
   {
     "id": "obs-otel-03",
     "skillId": "obs-otel",
     "difficulty": "medium",
-    "prompt": "You send traces to one vendor and metrics to Prometheus. OTel fits because:",
+    "prompt": "You send traces to a vendor and metrics to Prometheus. Why does OTel fit?",
     "choices": [
-      "Different exporters can sit behind one instrumentation.",
-      "It requires a single backend.",
-      "It cannot do metrics.",
-      "Prometheus cannot scrape an OTel collector."
+      "One instrumentation, many exporters.",
+      "It converts traces into metrics.",
+      "It replaces Prometheus's scraping.",
+      "It needs one backend for everything."
     ],
     "answer": 0,
-    "explanation": "The pipeline is allowed to fork. The app should not have to.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The pipeline is allowed to fork. The app should not have to."
   },
   {
     "id": "obs-otel-04",
     "skillId": "obs-otel",
     "difficulty": "hard",
-    "prompt": "A collector queue fills and the collector is configured to drop. What do you lose first, and what should you have paged on?",
+    "prompt": "A collector's queue fills and it is set to drop. What do you lose, and what should page?",
     "choices": [
-      "The application process, which blocks forever by default in every SDK.",
-      "Nothing. A full queue retries forever in the application thread always.",
-      "Only traces older than a year.",
-      "New telemetry, while the app keeps running. Page on the collector's own queue and export failures."
+      "The app's requests. Page on app latency.",
+      "Old telemetry. Page on storage capacity.",
+      "Nothing. Page on the collector's CPU use.",
+      "New telemetry. Page on the collector's drops."
     ],
     "answer": 3,
-    "explanation": "The pipeline's failure mode is a decision. Watch the pipeline, not only the app.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The app keeps running and the data vanishes. The pipeline's failure mode is a decision. Watch the pipeline, not only the app."
   },
   {
     "id": "obs-alerts-01",
     "skillId": "obs-alerts",
     "difficulty": "medium",
-    "prompt": "An alert that fires whenever CPU is over 80 percent for a minute is weak because:",
+    "prompt": "Why is an alert on CPU above 80% for a minute weak?",
     "choices": [
-      "CPU is a cause, not a symptom. Users may be fine, and you will learn to ignore it.",
-      "CPU cannot be measured.",
-      "Alerts should only use logs.",
-      "80 percent is always an outage."
+      "CPU is a cause, not a user-facing symptom.",
+      "One minute is too long to wait for CPU.",
+      "CPU must be alerted on as a rate, not a gauge.",
+      "80% is too low a threshold for any service."
     ],
     "answer": 0,
-    "explanation": "Alert on error rate, latency, or saturation that means the service is failing its job.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Users may be fine, and you will learn to ignore it. Alert on error rate, latency, or saturation that means the service is failing its job."
   },
   {
     "id": "obs-alerts-02",
     "skillId": "obs-alerts",
     "difficulty": "easy",
-    "prompt": "A good alert has:",
+    "prompt": "What does a good alert have?",
     "choices": [
-      "A name that says what is wrong, and a link or a sentence that says what to do next.",
-      "Only a metric name.",
-      "A threshold copied from another company.",
-      "No owner."
+      "A clear cause and a next step.",
+      "A threshold from industry norms.",
+      "A page to everyone on the team.",
+      "A graph of the last 24 hours."
     ],
     "answer": 0,
-    "explanation": "If it does not change what a human does, it is a chart, not an alert.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "If it does not change what a human does, it is a chart, not an alert."
   },
   {
     "id": "obs-alerts-03",
@@ -357,206 +313,180 @@
     "difficulty": "hard",
     "prompt": "You silenced a noisy alert during an incident and forgot. What is the durable fix?",
     "choices": [
-      "Raise the threshold until it never fires, including during the real outage.",
-      "Turn off the receiver.",
-      "A silence with an owner and an expiry, and a ticket to fix the rule. An infinite silence is a deleted alert.",
-      "Delete the metric."
+      "Lower the alert to a warning in Slack.",
+      "Delete the rule and rely on dashboards.",
+      "Silences with expiry, and fixing the rule.",
+      "Raise the threshold so it fires less often."
     ],
     "answer": 2,
-    "explanation": "Silence is a pause. The rule still needs to be true.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Silence is a pause. An infinite silence is a deleted alert. The rule still needs to be true."
   },
   {
     "id": "obs-alerts-04",
     "skillId": "obs-alerts",
     "difficulty": "medium",
-    "prompt": "Paging someone for a dev cluster and for production on the same route causes:",
+    "prompt": "What happens when dev and production page on the same route?",
     "choices": [
-      "Better coverage.",
-      "Lower latency.",
-      "Fewer false positives automatically.",
-      "Fatigue. Production pages get ignored because dev is loud."
+      "Dev alerts are dropped by deduplication.",
+      "Pages are delayed by grouping intervals.",
+      "Production alerts are silenced with dev.",
+      "Production pages get ignored as noise."
     ],
     "answer": 3,
-    "explanation": "Separate the routes. The severity is part of the alert.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Separate the routes. The severity is part of the alert."
   },
   {
     "id": "obs-logs-05",
     "skillId": "obs-logs",
     "difficulty": "medium",
-    "prompt": "Cloud logging in that curriculum is a detection problem, not a disk problem. The useful pipeline:",
+    "prompt": "Treat cloud logging as detection. What does a useful pipeline do?",
     "choices": [
-      "Stores logs only on the instance that produced them.",
-      "Turns debug on in production and keeps every line forever in the same bucket as the website.",
-      "Replaces metrics.",
-      "Gets control-plane events to a place the workload owner cannot delete, with enough identity to say who changed what."
+      "Keeps every log line on the instance for a year.",
+      "Samples audit events to keep the volume low.",
+      "Sends only error-level events to the SIEM.",
+      "Ships audit events where attackers cannot delete them."
     ],
     "answer": 3,
-    "explanation": "If the attacker can delete the only copy, you do not have detection.",
-    "source": "devsec blueprint",
-    "url": "https://devsecblueprint.com/curriculum"
+    "explanation": "If the attacker can delete the only copy, you do not have detection. Keep enough identity to say who changed what."
   },
   {
     "id": "obs-metrics-05",
     "skillId": "obs-metrics",
     "difficulty": "medium",
-    "prompt": "cAdvisor on 4194 with no authentication tells a compromised container:",
+    "prompt": "What does an unauthenticated cAdvisor on port 4194 tell a compromised container?",
     "choices": [
-      "The cloud account password.",
-      "Nothing. Metrics ports are empty.",
-      "Only its own cgroup.",
-      "What else is running on the node: container names, images, and resource use."
+      "The node's kubelet credentials.",
+      "The secrets of other pods.",
+      "Only its own cgroup's usage.",
+      "What else runs on the node."
     ],
     "answer": 3,
-    "explanation": "An open metrics port is reconnaissance. Bind it to localhost or put it behind auth.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2016-10-14-Kubernetes-Attack-Surface-cAdvisor.markdown"
+    "explanation": "Container names, images, and resource use are reconnaissance. Bind it to localhost or put it behind auth."
   },
   {
     "id": "obs-logs-06",
     "skillId": "obs-logs",
     "difficulty": "hard",
-    "prompt": "Container logs collected only on the node are incomplete because:",
+    "prompt": "Why are container logs collected only on the node incomplete?",
     "choices": [
-      "Namespaces keep a copy of stdout.",
-      "The scheduler moves pods. A log that dies with the node misses the rest of the pod's life, and stdout needs a shipper.",
-      "Pods write to etcd.",
-      "kubectl logs works after the container is gone from every node."
+      "stdout is buffered until the pod exits.",
+      "Pods move, and node logs die with the node.",
+      "The kubelet truncates stdout at 1MiB.",
+      "kubectl logs only shows the last hour."
     ],
     "answer": 1,
-    "explanation": "Ship stdout off the node. Design for ephemeral pods, not for a syslog file on one VM.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2022-11-19-PCI-Kubernetes-Section8%20-%20monitoring.markdown"
+    "explanation": "Ship stdout off the node. Design for ephemeral pods, not for a syslog file on one VM."
   },
   {
     "id": "obs-metrics-06",
     "skillId": "obs-metrics",
     "difficulty": "medium",
-    "prompt": "kube-proxy's health endpoint listens on 0.0.0.0:10256 and:",
+    "prompt": "kube-proxy's health endpoint listens on 0.0.0.0:10256. What is true of it?",
     "choices": [
-      "Requires a client certificate.",
-      "Is the API server.",
-      "Is disabled unless you pass a flag.",
-      "Has no authentication. /healthz returns metadata, not a bare ok. The root path 404s."
+      "It needs a client cert from the cluster CA.",
+      "It is reachable only from localhost.",
+      "It returns a bare ok and nothing else.",
+      "It needs no auth and returns metadata."
     ],
     "answer": 3,
-    "explanation": "An open health port is a discovery aid. Know which component ports are unauthenticated on your nodes.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2024-05-29-Taking-A-Look-At-The-Kube-Proxy-API.markdown"
+    "explanation": "/healthz returns metadata, and the root path 404s. An open health port is a discovery aid. Know which ports on your nodes are unauthenticated."
   },
   {
     "id": "obs-otel-05",
     "skillId": "obs-otel",
     "difficulty": "medium",
-    "prompt": "An OpenTelemetry setup for Kubernetes has three pieces:",
+    "prompt": "What are the three pieces of an OpenTelemetry setup for Kubernetes?",
     "choices": [
-      "A DaemonSet that replaces the API audit log.",
-      "kube-proxy metrics and nothing else.",
-      "Sources that emit signals, a collector that processes them, and backends that store them.",
-      "Only Grafana."
+      "SDKs, a sidecar, and a log store.",
+      "Exporters, a broker, and an index.",
+      "Sources, a collector, and backends.",
+      "Agents, a scraper, and dashboards."
     ],
     "answer": 2,
-    "explanation": "The collector is the process you operate. If it is down, the backends go quiet while the cluster does not.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2024-02-10-adding-open-telemetry-to-container-stacks.markdown"
+    "explanation": "The collector is the process you operate. If it is down, the backends go quiet while the cluster does not."
   },
   {
     "id": "obs-metrics-07",
     "skillId": "obs-metrics",
     "difficulty": "easy",
-    "prompt": "A Linux monitoring script is not done when it prints CPU once. It needs:",
+    "prompt": "A Linux monitoring script prints CPU once. What else does it need?",
     "choices": [
-      "Root with no log.",
-      "To replace the application metrics.",
-      "A schedule, a log of failures, and a threshold that a human will look at.",
-      "To run only when you remember."
+      "A graph library to plot the samples.",
+      "A faster sampling rate, under one second.",
+      "A schedule, failure logging, and thresholds.",
+      "Root access, so it sees every process."
     ],
     "answer": 2,
-    "explanation": "Cron plus a silent failure is how a disk fills up unseen.",
-    "source": "tech-vault",
-    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+    "explanation": "Cron plus a silent failure is how a disk fills up unseen. Someone has to look at the threshold."
   },
   {
     "id": "obs-alerts-05",
     "skillId": "obs-alerts",
     "difficulty": "medium",
-    "prompt": "A chaos exercise is useful when:",
+    "prompt": "When is a chaos experiment useful?",
     "choices": [
-      "You break production with no signal and no rollback.",
-      "You only read a slide.",
-      "You disable the health checks first so they do not page you.",
-      "You break one dependency on purpose and the alert plus the fallback behave as designed."
+      "You break things at random to find weak spots.",
+      "You test it once in staging, then sign it off.",
+      "You mute alerts so the team is not woken up.",
+      "You break one thing and alerts and fallback work."
     ],
     "answer": 3,
-    "explanation": "The point is the detection and the recovery, not the outage.",
-    "source": "tech-vault",
-    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+    "explanation": "The point is the detection and the recovery, not the outage. Break something specific with a signal and a rollback ready."
   },
   {
     "id": "obs-prometheus-05",
     "skillId": "obs-prometheus",
     "difficulty": "easy",
-    "prompt": "The monitoring challenge wants Prometheus and Grafana because:",
+    "prompt": "Why are Prometheus and Grafana usually paired?",
     "choices": [
-      "A dashboard replaces a pager.",
-      "Logs and metrics are the same store.",
-      "Prometheus holds the series and Grafana draws them. An alert needs a rule, not only a chart.",
-      "Grafana scrapes targets by itself in the default setup."
+      "Prometheus pages. Grafana logs.",
+      "Grafana scrapes. Prometheus alerts.",
+      "Prometheus stores. Grafana draws.",
+      "Grafana stores. Prometheus draws."
     ],
     "answer": 2,
-    "explanation": "If nobody is paged, the chart is a souvenir.",
-    "source": "tech-vault",
-    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+    "explanation": "An alert also needs a rule and a route, not only a chart. If nobody is paged, the chart is a souvenir."
   },
   {
     "id": "obs-alerts-06",
     "skillId": "obs-alerts",
     "difficulty": "easy",
-    "prompt": "Elastalert sits in the alerting section because:",
+    "prompt": "What is ElastAlert for?",
     "choices": [
-      "It scrapes Prometheus.",
-      "It replaces audit policy.",
-      "It signs images.",
-      "It watches a log store and notifies when a rule matches. It does not collect the logs."
+      "It ships logs from hosts into Elasticsearch.",
+      "It evaluates Prometheus alert expressions.",
+      "It routes alerts from many sources to on-call.",
+      "It runs rules over a log store and notifies."
     ],
     "answer": 3,
-    "explanation": "A rule with no route is silent. A route with no owner is noise.",
-    "source": "awesome-devsecops",
-    "url": "https://github.com/yelp/elastalert"
+    "explanation": "It does not collect the logs. A rule with no route is silent, and a route with no owner is noise."
   },
   {
     "id": "obs-logs-07",
     "skillId": "obs-logs",
     "difficulty": "easy",
-    "prompt": "Moloch, now Arkime, is a packet capture store. It is the wrong tool when:",
+    "prompt": "Arkime (formerly Moloch) stores packet captures. When is it the wrong tool?",
     "choices": [
-      "You are hunting an unexpected connection.",
-      "You already have a span and want the packets behind it.",
-      "You need who called the Kubernetes API. That is the audit log, not a pcap.",
-      "You need to see a flow that the flow log dropped."
+      "Finding the packets behind a slow request.",
+      "Finding a flow the flow logs missed.",
+      "Finding who called the Kubernetes API.",
+      "Finding what a suspicious host sent out."
     ],
     "answer": 2,
-    "explanation": "Capture is heavy. Turn it on for a question, with a retention limit.",
-    "source": "awesome-devsecops",
-    "url": "https://github.com/aol/moloch"
+    "explanation": "API calls are in the audit log, not a pcap. Capture is heavy, so turn it on for a question, with a retention limit."
   },
   {
     "id": "obs-metrics-08",
     "skillId": "obs-metrics",
     "difficulty": "easy",
-    "prompt": "Grafana and Kibana are dashboards over different stores:",
+    "prompt": "Grafana and Kibana are dashboards over different stores. Which pairing is typical?",
     "choices": [
-      "Grafana stores packets.",
-      "Grafana is commonly in front of metrics. Kibana is in front of Elasticsearch logs.",
-      "They both require Prometheus.",
-      "Kibana scrapes nodes."
+      "Grafana on logs, Kibana on InfluxDB.",
+      "Grafana on metrics, Kibana on Elasticsearch.",
+      "Grafana on Elasticsearch, Kibana on metrics.",
+      "Grafana on traces, Kibana on Prometheus."
     ],
     "answer": 1,
-    "explanation": "A dashboard is not the retention policy of the store behind it.",
-    "source": "awesome-devsecops",
-    "url": "https://github.com/devsecops/awesome-devsecops"
+    "explanation": "Grafana can read many sources, but metrics are its home. A dashboard is not the retention policy of the store behind it."
   }
 ]

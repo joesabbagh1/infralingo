@@ -36,8 +36,6 @@ object BankJson {
         val choices: List<String>,
         val answer: Int,
         val explanation: String,
-        val source: String,
-        val url: String = "",
     )
 
     @Serializable
@@ -62,8 +60,6 @@ object BankJson {
                     choices = dto.choices.map { it.trim() },
                     answerIndex = dto.answer,
                     explanation = dto.explanation.trim(),
-                    source = dto.source,
-                    url = dto.url,
                 )
             }
         }

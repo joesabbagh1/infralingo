@@ -1,0 +1,1682 @@
+[
+  {
+    "id": "k8s-pods-01",
+    "skillId": "k8s-pods",
+    "difficulty": "medium",
+    "prompt": "A Pod is the thing you debug, but a Deployment is what you edit. Why?",
+    "choices": [
+      "Pods are read-only once the scheduler binds them.",
+      "Edits to Pods are reverted by the kubelet on sync.",
+      "Pods are cluster-scoped, while Deployments are not.",
+      "Pods are replaceable copies its ReplicaSet makes."
+    ],
+    "answer": 3,
+    "explanation": "The Deployment owns a ReplicaSet that owns the Pods. A replaced Pod gets a new name and IP. Treat the Pod as disposable and put the desired state in the owner."
+  },
+  {
+    "id": "k8s-pods-02",
+    "skillId": "k8s-pods",
+    "difficulty": "medium",
+    "prompt": "What do two containers in one Pod share by default?",
+    "choices": [
+      "The root filesystem, so files are visible.",
+      "The process namespace, so each sees the other.",
+      "The image layers, so writes are shared.",
+      "The network namespace, so localhost works."
+    ],
+    "answer": 3,
+    "explanation": "localhost works. The disk does not, unless you mount the same volume. A shared PID namespace is opt-in with shareProcessNamespace."
+  },
+  {
+    "id": "k8s-pods-03",
+    "skillId": "k8s-pods",
+    "difficulty": "easy",
+    "prompt": "With restartPolicy Always, what happens when the container's process exits?",
+    "choices": [
+      "The Pod is marked Succeeded and left as it is.",
+      "The kubelet restarts the container in the same Pod.",
+      "The ReplicaSet replaces the Pod with a new one.",
+      "The scheduler moves the Pod to another node."
+    ],
+    "answer": 1,
+    "explanation": "Restart is a kubelet action on the same Pod, which is why the restart count goes up. A controller replacing the Pod is a different event."
+  },
+  {
+    "id": "k8s-pods-04",
+    "skillId": "k8s-pods",
+    "difficulty": "hard",
+    "prompt": "An init container has not finished. What is true of the app container?",
+    "choices": [
+      "It started and is waiting on a lock.",
+      "It is restarting in CrashLoopBackOff.",
+      "It has not started yet.",
+      "It is running but not Ready."
+    ],
+    "answer": 2,
+    "explanation": "Init containers run to completion first, in order. A stuck init container is why the app never appears. Read its logs before you blame the app image."
+  },
+  {
+    "id": "k8s-workloads-01",
+    "skillId": "k8s-workloads",
+    "difficulty": "medium",
+    "prompt": "You need one pod on every node, including nodes that join later. Which object?",
+    "choices": [
+      "ReplicaSet with a node selector",
+      "DaemonSet",
+      "StatefulSet",
+      "Deployment with anti-affinity"
+    ],
+    "answer": 1,
+    "explanation": "DaemonSets track the node list. A Deployment with anti-affinity spreads a fixed replica count but will not grow with the cluster."
+  },
+  {
+    "id": "k8s-workloads-02",
+    "skillId": "k8s-workloads",
+    "difficulty": "medium",
+    "prompt": "A database needs a stable name and its own disk per replica. What fits?",
+    "choices": [
+      "A Deployment with one PVC per replica.",
+      "A DaemonSet with a hostPath volume.",
+      "A StatefulSet with volumeClaimTemplates.",
+      "A Deployment with a ReadWriteMany PVC."
+    ],
+    "answer": 2,
+    "explanation": "Ordinals and per-pod PVCs are the StatefulSet feature. A Deployment's pod names change and its replicas share one claim."
+  },
+  {
+    "id": "k8s-workloads-03",
+    "skillId": "k8s-workloads",
+    "difficulty": "easy",
+    "prompt": "When is a Job done?",
+    "choices": [
+      "When its pods pass their readiness probe.",
+      "When enough pods exit with code 0.",
+      "When its pods have run for activeDeadlineSeconds.",
+      "When its pod has been scheduled once."
+    ],
+    "answer": 1,
+    "explanation": "Jobs want completion. Deployments want a process that stays up. activeDeadlineSeconds fails a Job that runs too long."
+  },
+  {
+    "id": "k8s-workloads-04",
+    "skillId": "k8s-workloads",
+    "difficulty": "hard",
+    "prompt": "You changed a Deployment's pod template and the old pods are still there. What are you waiting on?",
+    "choices": [
+      "The kubelet, which applies the template on next sync.",
+      "The old pods, which update when they next restart.",
+      "The ReplicaSet, which needs a manual scale to apply.",
+      "The rollout, gated by surge settings and readiness."
+    ],
+    "answer": 3,
+    "explanation": "A new ReplicaSet scales up as old pods are drained, governed by maxSurge, maxUnavailable and readiness. A failing probe pins the rollout and leaves the old pods serving."
+  },
+  {
+    "id": "k8s-config-01",
+    "skillId": "k8s-config",
+    "difficulty": "medium",
+    "prompt": "You mounted a ConfigMap on /etc/app and the image's files in that directory vanished. Why?",
+    "choices": [
+      "A volume mount hides what was in that directory.",
+      "The kubelet empties a directory before mounting.",
+      "ConfigMap mounts replace the image layer for it.",
+      "The mount is read-only, so the files are hidden."
+    ],
+    "answer": 0,
+    "explanation": "The mount covers the directory. Image files at that path are not merged in. Mount one file with subPath, or mount on an empty path."
+  },
+  {
+    "id": "k8s-config-02",
+    "skillId": "k8s-config",
+    "difficulty": "easy",
+    "prompt": "What is a ConfigMap for?",
+    "choices": [
+      "Non-secret configuration data.",
+      "Credentials and API tokens.",
+      "Node-level kubelet settings.",
+      "Large binary files over 1MiB."
+    ],
+    "answer": 0,
+    "explanation": "If it is secret, use a Secret or an external store. ConfigMaps end up in manifests and logs, and they are capped at 1MiB."
+  },
+  {
+    "id": "k8s-config-03",
+    "skillId": "k8s-config",
+    "difficulty": "medium",
+    "prompt": "You edited a ConfigMap and the pod still has the old env var. Why?",
+    "choices": [
+      "Env vars are read once, at container start.",
+      "The kubelet syncs env vars only every 10 minutes.",
+      "The edit needs kubectl apply, not kubectl edit.",
+      "Env vars are cached until the node restarts."
+    ],
+    "answer": 0,
+    "explanation": "A mounted file can update, but env vars cannot. Roll the pod to pick up env."
+  },
+  {
+    "id": "k8s-config-04",
+    "skillId": "k8s-config",
+    "difficulty": "hard",
+    "prompt": "An immutable ConfigMap will not let you change a key. How do you ship a new revision?",
+    "choices": [
+      "Remove immutable: true, edit the key, then re-add it.",
+      "Use kubectl replace --force on the same name.",
+      "Patch the key with a strategic merge patch.",
+      "Create a new ConfigMap and point the pods at it."
+    ],
+    "answer": 3,
+    "explanation": "Immutability cannot be unset, and replace --force deletes and recreates it under pods using it. A new name in the pod template makes the revision explicit."
+  },
+  {
+    "id": "k8s-secrets-01",
+    "skillId": "k8s-secrets",
+    "difficulty": "medium",
+    "prompt": "A Kubernetes Secret is base64 in the API. What does that not give you?",
+    "choices": [
+      "Namespacing.",
+      "Projection.",
+      "Encryption.",
+      "Binary support."
+    ],
+    "answer": 2,
+    "explanation": "Base64 is encoding. RBAC and encryption at rest are the controls. Anyone who can get secrets can read them."
+  },
+  {
+    "id": "k8s-secrets-02",
+    "skillId": "k8s-secrets",
+    "difficulty": "medium",
+    "prompt": "The pod is in CreateContainerConfigError and the message names a secret. What is wrong?",
+    "choices": [
+      "The secret exists, but its data is not valid base64.",
+      "The service account cannot read that secret.",
+      "The secret is too large to mount as a volume.",
+      "The secret or key is missing in the pod's namespace."
+    ],
+    "answer": 3,
+    "explanation": "Config errors happen before the process starts. Read the event, which names the missing object. The kubelet fetches secrets with its own identity."
+  },
+  {
+    "id": "k8s-secrets-03",
+    "skillId": "k8s-secrets",
+    "difficulty": "easy",
+    "prompt": "Where should a production database password live if you can choose?",
+    "choices": [
+      "An env value in the Deployment manifest.",
+      "A ConfigMap in a locked-down namespace.",
+      "A secret manager, injected at runtime.",
+      "A Kubernetes Secret committed to git."
+    ],
+    "answer": 2,
+    "explanation": "Git and images leak. A cluster Secret is a step up and still needs RBAC and encryption at rest."
+  },
+  {
+    "id": "k8s-secrets-04",
+    "skillId": "k8s-secrets",
+    "difficulty": "hard",
+    "prompt": "You rotated a TLS secret and the ingress still serves the old cert. What is likely stale?",
+    "choices": [
+      "The controller, or the secret name it references.",
+      "The pods, which cached the cert at their start.",
+      "kube-proxy, which caches TLS secrets per node.",
+      "CoreDNS, which caches the certificate's SAN."
+    ],
+    "answer": 0,
+    "explanation": "Confirm the secret name on the Ingress or Gateway, then the controller's reload. Creating a second secret does nothing until it is referenced."
+  },
+  {
+    "id": "k8s-services-01",
+    "skillId": "k8s-services",
+    "difficulty": "medium",
+    "prompt": "A ClusterIP Service fronts Ready pods. What should another pod call?",
+    "choices": [
+      "The node's IP on the Service's port.",
+      "The pod's hostname from its spec.",
+      "The Service's DNS name and port.",
+      "One of the pod IPs from the endpoints."
+    ],
+    "answer": 2,
+    "explanation": "DNS for the Service is the API. The Service IP is stable and pod IPs change on every recreate."
+  },
+  {
+    "id": "k8s-services-02",
+    "skillId": "k8s-services",
+    "difficulty": "medium",
+    "prompt": "The Service exists and its endpoints are empty. What is the usual cause?",
+    "choices": [
+      "Its selector matches no Ready pods.",
+      "Its targetPort is not a named port.",
+      "Its type is ClusterIP, not NodePort.",
+      "kube-proxy has not synced its rules."
+    ],
+    "answer": 0,
+    "explanation": "kubectl get endpoints. If it is empty, either nothing matches or nothing is ready. A wrong targetPort gives endpoints that refuse connections."
+  },
+  {
+    "id": "k8s-services-03",
+    "skillId": "k8s-services",
+    "difficulty": "easy",
+    "prompt": "What is a headless Service for?",
+    "choices": [
+      "A Service with no ports, used for labels.",
+      "DNS that returns pod IPs, with no VIP.",
+      "A Service that has no selector at all.",
+      "A ClusterIP that is reachable from outside."
+    ],
+    "answer": 1,
+    "explanation": "clusterIP: None means the DNS name returns the pods. StatefulSets use it for stable per-pod names."
+  },
+  {
+    "id": "k8s-services-04",
+    "skillId": "k8s-services",
+    "difficulty": "hard",
+    "prompt": "A NodePort opened a port on every node. What else must allow clients to reach it?",
+    "choices": [
+      "The cloud firewall or security group.",
+      "A NetworkPolicy in kube-system.",
+      "An Ingress for the Service's host.",
+      "kube-proxy running in IPVS mode."
+    ],
+    "answer": 0,
+    "explanation": "Kubernetes allocating the port does not open the cloud firewall. The network in front of the node still has to allow it."
+  },
+  {
+    "id": "k8s-ingress-01",
+    "skillId": "k8s-ingress",
+    "difficulty": "medium",
+    "prompt": "An Ingress returns 503 and its Service has no ready endpoints. Where is the fault?",
+    "choices": [
+      "The pods' readiness or the selector.",
+      "The Ingress class on the resource.",
+      "The TLS secret on the Ingress.",
+      "The path type in the Ingress rule."
+    ],
+    "answer": 0,
+    "explanation": "The proxy has nobody to send to. Fix readiness and the selector first, not the Ingress rule."
+  },
+  {
+    "id": "k8s-ingress-02",
+    "skillId": "k8s-ingress",
+    "difficulty": "medium",
+    "prompt": "You are moving a host and two paths from an Ingress to the Gateway API. What replaces the path rules?",
+    "choices": [
+      "An HTTPRoute attached to a Gateway.",
+      "A GatewayClass with the path list.",
+      "A Gateway listener per path.",
+      "A ReferenceGrant to the Services."
+    ],
+    "answer": 0,
+    "explanation": "Gateway is the listener. HTTPRoute is the routing. Keep the backends pointed at the same Services until you cut traffic."
+  },
+  {
+    "id": "k8s-ingress-03",
+    "skillId": "k8s-ingress",
+    "difficulty": "easy",
+    "prompt": "Ingress routes HTTP. What does a Service of type LoadBalancer typically give you?",
+    "choices": [
+      "TLS termination with a free cert.",
+      "An external address for its ports.",
+      "Host and path routing over HTTPS.",
+      "A DNS record in your public zone."
+    ],
+    "answer": 1,
+    "explanation": "Use Ingress or Gateway when the URL matters. Use a LoadBalancer Service when you want a stable external address for a port."
+  },
+  {
+    "id": "k8s-ingress-04",
+    "skillId": "k8s-ingress",
+    "difficulty": "hard",
+    "prompt": "Two Ingresses claim the same host and path on one class. What happens?",
+    "choices": [
+      "The controller merges both backends evenly.",
+      "The newer Ingress always replaces the older.",
+      "It depends on the controller's conflict rules.",
+      "The API server rejects the second Ingress."
+    ],
+    "answer": 2,
+    "explanation": "The API server usually accepts both objects. Do not assume they merge. Read the controller's logs and docs."
+  },
+  {
+    "id": "k8s-probes-01",
+    "skillId": "k8s-probes",
+    "difficulty": "medium",
+    "prompt": "A readiness exec probe always times out, though the command works by hand. Which default is too small?",
+    "choices": [
+      "timeoutSeconds, which is 1",
+      "periodSeconds, which is 10",
+      "failureThreshold, which is 3",
+      "initialDelaySeconds, which is 0"
+    ],
+    "answer": 0,
+    "explanation": "timeoutSeconds bounds one attempt. periodSeconds is only the gap between attempts. Raise the timeout and recreate the pod."
+  },
+  {
+    "id": "k8s-probes-02",
+    "skillId": "k8s-probes",
+    "difficulty": "medium",
+    "prompt": "You add only a liveness probe, and it fails when a dependency is slow. What outage did you create?",
+    "choices": [
+      "Restarts during every slow dependency.",
+      "Traffic sent to pods that are not ready.",
+      "Pods stuck Pending until the check passes.",
+      "The rollout pauses until the check passes."
+    ],
+    "answer": 0,
+    "explanation": "Readiness would only have removed the pod from the Service. Use liveness only for a truly stuck process, and give a slow start a startupProbe."
+  },
+  {
+    "id": "k8s-probes-03",
+    "skillId": "k8s-probes",
+    "difficulty": "hard",
+    "prompt": "You fixed the probe in YAML and apply says the field is immutable. What now?",
+    "choices": [
+      "Recreate the pod with the new spec.",
+      "Patch the pod with --subresource=status.",
+      "Use kubectl edit, which can change probes.",
+      "Annotate the pod so the kubelet reloads it."
+    ],
+    "answer": 0,
+    "explanation": "A bare pod's probes cannot be edited. Replace the pod from the updated manifest. Through a Deployment, a template change rolls new pods."
+  },
+  {
+    "id": "k8s-probes-04",
+    "skillId": "k8s-probes",
+    "difficulty": "easy",
+    "prompt": "Why does a startupProbe exist?",
+    "choices": [
+      "To check that the image was pulled correctly.",
+      "To hold off liveness until a slow start finishes.",
+      "To delay readiness by a fixed number of seconds.",
+      "To run a command once before the app starts."
+    ],
+    "answer": 1,
+    "explanation": "Startup runs first. Liveness and readiness take over after it succeeds. Running a command first is an init container's job."
+  },
+  {
+    "id": "k8s-resources-01",
+    "skillId": "k8s-resources",
+    "difficulty": "medium",
+    "prompt": "A pod is Pending with Insufficient cpu, yet the node looks idle. Why?",
+    "choices": [
+      "Scheduling counts requests, not usage.",
+      "Idle CPU is reserved for system pods.",
+      "The metrics server reports stale usage.",
+      "CPU limits on the node are already full."
+    ],
+    "answer": 0,
+    "explanation": "Requests already claimed the node. Lower the request or add a node. Free cycles do not help if they are already promised, and limits do not affect scheduling."
+  },
+  {
+    "id": "k8s-resources-02",
+    "skillId": "k8s-resources",
+    "difficulty": "medium",
+    "prompt": "What does Guaranteed QoS require?",
+    "choices": [
+      "Limits set for memory, requests for CPU.",
+      "A PriorityClass with a high value on it.",
+      "Requests equal to limits for CPU and memory.",
+      "Requests set for CPU and memory, no limits."
+    ],
+    "answer": 2,
+    "explanation": "Every container needs both, with requests equal to limits. Burstable is anything less. BestEffort is neither. Guaranteed pods are the last the OOM killer picks."
+  },
+  {
+    "id": "k8s-resources-03",
+    "skillId": "k8s-resources",
+    "difficulty": "hard",
+    "prompt": "The container is throttled while the node's CPU is half idle. What did you set?",
+    "choices": [
+      "A CPU request equal to its limit.",
+      "A CPU limit below its bursts.",
+      "A CPU request below its usage.",
+      "A memory limit below its usage."
+    ],
+    "answer": 1,
+    "explanation": "Limits are ceilings, enforced by the cgroup even when the node has spare CPU. Requests only weight sharing. A low limit on a bursty process is a latency bug."
+  },
+  {
+    "id": "k8s-resources-04",
+    "skillId": "k8s-resources",
+    "difficulty": "easy",
+    "prompt": "What does an OOMKilled status mean?",
+    "choices": [
+      "The process hit its open-files limit.",
+      "The container passed its memory limit.",
+      "The node ran out of disk for the container.",
+      "The kubelet evicted the pod for pressure."
+    ],
+    "answer": 1,
+    "explanation": "The cgroup hit memory.max for that container. The node may still have memory. Eviction shows as Evicted, not OOMKilled."
+  },
+  {
+    "id": "k8s-scheduling-01",
+    "skillId": "k8s-scheduling",
+    "difficulty": "medium",
+    "prompt": "A node is tainted NoSchedule and your pod has no toleration. What happens?",
+    "choices": [
+      "The pod is not scheduled onto that node.",
+      "The pod is scheduled, then evicted.",
+      "The pod is scheduled with lower priority.",
+      "The pod waits until the taint expires."
+    ],
+    "answer": 0,
+    "explanation": "Tolerations let a pod through a taint. They do not prefer the node. Add affinity or a node selector for that. NoExecute is the effect that evicts."
+  },
+  {
+    "id": "k8s-scheduling-02",
+    "skillId": "k8s-scheduling",
+    "difficulty": "medium",
+    "prompt": "You want an app's pods on different nodes. What expresses that?",
+    "choices": [
+      "A node selector on the app's pods.",
+      "A toleration on the app's pods.",
+      "Topology spread or pod anti-affinity.",
+      "A PodDisruptionBudget on the app."
+    ],
+    "answer": 2,
+    "explanation": "Spread is a scheduling rule. A PDB limits voluntary evictions, a selector restricts nodes, and a toleration only allows tainted ones."
+  },
+  {
+    "id": "k8s-scheduling-03",
+    "skillId": "k8s-scheduling",
+    "difficulty": "easy",
+    "prompt": "What does nodeSelector do in the simple case?",
+    "choices": [
+      "Labels the node a pod is scheduled onto.",
+      "Restricts a pod to nodes with given labels.",
+      "Prefers nodes with given labels, if free.",
+      "Keeps a pod off nodes with given labels."
+    ],
+    "answer": 1,
+    "explanation": "Selector is a hard filter. Affinity adds weights and anti-affinity."
+  },
+  {
+    "id": "k8s-scheduling-04",
+    "skillId": "k8s-scheduling",
+    "difficulty": "hard",
+    "prompt": "A pod has a toleration and a node selector that matches no node. Which explains Pending?",
+    "choices": [
+      "The toleration has no matching taint.",
+      "Both, since they must match one node.",
+      "Neither. Pending means image pulls.",
+      "The selector matches no node."
+    ],
+    "answer": 3,
+    "explanation": "A toleration only stops a taint excluding a node. An unused toleration is harmless. The scheduler event names the selector."
+  },
+  {
+    "id": "k8s-storage-01",
+    "skillId": "k8s-storage",
+    "difficulty": "medium",
+    "prompt": "A PVC is Pending and the StorageClass exists. What else must be true for a volume to appear?",
+    "choices": [
+      "A ResourceQuota that allows storage requests.",
+      "A working provisioner that can satisfy the request.",
+      "A pod in the same namespace running for a minute.",
+      "A PV of the same name created by an admin."
+    ],
+    "answer": 1,
+    "explanation": "The claim is an order. A provisioner must fulfill it, or a matching PV must already exist. WaitForFirstConsumer classes also wait for a pod."
+  },
+  {
+    "id": "k8s-storage-02",
+    "skillId": "k8s-storage",
+    "difficulty": "hard",
+    "prompt": "A PVC was deleted and its PV is Released, with reclaim policy Retain. How do you reuse the data?",
+    "choices": [
+      "Clear the PV's claimRef, then bind a new claim.",
+      "Recreate the PVC with the original name.",
+      "Change the PV's reclaim policy to Recycle.",
+      "Set the PV's phase back to Available."
+    ],
+    "answer": 0,
+    "explanation": "Retain keeps the bytes. The claimRef still points at the old claim, which is why a new claim sits Pending. Phase is status, not something you set."
+  },
+  {
+    "id": "k8s-storage-03",
+    "skillId": "k8s-storage",
+    "difficulty": "medium",
+    "prompt": "A ReadWriteOnce volume is used by two pods on different nodes. What do you get?",
+    "choices": [
+      "The second pod gets a copy.",
+      "Both mount it, with no locking.",
+      "Only one node can attach it.",
+      "Both pods mount it read-only."
+    ],
+    "answer": 2,
+    "explanation": "RWO is per node, not per pod. Use a volume that supports the access you need, or run the pods where the disk can attach."
+  },
+  {
+    "id": "k8s-storage-04",
+    "skillId": "k8s-storage",
+    "difficulty": "easy",
+    "prompt": "Where does an emptyDir live?",
+    "choices": [
+      "In the container's writable layer.",
+      "On the node, for the life of the pod.",
+      "On the node, until it is drained.",
+      "On a PV, until the pod is deleted."
+    ],
+    "answer": 1,
+    "explanation": "It is deleted with the pod and survives container restarts. Scratch space and caches belong there. A database does not."
+  },
+  {
+    "id": "k8s-rbac-01",
+    "skillId": "k8s-rbac",
+    "difficulty": "medium",
+    "prompt": "A user can list pods in one namespace and gets Forbidden in another. The role is a ClusterRole. What is missing?",
+    "choices": [
+      "A Role copied into the other namespace.",
+      "The aggregate-to-view label on the role.",
+      "A ServiceAccount in the other namespace.",
+      "A RoleBinding in the other namespace."
+    ],
+    "answer": 3,
+    "explanation": "A ClusterRole defines permissions. A RoleBinding grants them in one namespace. The ClusterRole existing is not a grant."
+  },
+  {
+    "id": "k8s-rbac-02",
+    "skillId": "k8s-rbac",
+    "difficulty": "hard",
+    "prompt": "Why is get on nodes/proxy dangerous?",
+    "choices": [
+      "It can run commands in pods via the kubelet.",
+      "It can read secrets mounted on the node.",
+      "It can change the node's taints and labels.",
+      "It can impersonate the node's identity."
+    ],
+    "answer": 0,
+    "explanation": "Treat nodes/proxy, pods/exec, and secrets as admin-shaped. Review bindings that grant them."
+  },
+  {
+    "id": "k8s-rbac-03",
+    "skillId": "k8s-rbac",
+    "difficulty": "easy",
+    "prompt": "What is a ServiceAccount?",
+    "choices": [
+      "A human user stored in the cluster.",
+      "A Secret type for registry logins.",
+      "The identity a pod uses with the API.",
+      "The Linux user a container runs as."
+    ],
+    "answer": 2,
+    "explanation": "It is not a human user, and it is not the process UID. Set automountServiceAccountToken: false when a workload should not talk to the API."
+  },
+  {
+    "id": "k8s-rbac-04",
+    "skillId": "k8s-rbac",
+    "difficulty": "medium",
+    "prompt": "Why use kubectl auth can-i?",
+    "choices": [
+      "It lists every role bound to the subject.",
+      "It grants a permission for one request.",
+      "It checks the admission policies too.",
+      "It evaluates all bindings for a subject."
+    ],
+    "answer": 3,
+    "explanation": "Ask what the workload can do before you ship the binding. It answers authorization, not admission."
+  },
+  {
+    "id": "k8s-netpol-01",
+    "skillId": "k8s-netpol",
+    "difficulty": "medium",
+    "prompt": "A namespace has no NetworkPolicies. What is the default?",
+    "choices": [
+      "All egress is denied.",
+      "All traffic is allowed.",
+      "All ingress is denied.",
+      "Only same-namespace traffic."
+    ],
+    "answer": 1,
+    "explanation": "The first policy that selects a pod starts the restriction for that direction. Write the allow you still need, including DNS."
+  },
+  {
+    "id": "k8s-netpol-02",
+    "skillId": "k8s-netpol",
+    "difficulty": "medium",
+    "prompt": "Backend ingress is locked down and you allow it from the frontend's labels. What is easy to forget?",
+    "choices": [
+      "A policy in kube-system for kube-proxy.",
+      "The frontend's egress, and DNS.",
+      "The backend's egress to the frontend.",
+      "A Service for the frontend pods."
+    ],
+    "answer": 1,
+    "explanation": "If egress is default-deny too, the frontend needs an allow to the backend and usually to kube-dns. Replies to an allowed connection need no rule."
+  },
+  {
+    "id": "k8s-netpol-03",
+    "skillId": "k8s-netpol",
+    "difficulty": "hard",
+    "prompt": "What is the least permissive policy that still lets frontend reach backend?",
+    "choices": [
+      "Select backend, allow the frontend namespace.",
+      "Select frontend, allow egress on all ports.",
+      "Select backend, allow all pods on its port.",
+      "Select backend, allow frontend pods on its port."
+    ],
+    "answer": 3,
+    "explanation": "Be explicit about pods, namespace and port. An empty selector matches everything."
+  },
+  {
+    "id": "k8s-netpol-04",
+    "skillId": "k8s-netpol",
+    "difficulty": "easy",
+    "prompt": "Who enforces NetworkPolicy?",
+    "choices": [
+      "The kubelet.",
+      "The CNI plugin.",
+      "kube-proxy.",
+      "The API server."
+    ],
+    "answer": 1,
+    "explanation": "If the plugin does not implement policy, the objects do nothing. Know your CNI before you trust the YAML."
+  },
+  {
+    "id": "k8s-psa-01",
+    "skillId": "k8s-psa",
+    "difficulty": "medium",
+    "prompt": "A node agent DaemonSet uses hostNetwork, hostPID, and a hostPath of /proc. The namespace enforces baseline and no pods appear. Which level can run it?",
+    "choices": [
+      "restricted",
+      "baseline",
+      "host",
+      "privileged"
+    ],
+    "answer": 3,
+    "explanation": "Those host accesses are outside baseline, and restricted is stricter still. There is no level called host. Label the namespace privileged, or exempt it on purpose."
+  },
+  {
+    "id": "k8s-psa-02",
+    "skillId": "k8s-psa",
+    "difficulty": "hard",
+    "prompt": "The storefront must reject baseline violations and only warn and audit on restricted ones. Which labels?",
+    "choices": [
+      "enforce=restricted, warn and audit=baseline",
+      "enforce=baseline, audit=restricted only",
+      "warn=baseline, enforce and audit=restricted",
+      "enforce=baseline, warn and audit=restricted"
+    ],
+    "answer": 3,
+    "explanation": "Each mode is its own label. Audit does not print. It annotates the API audit log, which is why you need warn too."
+  },
+  {
+    "id": "k8s-psa-03",
+    "skillId": "k8s-psa",
+    "difficulty": "medium",
+    "prompt": "You set enforce=restricted, the running pods stay Ready, then a rollout creates nothing. Why?",
+    "choices": [
+      "Enforce evicts pods on next sync.",
+      "Enforce blocks the Deployment edit.",
+      "Enforce waits for a namespace restart.",
+      "Enforce rejects only new pods."
+    ],
+    "answer": 3,
+    "explanation": "Running pods are left alone. The new ones are rejected at the ReplicaSet, so check its events. Dry-run the label first, then fix the securityContext the rejection names."
+  },
+  {
+    "id": "k8s-psa-04",
+    "skillId": "k8s-psa",
+    "difficulty": "easy",
+    "prompt": "Which of these does the restricted level require?",
+    "choices": [
+      "A memory limit on every container.",
+      "An AppArmor profile on every pod.",
+      "runAsNonRoot and dropped capabilities.",
+      "A read-only root filesystem."
+    ],
+    "answer": 2,
+    "explanation": "Restricted wants non-root, a seccomp profile, dropped capabilities, and no privilege escalation. A read-only root filesystem and limits are good practice but not part of it."
+  },
+  {
+    "id": "k8s-helm-01",
+    "skillId": "k8s-helm",
+    "difficulty": "medium",
+    "prompt": "When is helm template the right command?",
+    "choices": [
+      "To diff the release against the cluster.",
+      "To render manifests without installing.",
+      "To upgrade a release with new values.",
+      "To roll back a release to a revision."
+    ],
+    "answer": 1,
+    "explanation": "Template is a render. Install and upgrade talk to the cluster and record a release. Diffing needs the helm-diff plugin."
+  },
+  {
+    "id": "k8s-helm-02",
+    "skillId": "k8s-helm",
+    "difficulty": "medium",
+    "prompt": "The chart installs CRDs that are already in the cluster and owned elsewhere. What do you skip?",
+    "choices": [
+      "The chart's CRDs, with --skip-crds.",
+      "The chart's hooks, with --no-hooks.",
+      "The namespace, with --create-namespace.",
+      "The tests, with --skip-tests."
+    ],
+    "answer": 0,
+    "explanation": "Re-applying CRDs you do not own is how you fight another controller."
+  },
+  {
+    "id": "k8s-helm-03",
+    "skillId": "k8s-helm",
+    "difficulty": "easy",
+    "prompt": "What is a Helm release?",
+    "choices": [
+      "A tagged commit of the chart's source.",
+      "A values file for one environment.",
+      "A named install of a chart with its values.",
+      "A versioned chart tarball in a repository."
+    ],
+    "answer": 2,
+    "explanation": "Upgrade changes the release. The chart is the package."
+  },
+  {
+    "id": "k8s-helm-04",
+    "skillId": "k8s-helm",
+    "difficulty": "hard",
+    "prompt": "helm upgrade failed halfway and a retry is refused. What do you look at?",
+    "choices": [
+      "helm lint, for a template error in the chart.",
+      "helm get values, for a missing required value.",
+      "helm repo update, for a stale chart index.",
+      "helm history, for a release stuck pending."
+    ],
+    "answer": 3,
+    "explanation": "A stuck pending-upgrade blocks the next one. Read history and status, then roll back or fix the lock. Do not keep retrying blindly."
+  },
+  {
+    "id": "k8s-gitops-01",
+    "skillId": "k8s-gitops",
+    "difficulty": "medium",
+    "prompt": "In GitOps, what does the in-cluster controller do?",
+    "choices": [
+      "Pushes cluster changes back into git.",
+      "Applies a commit once, when it is pushed.",
+      "Deploys the newest tag in the registry.",
+      "Reconciles the cluster to what git declares."
+    ],
+    "answer": 3,
+    "explanation": "A kubectl edit will be reverted if git is the source of truth. Change git."
+  },
+  {
+    "id": "k8s-gitops-02",
+    "skillId": "k8s-gitops",
+    "difficulty": "easy",
+    "prompt": "What are Flux and Argo CD?",
+    "choices": [
+      "CI pipeline runners.",
+      "Helm chart registries.",
+      "Service mesh proxies.",
+      "GitOps controllers."
+    ],
+    "answer": 3,
+    "explanation": "Both reconcile manifests from a repository. The model is the same. The objects and the UI differ."
+  },
+  {
+    "id": "k8s-gitops-03",
+    "skillId": "k8s-gitops",
+    "difficulty": "medium",
+    "prompt": "What should a GitOps deploy of a Helm chart pin in git?",
+    "choices": [
+      "The rendered manifests' resource names.",
+      "The chart version and the values.",
+      "The values, with the chart on latest.",
+      "The chart repo URL and the namespace."
+    ],
+    "answer": 1,
+    "explanation": "Unpinned charts are an unreviewed upgrade. Pin both so a reconcile is repeatable."
+  },
+  {
+    "id": "k8s-gitops-04",
+    "skillId": "k8s-gitops",
+    "difficulty": "hard",
+    "prompt": "An image tag needs updating, and the cluster controller cannot write to git. What is a clean pattern?",
+    "choices": [
+      "CI runs kubectl set image, and the controller ignores it.",
+      "The controller polls the registry and applies new tags.",
+      "Developers edit the live Deployment, then sync to git.",
+      "CI commits the new tag, and the controller applies it."
+    ],
+    "answer": 3,
+    "explanation": "Git stays the source. CI proposes the tag change. The cluster does not drift ahead of git."
+  },
+  {
+    "id": "k8s-hpa-01",
+    "skillId": "k8s-hpa",
+    "difficulty": "medium",
+    "prompt": "A CPU HPA targets 50% and never scales. The pods have no CPU request. Why?",
+    "choices": [
+      "The HPA needs a CPU limit to scale on.",
+      "The metrics server only reports memory.",
+      "HPA scales only when pods are throttled.",
+      "Utilization is a percent of the request."
+    ],
+    "answer": 3,
+    "explanation": "No request means no percentage. Set the request to what the pod actually needs."
+  },
+  {
+    "id": "k8s-hpa-02",
+    "skillId": "k8s-hpa",
+    "difficulty": "medium",
+    "prompt": "The HPA added pods and they stayed Pending. What did you hit?",
+    "choices": [
+      "A stabilization window on scale-up.",
+      "Cluster capacity. HPA does not add nodes.",
+      "The HPA's maxReplicas, which holds new pods.",
+      "The metrics server lagging behind the HPA."
+    ],
+    "answer": 1,
+    "explanation": "Cluster autoscaler or a bigger pool is the next layer. HPA only changes the replica count."
+  },
+  {
+    "id": "k8s-hpa-03",
+    "skillId": "k8s-hpa",
+    "difficulty": "easy",
+    "prompt": "How do VPA and HPA differ?",
+    "choices": [
+      "VPA scales nodes. HPA scales pods.",
+      "VPA uses memory. HPA uses only CPU.",
+      "VPA resizes pods. HPA changes replicas.",
+      "VPA changes replicas. HPA resizes pods."
+    ],
+    "answer": 2,
+    "explanation": "Running both on CPU without care makes them fight. One adds pods, the other changes the request the first one measures."
+  },
+  {
+    "id": "k8s-hpa-04",
+    "skillId": "k8s-hpa",
+    "difficulty": "hard",
+    "prompt": "VPA should leave a pod's sidecar alone and size only the app. What is the control?",
+    "choices": [
+      "A containerPolicy with mode Off for the sidecar.",
+      "An updatePolicy with mode Initial for the pod.",
+      "A separate VPA that targets only the sidecar.",
+      "A resource limit on the sidecar so VPA skips it."
+    ],
+    "answer": 0,
+    "explanation": "The resource policy is per container. The app's recommendation and the sidecar's fixed size are different problems."
+  },
+  {
+    "id": "k8s-debug-01",
+    "skillId": "k8s-debug",
+    "difficulty": "medium",
+    "prompt": "What does CrashLoopBackOff mean?",
+    "choices": [
+      "The node keeps rejecting the pod at admission.",
+      "The container keeps exiting and restarts are delayed.",
+      "The image cannot be pulled and retries are delayed.",
+      "The liveness probe passes but readiness fails."
+    ],
+    "answer": 1,
+    "explanation": "Read the previous container's logs with --previous. The current container may already be dead."
+  },
+  {
+    "id": "k8s-debug-02",
+    "skillId": "k8s-debug",
+    "difficulty": "medium",
+    "prompt": "A pod from a private registry is in ImagePullBackOff. What is the first check?",
+    "choices": [
+      "The event text: auth, missing tag, or timeout.",
+      "The pod's ServiceAccount RBAC permissions.",
+      "The node's disk space for the image layers.",
+      "The pod's readiness and liveness probes."
+    ],
+    "answer": 0,
+    "explanation": "Unauthorized, manifest unknown, and a timeout are three different fixes: the pull secret, the image name, or the network to the registry."
+  },
+  {
+    "id": "k8s-debug-03",
+    "skillId": "k8s-debug",
+    "difficulty": "hard",
+    "prompt": "kubectl exec fails because the image has no shell. What do you attach instead?",
+    "choices": [
+      "A sidecar added with kubectl patch.",
+      "kubectl attach to the main container.",
+      "kubectl port-forward and a local shell.",
+      "An ephemeral container via kubectl debug."
+    ],
+    "answer": 3,
+    "explanation": "Bring tools in a second container that shares the process or network namespace. Patching a pod's containers is not allowed, and attach needs a shell too."
+  },
+  {
+    "id": "k8s-debug-04",
+    "skillId": "k8s-debug",
+    "difficulty": "easy",
+    "prompt": "Why is kubectl describe the first stop when a pod is not Running?",
+    "choices": [
+      "It shows app logs.",
+      "It retries the pod.",
+      "It shows the YAML.",
+      "Its events say why."
+    ],
+    "answer": 3,
+    "explanation": "Logs are empty if the process never started. Events still record pull, schedule, mount and probe failures."
+  },
+  {
+    "id": "k8s-dns-01",
+    "skillId": "k8s-dns",
+    "difficulty": "medium",
+    "prompt": "A pod resolves internet names but not a Service name. What is the in-cluster path to check?",
+    "choices": [
+      "CoreDNS, the search domains, and policy to it.",
+      "The node's resolver, which serves cluster names.",
+      "kube-proxy's DNS cache on the pod's node.",
+      "The Ingress controller, which owns Service DNS."
+    ],
+    "answer": 0,
+    "explanation": "Check resolv.conf in the pod, then the CoreDNS endpoints, then NetworkPolicy. If internet names work, upstream forwarding is fine."
+  },
+  {
+    "id": "k8s-dns-02",
+    "skillId": "k8s-dns",
+    "difficulty": "hard",
+    "prompt": "kubectl fails with a certificate error while workloads keep serving. What likely expired?",
+    "choices": [
+      "The ingress controller's TLS cert.",
+      "The control plane's certificates.",
+      "The pods' service account tokens.",
+      "The cluster CA's root certificate."
+    ],
+    "answer": 1,
+    "explanation": "The data plane keeps serving traffic it already has. kubeadm certs check-expiration, then renew, then restart the control plane static pods."
+  },
+  {
+    "id": "k8s-dns-03",
+    "skillId": "k8s-dns",
+    "difficulty": "medium",
+    "prompt": "You change the cluster DNS domain from cluster.local. What has to change together?",
+    "choices": [
+      "The kubelet and the API server's flags.",
+      "CoreDNS and each pod's dnsConfig.",
+      "CoreDNS and the kubelet's clusterDomain.",
+      "CoreDNS and every Service's spec."
+    ],
+    "answer": 2,
+    "explanation": "Pods learn the search domain from the kubelet. Half of that change leaves resolv.conf and the server disagreeing."
+  },
+  {
+    "id": "k8s-dns-04",
+    "skillId": "k8s-dns",
+    "difficulty": "easy",
+    "prompt": "How is a Service named web in namespace shop reached from another namespace?",
+    "choices": [
+      "web.shop",
+      "web",
+      "shop.web",
+      "web.svc"
+    ],
+    "answer": 0,
+    "explanation": "The search path supplies .svc.cluster.local. A bare web only resolves in the caller's own namespace."
+  },
+  {
+    "id": "k8s-netpol-05",
+    "skillId": "k8s-netpol",
+    "difficulty": "medium",
+    "prompt": "A NetworkPolicy starts selecting a pod that had none. What happens to traffic you did not allow?",
+    "choices": [
+      "It is denied in both directions for that pod.",
+      "It is denied for every pod in the namespace.",
+      "It is allowed until a deny rule is added.",
+      "It is denied for the directions the policy covers."
+    ],
+    "answer": 3,
+    "explanation": "The first matching policy moves that pod off the implicit allow, for ingress, egress, or both as policyTypes says. List the traffic you still want."
+  },
+  {
+    "id": "k8s-netpol-06",
+    "skillId": "k8s-netpol",
+    "difficulty": "hard",
+    "prompt": "Your egress NetworkPolicy rules seem to do nothing. What do you check first?",
+    "choices": [
+      "Whether kube-proxy is in iptables mode.",
+      "Whether your CNI enforces egress at all.",
+      "Whether the rules list port 53 for DNS.",
+      "Whether policyTypes is set on the ingress side."
+    ],
+    "answer": 1,
+    "explanation": "Some plugins only enforce ingress. A policy object the plugin does not implement is documentation."
+  },
+  {
+    "id": "k8s-secrets-05",
+    "skillId": "k8s-secrets",
+    "difficulty": "medium",
+    "prompt": "By default, where is a service account token mounted in every container?",
+    "choices": [
+      "/run/secrets/kubernetes.io/token",
+      "/var/lib/kubelet/pods/serviceaccount/kubernetes.io/token",
+      "/var/run/secrets/kubernetes.io/serviceaccount/token",
+      "/etc/kubernetes/serviceaccount/token"
+    ],
+    "answer": 2,
+    "explanation": "It is mounted unless you turn automount off. Anyone who can read the container filesystem can present it to the API."
+  },
+  {
+    "id": "k8s-rbac-05",
+    "skillId": "k8s-rbac",
+    "difficulty": "hard",
+    "prompt": "Before RBAC was the default, why was the mounted token dangerous?",
+    "choices": [
+      "It often had cluster-admin rights.",
+      "It never expired and could not be revoked.",
+      "It was shared by every pod in the cluster.",
+      "It was readable by other pods on the node."
+    ],
+    "answer": 0,
+    "explanation": "A shell in any pod was a cluster shell. The fix is a current cluster with restrictive RBAC, and no token on workloads that do not call the API."
+  },
+  {
+    "id": "k8s-rbac-06",
+    "skillId": "k8s-rbac",
+    "difficulty": "medium",
+    "prompt": "Anonymous auth on the API server is on by default. Why is that not automatically cluster-admin?",
+    "choices": [
+      "Anonymous requests still go through RBAC.",
+      "Anonymous requests are read-only by design.",
+      "Anonymous requests are rate-limited hard.",
+      "Anonymous requests only reach /healthz."
+    ],
+    "answer": 0,
+    "explanation": "They become system:anonymous in system:unauthenticated and still pass authorization and admission. The dangerous cluster is one that also binds rights to that group."
+  },
+  {
+    "id": "k8s-rbac-07",
+    "skillId": "k8s-rbac",
+    "difficulty": "hard",
+    "prompt": "Why is system:public-info-viewer bound to unauthenticated users?",
+    "choices": [
+      "So nodes can register before joining.",
+      "So pods can read their own spec.",
+      "So version and health endpoints work.",
+      "So kubectl can find the API server."
+    ],
+    "answer": 2,
+    "explanation": "It allows a few discovery endpoints without a credential. It is not a grant to create pods. Cryptojacking campaigns look for clusters that went further."
+  },
+  {
+    "id": "k8s-rbac-08",
+    "skillId": "k8s-rbac",
+    "difficulty": "hard",
+    "prompt": "kubectl auth can-i --list misses rights that still work. Why?",
+    "choices": [
+      "It hides rights granted via groups.",
+      "It omits rights on subresources.",
+      "It shows RBAC only, not other modes.",
+      "It shows cluster rights, not namespaced."
+    ],
+    "answer": 2,
+    "explanation": "Authorization modes are cumulative, and Node authorization adds rights the list does not show. Check a specific verb with can-i."
+  },
+  {
+    "id": "k8s-storage-05",
+    "skillId": "k8s-storage",
+    "difficulty": "hard",
+    "prompt": "A gitRepo volume is deprecated but still accepted. If git is on the node, what can a pod using one do?",
+    "choices": [
+      "Read files from other pods' volumes.",
+      "Write into the node's kubelet config.",
+      "Run commands as root on the node.",
+      "Clone any repo the node can reach."
+    ],
+    "answer": 2,
+    "explanation": "The volume type shells out to git on the host. Baseline Pod Security does not block it. Restricted does. The rights required are create on pods."
+  },
+  {
+    "id": "k8s-psa-05",
+    "skillId": "k8s-psa",
+    "difficulty": "medium",
+    "prompt": "Which Pod Security level actually excludes gitRepo volumes?",
+    "choices": [
+      "restricted",
+      "baseline",
+      "privileged",
+      "None of them"
+    ],
+    "answer": 0,
+    "explanation": "baseline still allows the type. Deprecation is not enforcement. If the API accepts the volume, the policy has to reject it."
+  },
+  {
+    "id": "k8s-services-05",
+    "skillId": "k8s-services",
+    "difficulty": "medium",
+    "prompt": "A kind cluster shows three different address ranges. What are they?",
+    "choices": [
+      "Docker, node, and host networks.",
+      "Node, pod, and Service networks.",
+      "Node, Ingress, and LoadBalancer networks.",
+      "Pod, Service, and etcd peer networks."
+    ],
+    "answer": 1,
+    "explanation": "A packet to a Service IP is not a packet to a pod IP. They are different networks on purpose."
+  },
+  {
+    "id": "k8s-rbac-09",
+    "skillId": "k8s-rbac",
+    "difficulty": "hard",
+    "prompt": "A NetworkPolicy blocks your namespace from a pod. Why can the API server proxy still reach it?",
+    "choices": [
+      "Policies only apply to traffic through a Service.",
+      "The proxy rewrites the source to the pod's namespace.",
+      "The request comes from the API server, not your pod.",
+      "The proxy subresource is exempt from all RBAC."
+    ],
+    "answer": 2,
+    "explanation": "The proxy is a second path. Locking pod-to-pod traffic does not lock it. RBAC on pods/proxy is the control."
+  },
+  {
+    "id": "k8s-netpol-07",
+    "skillId": "k8s-netpol",
+    "difficulty": "medium",
+    "prompt": "What is curl to 127.0.0.1:8001/api/v1/namespaces/default/pods/<name>:<port>/proxy/?",
+    "choices": [
+      "kubectl port-forward, then a tunnel to the pod.",
+      "kube-proxy forwarding from the node to the pod.",
+      "A direct connection from your laptop to the pod.",
+      "kubectl proxy, then the API server reaching the pod."
+    ],
+    "answer": 3,
+    "explanation": "The echo server sees the API server's address as the client, not yours."
+  },
+  {
+    "id": "k8s-debug-05",
+    "skillId": "k8s-debug",
+    "difficulty": "hard",
+    "prompt": "kubectl debug on a node with the legacy profile can pull with ctr but fails to start a container. Why?",
+    "choices": [
+      "ctr needs the API server's credentials.",
+      "ctr needs the host's mount namespace.",
+      "The legacy profile has no network access.",
+      "The legacy profile runs as a non-root user."
+    ],
+    "answer": 1,
+    "explanation": "containerd assumes the client shares the host mount namespace. Debug profiles grant different rights, and a newer one fixes the mount error."
+  },
+  {
+    "id": "k8s-debug-06",
+    "skillId": "k8s-debug",
+    "difficulty": "medium",
+    "prompt": "Why is the containerd socket not a drop-in for the Docker socket?",
+    "choices": [
+      "ctr expects the host's mounts beside it.",
+      "The containerd socket is read-only.",
+      "containerd's API needs a client cert.",
+      "ctr cannot start containers by itself."
+    ],
+    "answer": 0,
+    "explanation": "A casually mounted containerd socket does not give the same easy breakout. Do not assume it is harmless either."
+  },
+  {
+    "id": "k8s-workloads-05",
+    "skillId": "k8s-workloads",
+    "difficulty": "easy",
+    "prompt": "Which command creates a CronJob from the CLI?",
+    "choices": [
+      "kubectl apply cronjob",
+      "kubectl create cronjob",
+      "kubectl run --schedule",
+      "kubectl create job --cron"
+    ],
+    "answer": 1,
+    "explanation": "CronJob is its own kind. Pass --schedule in cron syntax and the command after --."
+  },
+  {
+    "id": "k8s-rbac-10",
+    "skillId": "k8s-rbac",
+    "difficulty": "medium",
+    "prompt": "A kubeconfig user named operator is created from security.crt and secrecy.key. What did you add?",
+    "choices": [
+      "A service account named operator.",
+      "A user that can create its own roles.",
+      "A client cert identity with no rights yet.",
+      "A user with the operator ClusterRole."
+    ],
+    "answer": 2,
+    "explanation": "The context then points kubectl at that user. Authorization is a separate binding."
+  },
+  {
+    "id": "k8s-rbac-11",
+    "skillId": "k8s-rbac",
+    "difficulty": "hard",
+    "prompt": "A ClusterRole named monitor allows every apiGroup, resource, and verb, bound to a service account. What is it?",
+    "choices": [
+      "Admin, but only in its own namespace.",
+      "Admin, except for Secrets and RBAC.",
+      "cluster-admin under another name.",
+      "Read-only, since verbs exclude write."
+    ],
+    "answer": 2,
+    "explanation": "The word monitor does not narrow '*'. A ClusterRoleBinding applies it everywhere. Do not ship that for a monitor."
+  },
+  {
+    "id": "k8s-gitops-05",
+    "skillId": "k8s-gitops",
+    "difficulty": "medium",
+    "prompt": "In an Argo CD setup, what is the controller's job?",
+    "choices": [
+      "Apply each commit once, then stop watching.",
+      "Push live cluster changes back into git.",
+      "Sync the cluster to git and undo manual edits.",
+      "Build images when a commit lands in git."
+    ],
+    "answer": 2,
+    "explanation": "If git is the source, the laptop is not. Self-heal puts manual edits back."
+  },
+  {
+    "id": "k8s-helm-05",
+    "skillId": "k8s-helm",
+    "difficulty": "medium",
+    "prompt": "You install a Helm release in a namespace, with values for replicas and image tag. What is the model?",
+    "choices": [
+      "The image tag belongs in Chart.yaml.",
+      "Chart is the template. Values make the deploy.",
+      "Values override the chart's templates.",
+      "Releases are scoped to the chart's repository."
+    ],
+    "answer": 1,
+    "explanation": "Pin the tag in values and upgrade the release when it changes. Do not edit the live Deployment and lose the source."
+  },
+  {
+    "id": "k8s-services-06",
+    "skillId": "k8s-services",
+    "difficulty": "medium",
+    "prompt": "What does Istio add in front of a Kubernetes service?",
+    "choices": [
+      "DNS names for each pod's IP.",
+      "mTLS and traffic routing policy.",
+      "Pod autoscaling on request rate.",
+      "A replacement for the Service object."
+    ],
+    "answer": 1,
+    "explanation": "The mesh is another hop. Know whether TLS stops at the gateway or continues to the pod."
+  },
+  {
+    "id": "k8s-psa-06",
+    "skillId": "k8s-psa",
+    "difficulty": "easy",
+    "prompt": "In Kubernetes security, what does the admission layer do?",
+    "choices": [
+      "Decides which users may call the API.",
+      "Detects bad behavior in running pods.",
+      "Isolates pods from each other's traffic.",
+      "Rejects bad objects before they are stored."
+    ],
+    "answer": 3,
+    "explanation": "RBAC decides who may ask. Admission, where Pod Security and policy engines sit, decides whether the object is acceptable."
+  },
+  {
+    "id": "k8s-debug-07",
+    "skillId": "k8s-debug",
+    "difficulty": "hard",
+    "prompt": "An old default kubelet API reachable from the pod network was enough to control the node. Why?",
+    "choices": [
+      "It returned the node's SSH host keys.",
+      "It proxied requests to etcd unauthenticated.",
+      "It let callers edit the node's taints.",
+      "It ran commands in pods, with no auth."
+    ],
+    "answer": 3,
+    "explanation": "The kubelet runs the containers. An unauthenticated kubelet port is a remote control for that node and, through it, the cluster."
+  },
+  {
+    "id": "k8s-rbac-12",
+    "skillId": "k8s-rbac",
+    "difficulty": "medium",
+    "prompt": "Kubernetes has no built-in user database. Where must an access review start?",
+    "choices": [
+      "With kubectl get users across namespaces.",
+      "With the user accounts on the control plane.",
+      "With the ServiceAccounts in kube-system.",
+      "With the authenticators the cluster uses."
+    ],
+    "answer": 3,
+    "explanation": "OIDC, certificates, or a cloud IAM webhook decide who exists. If you are not on RBAC, 'who is admin' may be 'anyone who can authenticate'."
+  },
+  {
+    "id": "k8s-rbac-13",
+    "skillId": "k8s-rbac",
+    "difficulty": "hard",
+    "prompt": "Why does the bind verb on roles matter?",
+    "choices": [
+      "It lets you grant roles you do not hold yourself.",
+      "It lets you bind roles across namespaces.",
+      "It lets you bind roles to unauthenticated users.",
+      "It lets you create new roles in a namespace."
+    ],
+    "answer": 0,
+    "explanation": "Without bind, RBAC stops you granting more than you have. escalate, bind, and impersonate turn a limited account into a broader one. Audit them on purpose."
+  },
+  {
+    "id": "k8s-services-07",
+    "skillId": "k8s-services",
+    "difficulty": "hard",
+    "prompt": "Why can a host on the nodes' LAN sometimes reach pod IPs you thought were private?",
+    "choices": [
+      "The overlay advertises routes via BGP.",
+      "Nodes forward traffic for pod CIDRs.",
+      "Pod IPs come from the node's subnet.",
+      "kube-proxy publishes pod IPs over ARP."
+    ],
+    "answer": 1,
+    "explanation": "'Not advertised' is not 'not routable'. Add a route via a node and it forwards. Test from the node LAN before you call the pod network unreachable."
+  },
+  {
+    "id": "k8s-debug-08",
+    "skillId": "k8s-debug",
+    "difficulty": "easy",
+    "prompt": "Which ports typically reveal a Kubernetes cluster on a network scan?",
+    "choices": [
+      "8080, 9090, 3000",
+      "443, 8443, 9443",
+      "22, 53, 179",
+      "6443, 10250, 2379"
+    ],
+    "answer": 3,
+    "explanation": "API 6443 or 443, kubelet 10250, and etcd 2379 and 2380. 10255 is the old unauthenticated kubelet read-only port. If it is open, treat it as a finding."
+  },
+  {
+    "id": "k8s-secrets-06",
+    "skillId": "k8s-secrets",
+    "difficulty": "medium",
+    "prompt": "ServiceAccounts used to get a long-lived token Secret automatically. Why did bound tokens replace that?",
+    "choices": [
+      "They are per pod, expire, and have an audience.",
+      "They are encrypted, while the Secrets were not.",
+      "They are stored in the kubelet, not etcd.",
+      "They work across clusters for federation."
+    ],
+    "answer": 0,
+    "explanation": "A legacy token lives until someone deletes the Secret. If you still see type kubernetes.io/service-account-token, you are on the old pattern."
+  },
+  {
+    "id": "k8s-rbac-14",
+    "skillId": "k8s-rbac",
+    "difficulty": "hard",
+    "prompt": "Cloud Kubernetes often chains RBAC with a webhook authorizer. When is a request allowed?",
+    "choices": [
+      "When RBAC allows it, then the webhook audits.",
+      "When the webhook allows it, then RBAC checks.",
+      "When any authorizer in the chain allows it.",
+      "When every authorizer in the chain allows it."
+    ],
+    "answer": 2,
+    "explanation": "Authorizers are consulted in --authorization-mode order, and the first allow wins. An audit that only reads RoleBindings misses the cloud IAM allow."
+  },
+  {
+    "id": "k8s-rbac-15",
+    "skillId": "k8s-rbac",
+    "difficulty": "medium",
+    "prompt": "MicroK8s ships with RBAC off until you enable the addon. What is the consequence?",
+    "choices": [
+      "Anonymous users get read-only access.",
+      "Any authenticated user is effectively admin.",
+      "Only cluster-admin can use the API at all.",
+      "ServiceAccounts cannot call the API."
+    ],
+    "answer": 1,
+    "explanation": "Do not assume kubeadm defaults. 'Kubernetes is secure by default' is not a sentence you can say once for every distribution."
+  },
+  {
+    "id": "k8s-resources-05",
+    "skillId": "k8s-resources",
+    "difficulty": "medium",
+    "prompt": "A container is a process on a shared kernel. What happens without limits?",
+    "choices": [
+      "The kubelet assigns each pod a default share.",
+      "The scheduler refuses to place the pod.",
+      "Pods are evicted as soon as usage rises.",
+      "One pod can starve the node, even with a fork bomb."
+    ],
+    "answer": 3,
+    "explanation": "Set CPU, memory, and a PID limit. Without them, one pod can take the node down."
+  },
+  {
+    "id": "k8s-psa-07",
+    "skillId": "k8s-psa",
+    "difficulty": "medium",
+    "prompt": "Why does image build guidance for Kubernetes start with the user the process runs as?",
+    "choices": [
+      "Root images cannot be signed with cosign.",
+      "Root is the default unless built and enforced.",
+      "Non-root images pull faster on most nodes.",
+      "USER in the image overrides runAsUser."
+    ],
+    "answer": 1,
+    "explanation": "Build a non-root user and enforce it at admission, so a later manifest cannot put root back. The pod spec overrides the image's USER."
+  },
+  {
+    "id": "k8s-netpol-08",
+    "skillId": "k8s-netpol",
+    "difficulty": "hard",
+    "prompt": "PCI segmentation keeps systems of different sensitivity apart. On one cluster, what achieves it?",
+    "choices": [
+      "A separate Ingress class per sensitivity level.",
+      "NetworkPolicy, dedicated nodes, or clusters.",
+      "A namespace per sensitivity level.",
+      "RBAC limiting who deploys to each."
+    ],
+    "answer": 1,
+    "explanation": "A namespace label alone does not segment traffic. If cardholder pods can connect to everything else, they are not segmented."
+  },
+  {
+    "id": "k8s-secrets-07",
+    "skillId": "k8s-secrets",
+    "difficulty": "easy",
+    "prompt": "Why not put a database password in the image?",
+    "choices": [
+      "Images are widely copied and readable.",
+      "Images are too large to update quickly.",
+      "Secrets in layers break the build cache.",
+      "Kubernetes strips env from image config."
+    ],
+    "answer": 0,
+    "explanation": "A password change would also force a rebuild. Inject it at runtime, and the image stays one artifact for every environment."
+  },
+  {
+    "id": "k8s-workloads-06",
+    "skillId": "k8s-workloads",
+    "difficulty": "medium",
+    "prompt": "Workload security starts from what a container is. What is it?",
+    "choices": [
+      "A lightweight VM with a shared kernel.",
+      "A sandboxed process with its own kernel.",
+      "A chroot with resource limits applied.",
+      "A process isolated by kernel features."
+    ],
+    "answer": 3,
+    "explanation": "It runs as root unless the image and pod say otherwise. Drop capabilities, run non-root, and add seccomp. Those are not a hypervisor."
+  },
+  {
+    "id": "k8s-rbac-16",
+    "skillId": "k8s-rbac",
+    "difficulty": "easy",
+    "prompt": "How can two certified Kubernetes distributions still differ?",
+    "choices": [
+      "In which core API objects they support.",
+      "In the kubectl commands they accept.",
+      "In the YAML format of the manifests.",
+      "In security defaults such as auth and audit."
+    ],
+    "answer": 3,
+    "explanation": "Conformance tests behavior, not a security baseline. Ask which product you are on before you copy a hardening guide written for kubeadm."
+  },
+  {
+    "id": "k8s-storage-06",
+    "skillId": "k8s-storage",
+    "difficulty": "medium",
+    "prompt": "What does CVE-2025-1767 in gitRepo volumes let a pod do?",
+    "choices": [
+      "Clone private repos with the node's key.",
+      "Read other git repos on the node.",
+      "Run commands in other pods on the node.",
+      "Write to the node's kubelet config."
+    ],
+    "answer": 1,
+    "explanation": "git must be installed, and the pod must land on that node. Deprecation did not delete the feature. Restricted policy and removing the type are the controls."
+  },
+  {
+    "id": "k8s-services-08",
+    "skillId": "k8s-services",
+    "difficulty": "easy",
+    "prompt": "What assigns pod IPs?",
+    "choices": [
+      "CoreDNS.",
+      "The CNI plugin.",
+      "The scheduler.",
+      "kube-proxy."
+    ],
+    "answer": 1,
+    "explanation": "'How does this packet get a pod IP' is a question about whichever plugin the cluster installed."
+  },
+  {
+    "id": "k8s-rbac-17",
+    "skillId": "k8s-rbac",
+    "difficulty": "medium",
+    "prompt": "Why does SSRF via objects that make the API server call a URL matter?",
+    "choices": [
+      "Admission webhooks skip objects with URLs.",
+      "Such objects are readable by any user.",
+      "The API server calls from its network position.",
+      "The API server forwards the caller's own token."
+    ],
+    "answer": 2,
+    "explanation": "Creating those objects is a privileged action, and it should stay that way. The defensive control is who may create objects with URL fields."
+  },
+  {
+    "id": "k8s-workloads-07",
+    "skillId": "k8s-workloads",
+    "difficulty": "easy",
+    "prompt": "Why is letting a user create any Pod a security decision?",
+    "choices": [
+      "Pods can bind cluster roles.",
+      "Pods inherit the creator's RBAC.",
+      "The spec can ask for host access.",
+      "Pods can read every namespace."
+    ],
+    "answer": 2,
+    "explanation": "Host namespaces, privileged containers, and host paths are all fields. RBAC says who may create. Pod Security says what they may put in the spec."
+  },
+  {
+    "id": "k8s-workloads-08",
+    "skillId": "k8s-workloads",
+    "difficulty": "medium",
+    "prompt": "What is a DaemonSet that mounts the node's runtime socket?",
+    "choices": [
+      "Limited to its own namespace.",
+      "Safe under the baseline policy.",
+      "A root shell on every node.",
+      "Safe if the mount is read-only."
+    ],
+    "answer": 2,
+    "explanation": "The socket is the runtime's admin API, and read-only does not limit API calls. Do not grant create on DaemonSets to a tenant."
+  },
+  {
+    "id": "k8s-workloads-09",
+    "skillId": "k8s-workloads",
+    "difficulty": "medium",
+    "prompt": "You deploy redis as a Deployment with two replicas on port 6379. What keeps the replicas up?",
+    "choices": [
+      "The ReplicaSet the Deployment owns.",
+      "The Service in front of the pods.",
+      "The kubelet's restartPolicy only.",
+      "The HorizontalPodAutoscaler."
+    ],
+    "answer": 0,
+    "explanation": "A bare Pod would not be recreated. Namespace, Deployment, replicas, and container port are four fields. Missing one fails the check."
+  },
+  {
+    "id": "k8s-workloads-10",
+    "skillId": "k8s-workloads",
+    "difficulty": "easy",
+    "prompt": "Why is kubectl create cronjob the right kind?",
+    "choices": [
+      "A CronJob creates Pods with restarts.",
+      "A CronJob runs a Deployment at times.",
+      "A CronJob schedules a single Pod.",
+      "A CronJob creates Jobs on a schedule."
+    ],
+    "answer": 3,
+    "explanation": "The schedule is five cron fields. The command goes after --. kubectl run creates a Pod."
+  },
+  {
+    "id": "k8s-gitops-06",
+    "skillId": "k8s-gitops",
+    "difficulty": "easy",
+    "prompt": "When is Argo CD the right tool?",
+    "choices": [
+      "The manifests are in git and a controller applies them.",
+      "The manifests are on a laptop and applied by hand.",
+      "The images need building when a commit lands.",
+      "The cluster's state needs backing up to git."
+    ],
+    "answer": 0,
+    "explanation": "The Application points at a repo and a path. Drift from a manual edit gets corrected."
+  },
+  {
+    "id": "k8s-services-09",
+    "skillId": "k8s-services",
+    "difficulty": "medium",
+    "prompt": "What is Istio next to a Kubernetes service for?",
+    "choices": [
+      "Load balancing that replaces Services.",
+      "DNS for pods across namespaces.",
+      "Autoscaling pods on request rate.",
+      "mTLS and routing rules between pods."
+    ],
+    "answer": 3,
+    "explanation": "The Deployment still runs the container. If you turn on strict mTLS, clients outside the mesh stop working until you intend that."
+  },
+  {
+    "id": "k8s-secrets-08",
+    "skillId": "k8s-secrets",
+    "difficulty": "medium",
+    "prompt": "An app with a database password also gets an HPA. What is still required?",
+    "choices": [
+      "The password set in the Deployment.",
+      "A ConfigMap holding the password.",
+      "The password injected from a Secret.",
+      "The HPA mounting the Secret for pods."
+    ],
+    "answer": 2,
+    "explanation": "HPA changes replica count, not how the secret is injected. The Service must also select the pods."
+  },
+  {
+    "id": "k8s-helm-06",
+    "skillId": "k8s-helm",
+    "difficulty": "medium",
+    "prompt": "What does packaging a service as a Helm chart mean?",
+    "choices": [
+      "An image with its manifests baked in.",
+      "A Kustomize base with overlays.",
+      "Templates plus values for each deploy.",
+      "One manifest with hard-coded settings."
+    ],
+    "answer": 2,
+    "explanation": "Override a community chart with a values file. You do not fork the chart for one replica count."
+  },
+  {
+    "id": "k8s-helm-07",
+    "skillId": "k8s-helm",
+    "difficulty": "hard",
+    "prompt": "What do Helmfile plus a migration hook give you?",
+    "choices": [
+      "One chart that deploys to all clusters at once.",
+      "Automatic rollback when a migration fails.",
+      "Migrations run once per chart version only.",
+      "Declared releases, with migrations in the release."
+    ],
+    "answer": 3,
+    "explanation": "One file describes dev, staging and prod releases, and the migration runs as a hook rather than a manual job someone hopes ran."
+  },
+  {
+    "id": "k8s-workloads-11",
+    "skillId": "k8s-workloads",
+    "difficulty": "easy",
+    "prompt": "Why does Kubernetes security start from reconciliation?",
+    "choices": [
+      "Controllers fix bad specs before pods are made.",
+      "Controllers only act when kubectl apply runs.",
+      "Controllers roll back pods that fail probes.",
+      "Controllers keep recreating whatever the spec says."
+    ],
+    "answer": 3,
+    "explanation": "A bad spec is reapplied until admission rejects it, and kubectl edit against a controller does not stick."
+  }
+]

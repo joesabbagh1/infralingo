@@ -292,8 +292,6 @@ class InfralingoViewModel(
             },
             answer = answer,
             explanation = question.explanation,
-            source = question.source,
-            url = question.url,
             xp = verdict.xp,
             askAi = buildString {
                 appendLine("I am studying DevOps and infrastructure with a quiz app. Topic: $unit, $skill.")

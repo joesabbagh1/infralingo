@@ -5,79 +5,69 @@
     "difficulty": "medium",
     "prompt": "A deploy pipeline's cloud role can create the service and also administer IAM. What do you change?",
     "choices": [
-      "Put the access key in the git repo so reviews can see it.",
-      "Split the role so the pipeline can deploy and cannot edit identity.",
-      "Add AdministratorAccess so the next failure is impossible.",
-      "Share the role with the on-call laptop."
+      "Restrict the role to the pipeline's IP range.",
+      "Remove the IAM permissions from the deploy role.",
+      "Require MFA on the deploy role's IAM actions.",
+      "Log the role's IAM calls to a separate trail."
     ],
     "answer": 1,
-    "explanation": "The pipeline should be able to do the deploy and nothing that lets it grant itself more.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The pipeline should be able to deploy and nothing that lets it grant itself more. MFA cannot apply to a pipeline, and logging or IP limits do not shrink the power."
   },
   {
     "id": "sec-least-02",
     "skillId": "sec-least",
     "difficulty": "easy",
-    "prompt": "Least privilege means:",
+    "prompt": "What does least privilege mean?",
     "choices": [
-      "The identity is root and people promise to be careful.",
-      "Everyone uses one shared user so the audit log is simple.",
-      "Permissions are copied from production into development because they already work.",
-      "The identity can do the task and cannot do the neighboring tasks."
+      "Read access everywhere, write where needed.",
+      "Admin access, with every action logged.",
+      "Admin access, granted for one hour.",
+      "Only the permissions the task needs."
     ],
     "answer": 3,
-    "explanation": "Start from the calls you observed. Delete what the last month did not use.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Start from the calls you observed. Delete what the last month did not use. Broad access with logging or a time limit is still broad."
   },
   {
     "id": "sec-least-03",
     "skillId": "sec-least",
     "difficulty": "hard",
-    "prompt": "A Kubernetes Role can get secrets in the namespace. The workload only needs to read a ConfigMap. What is the extra power?",
+    "prompt": "A Role can get secrets in the namespace, but the workload only reads a ConfigMap. What is the extra power?",
     "choices": [
-      "Anyone who compromises the pod can read every secret in the namespace, including ones it does not mount.",
-      "ConfigMaps include secrets, so the Role is identical.",
-      "get on secrets is required to mount a projected token.",
-      "Roles cannot see secrets. That is a ClusterRole only."
+      "A compromised pod can read every secret there.",
+      "A compromised pod can create new secrets there.",
+      "A compromised pod can read secrets cluster-wide.",
+      "A compromised pod can mount secrets into others."
     ],
     "answer": 0,
-    "explanation": "Mount the one secret. Do not grant list and get on all of them.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "get covers every secret in that namespace, including ones the pod does not mount. A Role cannot reach other namespaces. Mount the one secret you need."
   },
   {
     "id": "sec-least-04",
     "skillId": "sec-least",
     "difficulty": "medium",
-    "prompt": "A break-glass admin account should be:",
+    "prompt": "How should a break-glass admin account be handled?",
     "choices": [
-      "Disabled MFA, so it works during an incident. That is how it gets used on a Tuesday.",
-      "Rare, logged, and stored offline. Not the account CI uses.",
-      "The key in the pipeline.",
-      "Shared in the team chat."
+      "Kept without MFA, so it works in outages.",
+      "Rarely used, logged, and stored offline.",
+      "Used by CI, so it is always tested.",
+      "Shared in chat, so anyone can reach it."
     ],
     "answer": 1,
-    "explanation": "The emergency path is real. It is not the daily path.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The emergency path is real. It is not the daily path. Without MFA it gets used on a Tuesday."
   },
   {
     "id": "sec-secrets-01",
     "skillId": "sec-secrets",
     "difficulty": "medium",
-    "prompt": "A Kubernetes Secret mounted as a file is still weaker than a manager if:",
+    "prompt": "When is a Secret mounted as a file still weaker than a secret manager?",
     "choices": [
-      "Secrets are encrypted just because they are base64.",
-      "The kubelet refuses to give a secret to a pod.",
-      "The manifest or etcd is readable, or RBAC is wide. Encoding is not encryption.",
-      "The file is mode 0400 inside the pod, which makes it safe even when etcd is world-readable."
+      "When the Secret is larger than one MiB.",
+      "When the pod mounts it rather than env vars.",
+      "When etcd or RBAC lets others read it.",
+      "When the file mode inside the pod is 0644."
     ],
     "answer": 2,
-    "explanation": "Prefer a manager and a short lease. If you use a Secret, turn on encryption at rest and tight RBAC.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Encoding is not encryption. Prefer a manager and a short lease. If you use a Secret, turn on encryption at rest and tight RBAC."
   },
   {
     "id": "sec-secrets-02",
@@ -85,15 +75,13 @@
     "difficulty": "easy",
     "prompt": "Where must a production password not live?",
     "choices": [
-      "In memory of the process that uses it, for as long as it must.",
-      "In a CI secret the job injects.",
-      "In the image, in git, or in a chat paste.",
+      "In a CI secret store.",
+      "In the process's memory.",
+      "In a container image.",
       "In a secret manager."
     ],
     "answer": 2,
-    "explanation": "The places that get cloned and pulled are the leaks.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Images, git, and chat get cloned and pulled. Those are the leaks."
   },
   {
     "id": "sec-secrets-03",
@@ -101,607 +89,531 @@
     "difficulty": "hard",
     "prompt": "You rotated a key and the old one still works. What did the rotation miss?",
     "choices": [
-      "The second copy: an environment file, a laptop, a CI variable, or a cache.",
-      "Rotation always revokes every copy automatically.",
-      "Keys cannot be rotated.",
-      "The manager keeps both forever and that is the design you cannot change."
+      "Disabling the old key everywhere.",
+      "Restarting the apps using the key.",
+      "Updating the key in the manager.",
+      "Clearing the manager's key cache."
     ],
     "answer": 0,
-    "explanation": "Find every consumer before you call it rotated. Disable the old credential and watch who breaks.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Issuing a new key does not revoke the old one. Find every consumer, disable the old credential, and watch who breaks."
   },
   {
     "id": "sec-secrets-04",
     "skillId": "sec-secrets",
     "difficulty": "medium",
-    "prompt": "SOPS or Sealed Secrets belong in a GitOps repo because:",
+    "prompt": "Why do SOPS or Sealed Secrets belong in a GitOps repo?",
     "choices": [
-      "The git history holds ciphertext. The cluster or the key holder decrypts it.",
-      "The pull request shows the password so reviewers can type it.",
-      "Git encrypts all files once you enable SOPS on the repo settings. You encrypt the file.",
-      "They replace the need to rotate."
+      "Git holds ciphertext, and only the key holder decrypts.",
+      "Git holds plaintext, and the cluster encrypts on apply.",
+      "Git holds a reference, and the cluster fetches the value.",
+      "Git holds a hash, and reviewers compare it to the value."
     ],
     "answer": 0,
-    "explanation": "Review that a secret changed. Do not review the secret.",
-    "source": "awesome-devsecops",
-    "url": "https://github.com/mozilla/sops"
+    "explanation": "Review that a secret changed. Do not review the secret. Fetching by reference is the External Secrets pattern."
   },
   {
     "id": "sec-pki-01",
     "skillId": "sec-pki",
     "difficulty": "medium",
-    "prompt": "A certificate and a private key. Which one can you hand to a client?",
+    "prompt": "Of a certificate and its private key, which can you hand to a client?",
     "choices": [
-      "The key, but not the certificate.",
-      "The certificate. The key stays on the server.",
-      "Both. The client needs the key to trust you.",
-      "Neither. Trust is a password."
+      "Neither of them.",
+      "The certificate.",
+      "The private key.",
+      "Both of them."
     ],
     "answer": 1,
-    "explanation": "The certificate is public and names the key. The key proves you hold it. Giving away the key lets someone be you.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The certificate is public and names the key. The key proves you hold it. Giving away the key lets someone be you."
   },
   {
     "id": "sec-pki-02",
     "skillId": "sec-pki",
     "difficulty": "medium",
-    "prompt": "The API server certificate expired and kubectl fails. Workloads are still serving. Why can both be true?",
+    "prompt": "The API server certificate expired and kubectl fails, but workloads keep serving. Why can both be true?",
     "choices": [
-      "Clients of the API check that certificate. The data plane does not re-check it on every packet of an existing flow.",
-      "Workloads use the same kubectl binary, so they should have failed too.",
-      "Expired certificates still verify.",
-      "kubeconfig does not use TLS."
+      "App traffic does not pass through the API server.",
+      "The kubelet caches the cert for 24 hours.",
+      "Pods use their own copy of the API server cert.",
+      "kube-proxy re-signs the cert for the pods."
     ],
     "answer": 0,
-    "explanation": "Renew the control plane certs and restart the static pods. Do not reboot the whole fleet first.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/challenges/cka-practice-renew-control-plane-certificates-94a449de"
+    "explanation": "Clients of the API check that certificate. The data plane keeps serving traffic. Renew the control plane certs and restart the static pods."
   },
   {
     "id": "sec-pki-03",
     "skillId": "sec-pki",
     "difficulty": "easy",
-    "prompt": "A private CA is trustworthy to a client when:",
+    "prompt": "When does a client trust a certificate from a private CA?",
     "choices": [
-      "You used a long key.",
-      "The certificate is base64.",
-      "The hostname matches, even if the CA is unknown. Both matter.",
-      "The client has that CA in its trust store. A private CA is not public trust."
+      "When the key is 4096 bits or more.",
+      "When the certificate is self-signed.",
+      "When the hostname is in the subject.",
+      "When the CA is in its trust store."
     ],
     "answer": 3,
-    "explanation": "Install the CA where the clients are. Matching the name is the other half.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "A private CA is not public trust. Install it where the clients are. Matching the name is the other half."
   },
   {
     "id": "sec-pki-04",
     "skillId": "sec-pki",
     "difficulty": "hard",
-    "prompt": "mTLS between services fails after a rotation. The server cert verifies. What else rotated badly?",
+    "prompt": "mTLS between services fails after a rotation, while the server cert still verifies. What else rotated badly?",
     "choices": [
-      "The container image tag, which is the TLS key.",
-      "Nothing. mTLS only checks the server.",
-      "The client certificate, or the server's trust of client CAs.",
-      "DNS."
+      "The intermediate on the server's certificate.",
+      "The cipher suites the server offers clients.",
+      "The client cert, or the server's client CA bundle.",
+      "The server's private key, which no longer matches."
     ],
     "answer": 2,
-    "explanation": "Both directions have a trust store. Rotate them as a pair and keep a grace period.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Both directions have a trust store. Rotate them as a pair and keep a grace period. A bad server key or chain would fail server verification."
   },
   {
     "id": "sec-image-01",
     "skillId": "sec-image",
     "difficulty": "medium",
-    "prompt": "Trivy or Grype reported a critical CVE in a base image. What is the fix, not the report?",
+    "prompt": "Trivy reported a critical CVE in a base image. What is the fix?",
     "choices": [
-      "Delete the scanner so the CVE is gone.",
-      "Rebuild on a patched base, or remove the package. The scanner does not patch.",
-      "Ignore all criticals from base images.",
-      "Restart the container. The running layers will update."
+      "Pin the base image by digest to freeze it.",
+      "Rebuild on a patched base, then redeploy.",
+      "Add the CVE to the scanner's ignore file.",
+      "Restart the pods so they pull the base again."
     ],
     "answer": 1,
-    "explanation": "The report is a list. The release is a new digest.",
-    "source": "awesome-devsecops",
-    "url": "https://github.com/aquasecurity/trivy"
+    "explanation": "The scanner does not patch. The release is a new digest. Pinning keeps the vulnerable bytes in place."
   },
   {
     "id": "sec-image-02",
     "skillId": "sec-image",
     "difficulty": "easy",
-    "prompt": "A smaller base image helps because:",
+    "prompt": "Why does a smaller base image help?",
     "choices": [
-      "Distroless disables syscalls.",
-      "Alpine is exempt from CVEs.",
-      "Fewer packages means fewer CVEs and less shell for an attacker who lands.",
-      "Small images cannot be vulnerable."
+      "Smaller images run with fewer syscalls.",
+      "Smaller images cannot run a shell at all.",
+      "Fewer packages, so fewer CVEs and tools.",
+      "Smaller images are not scanned for CVEs."
     ],
     "answer": 2,
-    "explanation": "Still scan it. Less is not none.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Still scan it. Less is not none, and an attacker who lands has less to work with."
   },
   {
     "id": "sec-image-03",
     "skillId": "sec-image",
     "difficulty": "medium",
-    "prompt": "You scan in CI and production runs a different tag. What did the scan buy you?",
+    "prompt": "You scan in CI, and production runs a different tag. What did the scan buy you?",
     "choices": [
-      "A guarantee about production.",
-      "The admission decision.",
-      "A signature.",
-      "Little. You scanned bytes you did not deploy."
+      "A baseline that covers later tags.",
+      "Coverage, as long as the base matches.",
+      "Coverage, if the tags share a prefix.",
+      "Little, because you scanned other bytes."
     ],
     "answer": 3,
-    "explanation": "Scan the digest you run, or admit only digests you have scanned.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Scan the digest you run, or admit only digests you have scanned."
   },
   {
     "id": "sec-image-04",
     "skillId": "sec-image",
     "difficulty": "hard",
-    "prompt": "A dependency scanner and an image scanner both exist. Why keep both?",
+    "prompt": "Why keep both a dependency scanner and an image scanner?",
     "choices": [
-      "They always report the same CVEs.",
-      "Image scanners read package.json and nothing else.",
-      "Dependency scanners read /var/lib/dpkg.",
-      "One sees the application packages. The other sees the OS packages in the image. Neither sees both reliably."
+      "They use different CVE databases.",
+      "One scans at build, one at runtime.",
+      "One finds CVEs, the other licenses.",
+      "They see different package types."
     ],
     "answer": 3,
-    "explanation": "Run both on the artifact you ship. Then deduplicate in the ticket, not by deleting a tool.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "One reads lockfiles and app packages. The other reads OS package databases in the image. Neither sees both reliably. Run both on the artifact you ship."
   },
   {
     "id": "sec-sbom-01",
     "skillId": "sec-sbom",
     "difficulty": "medium",
-    "prompt": "An SBOM is useful the morning a new CVE is published because:",
+    "prompt": "Why is an SBOM useful the morning a new CVE is published?",
     "choices": [
-      "It patches the component.",
-      "It replaces signing.",
-      "It is a network policy.",
-      "You can search what you shipped for the affected component instead of guessing."
+      "It lists which CVEs you are exposed to.",
+      "It shows which services call the library.",
+      "It tells you the patched version to use.",
+      "You can search what you shipped for it."
     ],
     "answer": 3,
-    "explanation": "Generate it from the build and store it with the digest.",
-    "source": "devsec blueprint",
-    "url": "https://devsecblueprint.com/curriculum"
+    "explanation": "Generate it from the build and store it with the digest. A scanner maps it to CVEs."
   },
   {
     "id": "sec-sbom-02",
     "skillId": "sec-sbom",
     "difficulty": "medium",
-    "prompt": "Signing an image with cosign and checking the signature at admission means:",
+    "prompt": "What does checking cosign signatures at admission mean?",
     "choices": [
-      "The image has no CVEs.",
-      "The signature replaces RBAC.",
-      "Admission is unnecessary if the registry is private.",
-      "The cluster only runs images a key you trust has signed. A pulled tag from the internet fails closed."
+      "Only images with no critical CVEs can run.",
+      "Only images from a private registry can run.",
+      "Only images rebuilt this week can run.",
+      "Only images signed by a trusted key can run."
     ],
     "answer": 3,
-    "explanation": "Verify at the cluster. A private registry still accepts whatever a stolen push credential uploads.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Verify at the cluster. A private registry still accepts whatever a stolen push credential uploads, and a signature says nothing about CVEs."
   },
   {
     "id": "sec-sbom-03",
     "skillId": "sec-sbom",
     "difficulty": "easy",
-    "prompt": "A signature over a tag is weaker than a signature over a digest because:",
+    "prompt": "Why is signing a digest stronger than signing a tag?",
     "choices": [
-      "Digests change when the tag is pushed again, so they are less precise. The digest identifies the bytes.",
-      "Tags are hashes.",
-      "Signatures cannot cover a manifest.",
-      "The tag can move to unsigned bytes. The digest is the bytes."
+      "A digest signature also covers the tag.",
+      "A tag cannot hold a signature at all.",
+      "A digest signature expires less often.",
+      "A tag can later point at other bytes."
     ],
     "answer": 3,
-    "explanation": "Sign the digest. Point the tag at it afterwards if humans need a name.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The digest is the bytes. Sign the digest, and point a tag at it if humans need a name."
   },
   {
     "id": "sec-sbom-04",
     "skillId": "sec-sbom",
     "difficulty": "hard",
-    "prompt": "The SBOM says a library is present and the scanner did not flag it. What do you trust for 'are we running it'?",
+    "prompt": "An SBOM lists a library and the scanner did not flag it. What do you trust for 'are we running it'?",
     "choices": [
-      "The image or the running filesystem, not a stale SBOM from a previous build.",
-      "The SBOM always matches production.",
-      "The scanner, which reads the SBOM and never the image.",
-      "Git."
+      "An SBOM made from the image you run.",
+      "The newest SBOM in the artifact store.",
+      "The scanner's report of the image.",
+      "The lockfile in the release's git tag."
     ],
     "answer": 0,
-    "explanation": "SBOMs drift when they are not produced from the shipped artifact. Regenerate from that digest.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "SBOMs drift when they are not produced from the shipped artifact. Regenerate from that digest."
   },
   {
     "id": "sec-pipeline-01",
     "skillId": "sec-pipeline",
     "difficulty": "medium",
-    "prompt": "A pipeline that builds and deploys with the same cloud admin key means:",
+    "prompt": "What does building and deploying with the same cloud admin key mean?",
     "choices": [
-      "The key is fine if it is masked in the log.",
-      "Any code that runs in the build, including a dependency's install script, can deploy.",
-      "The build is hermetic.",
-      "Admin is required to compile."
+      "Deploys need the build to pass first.",
+      "Any code in the build can deploy.",
+      "Builds are reproducible across runs.",
+      "The key is safe once it is masked."
     ],
     "answer": 1,
-    "explanation": "Separate build identity from deploy identity. The build should not be able to change production.",
-    "source": "devsec blueprint",
-    "url": "https://devsecblueprint.com/curriculum"
+    "explanation": "A dependency's install script runs with the same power. Separate build identity from deploy identity."
   },
   {
     "id": "sec-pipeline-02",
     "skillId": "sec-pipeline",
     "difficulty": "hard",
-    "prompt": "pull_request_target plus a checkout of the pull request head plus secrets is:",
+    "prompt": "What is pull_request_target plus a checkout of the PR head plus secrets?",
     "choices": [
-      "Untrusted code running where secrets are available.",
-      "The safe way to test forks.",
-      "Required for OIDC.",
-      "Isolated by GitHub automatically."
+      "Untrusted code running with secrets.",
+      "Safe, since the workflow file is trusted.",
+      "Safe, if the token is read-only.",
+      "Safe, if the PR is from the same org."
     ],
     "answer": 0,
-    "explanation": "Run untrusted code with pull_request and no secrets. Use the privileged trigger only for code you already merged.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The workflow file is trusted, but the code it checks out is not. Run untrusted code with pull_request and no secrets."
   },
   {
     "id": "sec-pipeline-03",
     "skillId": "sec-pipeline",
     "difficulty": "easy",
-    "prompt": "Protected environments in the CI system are for:",
+    "prompt": "What are protected environments in a CI system for?",
     "choices": [
-      "Requiring a reviewer and a branch rule before the production credentials are used.",
-      "Speeding up tests.",
-      "Storing container layers.",
-      "Replacing code review on the application."
+      "Gating production credentials behind approval.",
+      "Running jobs on isolated, dedicated runners.",
+      "Storing production secrets encrypted at rest.",
+      "Blocking deploys outside business hours."
     ],
     "answer": 0,
-    "explanation": "The production job should be harder to start than the unit tests.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The production job should be harder to start than the unit tests. Isolation and encryption are separate controls."
   },
   {
     "id": "sec-pipeline-04",
     "skillId": "sec-pipeline",
     "difficulty": "medium",
-    "prompt": "A Dockerfile in CI does docker build with the socket of the host daemon. What did the job just get?",
+    "prompt": "A CI job runs docker build using the host daemon's socket. What did the job get?",
     "choices": [
-      "A contained build with no access to the host.",
-      "A rootless runtime by default.",
-      "Read-only access to images.",
-      "Root-equivalent control of the build machine, if that daemon is rootful."
+      "Access limited to building images.",
+      "A rootless runtime, scoped to the job.",
+      "Read-only access to the host's images.",
+      "Root-level control of the build host."
     ],
     "answer": 3,
-    "explanation": "Prefer a rootless or isolated builder. The host socket is the host.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/tutorials/docker-security-introduction-a859718d"
+    "explanation": "If the daemon is rootful, the socket is the host. Prefer a rootless or isolated builder."
   },
   {
     "id": "sec-runtime-01",
     "skillId": "sec-runtime",
     "difficulty": "medium",
-    "prompt": "Falco or Tetragon is in the stack so that:",
+    "prompt": "Why have Falco or Tetragon in the stack?",
     "choices": [
-      "You can detect a suspicious syscall or process in a running container. It does not replace admission.",
-      "Images are scanned.",
-      "Git is signed.",
-      "The API server is authenticated."
+      "To detect suspicious behavior in running workloads.",
+      "To block unsigned images at admission time, per namespace.",
+      "To scan images for CVEs in the registry.",
+      "To enforce NetworkPolicy at the node level."
     ],
     "answer": 0,
-    "explanation": "Runtime tools see what got through. Policy should have stopped the easy cases earlier.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/tutorials/introduction-to-tetragon"
+    "explanation": "Runtime tools see what got through. Policy should have stopped the easy cases earlier."
   },
   {
     "id": "sec-runtime-02",
     "skillId": "sec-runtime",
     "difficulty": "easy",
-    "prompt": "A seccomp profile of RuntimeDefault does what, compared with Unconfined?",
+    "prompt": "How does a RuntimeDefault seccomp profile compare with Unconfined?",
     "choices": [
-      "It blocks a default set of syscalls the runtime considers unnecessary. Unconfined allows what the kernel allows the process.",
-      "It gives the container CAP_SYS_ADMIN.",
-      "It is the same as privileged.",
-      "It encrypts the root filesystem."
+      "It blocks risky syscalls the runtime picks.",
+      "It allows only the syscalls the app used.",
+      "It logs syscalls but blocks none of them.",
+      "It drops all Linux capabilities as well."
     ],
     "answer": 0,
-    "explanation": "Start from the runtime default. Add a custom profile only when you have measured the syscalls the app needs.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/challenges/lock-down-container-syscalls-with-seccomp-5c86273c"
+    "explanation": "Start from the runtime default. Add a custom profile only when you have measured the syscalls the app needs."
   },
   {
     "id": "sec-runtime-03",
     "skillId": "sec-runtime",
     "difficulty": "hard",
-    "prompt": "You applied a seccomp profile and the app breaks on one syscall. What is the repair that keeps the lockdown?",
+    "prompt": "A seccomp profile breaks the app on one syscall. What repair keeps the lockdown?",
     "choices": [
-      "Disable auditd.",
-      "Allow that syscall in the profile after you confirm the app needs it. Do not switch the pod to Unconfined.",
-      "Delete seccomp from the cluster.",
-      "Run as privileged, which is unrelated and broader."
+      "Grant the capability the syscall checks.",
+      "Allow that one syscall after confirming it.",
+      "Switch the pod to RuntimeDefault for now.",
+      "Set the profile's default action to log."
     ],
     "answer": 1,
-    "explanation": "The profile is a list. Open the one hole you can justify.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/challenges/lock-down-container-syscalls-with-seccomp-5c86273c"
+    "explanation": "The profile is a list. Open the one hole you can justify. A log default turns the profile off."
   },
   {
     "id": "sec-runtime-04",
     "skillId": "sec-runtime",
     "difficulty": "medium",
-    "prompt": "Dropping all capabilities and adding back none is a problem for an app that binds port 80 because:",
+    "prompt": "Why does dropping all capabilities break an app that binds port 80?",
     "choices": [
-      "Capabilities are not checked for ports.",
-      "Port 80 requires SYS_ADMIN.",
-      "Dropping capabilities disables networking entirely, including high ports.",
-      "Binding a low port wants NET_BIND_SERVICE, or you can bind high and let the proxy hold 80."
+      "Ports below 1024 need CAP_NET_ADMIN.",
+      "Ports below 1024 need SYS_ADMIN.",
+      "Ports below 1024 need NET_RAW.",
+      "Ports below 1024 need NET_BIND_SERVICE."
     ],
     "answer": 3,
-    "explanation": "Do not hand SYS_ADMIN to get one low port. Move the port or add the one capability.",
-    "source": "raesene",
-    "url": "https://raesene.github.io/categories/capabilities/"
+    "explanation": "Add the one capability, or bind a high port and let the proxy hold 80. Do not hand out SYS_ADMIN for one low port."
   },
   {
     "id": "sec-audit-01",
     "skillId": "sec-audit",
     "difficulty": "medium",
-    "prompt": "Kubernetes audit logs are what you read to answer:",
+    "prompt": "Which question do Kubernetes audit logs answer?",
     "choices": [
-      "The node temperature.",
-      "The image layers.",
-      "Who called the API, and what they did. They are not the application access log.",
-      "Which SQL query was slow."
+      "Which processes ran in a container.",
+      "Which requests the app served.",
+      "Who called the API, and what they did.",
+      "Which pods talked to each other."
     ],
     "answer": 2,
-    "explanation": "If audit logging is off, an incident has no actor. Turn it on before you need it.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/challenges/roll-out-pod-security-standards-across-three-namespaces-1be633bd"
+    "explanation": "If audit logging is off, an incident has no actor. Turn it on before you need it."
   },
   {
     "id": "sec-audit-02",
     "skillId": "sec-audit",
     "difficulty": "easy",
-    "prompt": "Pod Security audit mode differs from enforce because:",
+    "prompt": "How does Pod Security audit mode differ from enforce?",
     "choices": [
-      "They are the same label.",
-      "Audit deletes the namespace.",
-      "Audit records the violation and allows the pod. Enforce rejects the new pod.",
-      "Audit reboots the node."
+      "Audit warns the user. Enforce logs it.",
+      "Audit checks pods. Enforce checks nodes.",
+      "Audit records it. Enforce rejects it.",
+      "Audit rejects it. Enforce records it."
     ],
     "answer": 2,
-    "explanation": "Use audit and warn to see what would break before you enforce.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/challenges/roll-out-pod-security-standards-across-three-namespaces-1be633bd"
+    "explanation": "Use audit and warn to see what would break before you enforce."
   },
   {
     "id": "sec-audit-03",
     "skillId": "sec-audit",
     "difficulty": "medium",
-    "prompt": "CloudTrail or the cloud audit log is the source for:",
+    "prompt": "What is CloudTrail or the cloud audit log the source for?",
     "choices": [
-      "Packet payloads.",
-      "Container stdout.",
-      "Git commits.",
-      "Control-plane API calls in the account: who changed a security group."
+      "What data was read from a bucket.",
+      "Which packets crossed the VPC.",
+      "What ran inside an instance.",
+      "Who made control-plane API calls."
     ],
     "answer": 3,
-    "explanation": "Application logs and cloud audit answer different questions. Keep both.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Data reads need data events, packets need flow logs, and processes need host telemetry. Keep each for its own question."
   },
   {
     "id": "sec-audit-04",
     "skillId": "sec-audit",
     "difficulty": "hard",
-    "prompt": "An attacker with API access turned audit policy to None. Why is a remote copy of the log the real control?",
+    "prompt": "An attacker with API access set the audit policy to None. Why is a remote copy the real control?",
     "choices": [
-      "A log that only lives in the cluster can be edited by the person who just got in.",
-      "Audit logs cannot be shipped.",
-      "The API server refuses to change audit policy.",
-      "A remote copy is slower and therefore less accurate."
+      "Logs inside the cluster can be deleted by the attacker.",
+      "Remote copies record calls the API server skips.",
+      "The audit policy only applies to remote backends.",
+      "Local logs are rotated before anyone can read them."
     ],
     "answer": 0,
-    "explanation": "Ship the audit stream somewhere the cluster admin of the compromised cluster cannot delete.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Ship the audit stream somewhere the admin of the compromised cluster cannot delete."
   },
   {
     "id": "sec-incident-01",
     "skillId": "sec-incident",
     "difficulty": "medium",
-    "prompt": "A node is suspected of a container escape. What do you do before you reimage it?",
+    "prompt": "A node is suspected of a container escape. What do you do before reimaging it?",
     "choices": [
-      "Delete the node object and forget the disk.",
-      "Restart the kubelet and call it contained.",
-      "Scale the deployment up on that node.",
-      "Cordon it, isolate it, and keep a snapshot if you need to learn. Reimaging first deletes the evidence and may be right later."
+      "Drain it to move pods off quickly.",
+      "Reboot it to kill the attacker.",
+      "Upgrade its kernel in place.",
+      "Cordon, isolate, and snapshot it."
     ],
     "answer": 3,
-    "explanation": "Contain first. Decide explicitly if you are preserving evidence.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Contain first. Decide explicitly if you are preserving evidence. Draining moves possibly compromised pods elsewhere, and a reboot destroys memory evidence."
   },
   {
     "id": "sec-incident-02",
     "skillId": "sec-incident",
     "difficulty": "easy",
-    "prompt": "Revoking the cloud keys found in a leaked repo happens:",
+    "prompt": "When do you revoke cloud keys found in a leaked repo?",
     "choices": [
-      "After the blog post.",
-      "Only if the key is older than a year.",
-      "By rotating the git history and leaving the key enabled.",
-      "Before you finish the postmortem. The key is live."
+      "After the history rewrite.",
+      "After the postmortem.",
+      "If the logs show use.",
+      "Immediately."
     ],
     "answer": 3,
-    "explanation": "History rewrite does not disable a key. The cloud console does.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The key is live. History rewrite does not disable it, and the absence of use in logs is not proof."
   },
   {
     "id": "sec-incident-03",
     "skillId": "sec-incident",
     "difficulty": "hard",
-    "prompt": "A workload identity is compromised and it can read a bucket. Containment is:",
+    "prompt": "A workload identity that can read a bucket is compromised. What is containment?",
     "choices": [
-      "Turn off the region.",
-      "Ignore it if the pod is in kube-system.",
-      "Disable that identity, block the bucket path, and look for what it already read. Restarting the pod keeps the role.",
-      "Delete the pod. The identity is then useless. The role still exists for the next pod."
+      "Rotate the bucket's encryption key.",
+      "Move the pod to a new namespace.",
+      "Revoke its sessions and see what it read.",
+      "Delete the pod so the identity is dropped."
     ],
     "answer": 2,
-    "explanation": "The credential is the identity, not the pod name. Revoke the role session and tighten the role.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The credential is the identity, not the pod. The role still exists for the next pod, and stolen sessions stay valid until revoked."
   },
   {
     "id": "sec-incident-04",
     "skillId": "sec-incident",
     "difficulty": "medium",
-    "prompt": "A NetworkPolicy that isolates a namespace during an incident should:",
+    "prompt": "What should a NetworkPolicy that isolates a namespace during an incident do?",
     "choices": [
-      "Be your permanent architecture with no review.",
-      "Replace the need to rotate secrets.",
-      "Cut the unexpected flows and leave you a path to administer the cluster.",
-      "Drop all cluster traffic including the node you are SSHed through, with no console."
+      "Allow only traffic from the monitoring stack.",
+      "Block egress, and leave ingress as it was.",
+      "Cut unexpected flows but keep admin access.",
+      "Block all ingress and egress, with no exceptions."
     ],
     "answer": 2,
-    "explanation": "Isolation is a change. Make it one you can undo, and do not lock out the control plane.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Isolation is a change. Make it one you can undo, and do not lock yourself out."
   },
   {
     "id": "sec-zero-01",
     "skillId": "sec-zero",
     "difficulty": "medium",
-    "prompt": "Zero trust in a platform sense means:",
+    "prompt": "What does zero trust mean for a platform?",
     "choices": [
-      "The network location is not the authorization. Each call authenticates and is allowed on purpose.",
-      "There is no firewall.",
-      "Every packet is inspected by a human.",
-      "VPCs are unnecessary."
+      "Network location grants no access.",
+      "Every packet is inspected deeply.",
+      "No traffic leaves the private network.",
+      "Every user is re-verified each hour."
     ],
     "answer": 0,
-    "explanation": "Identity, mTLS, and policy sit on top of a network that is no longer the only control.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Each call authenticates and is allowed on purpose. Identity, mTLS, and policy sit on top of a network that is no longer the only control."
   },
   {
     "id": "sec-zero-02",
     "skillId": "sec-zero",
     "difficulty": "easy",
-    "prompt": "A 'trusted internal subnet' is a weak boundary because:",
+    "prompt": "Why is a 'trusted internal subnet' a weak boundary?",
     "choices": [
-      "Subnets cannot route.",
-      "Identity is free if the subnet matches.",
-      "Internal traffic cannot be TLS.",
-      "A single compromised pod on that subnet can call everything that trusts the subnet."
+      "Internal subnets cannot use encryption.",
+      "Internal subnets skip the firewall rules.",
+      "Internal subnets cannot be audited.",
+      "One compromised host reaches everything."
     ],
     "answer": 3,
-    "explanation": "Assume the neighbor is hostile. Authenticate the call.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Assume the neighbor is hostile. Authenticate the call."
   },
   {
     "id": "sec-zero-03",
     "skillId": "sec-zero",
     "difficulty": "medium",
-    "prompt": "Short-lived workload certificates are better than a long-lived token in a Secret because:",
+    "prompt": "Why are short-lived workload certificates better than a long-lived token?",
     "choices": [
-      "They cannot be stolen.",
-      "They replace authorization.",
-      "They are stored in git.",
-      "A stolen certificate expires, and you can stop issuing the next one."
+      "They cannot be copied off.",
+      "They need no authorization.",
+      "They do not need a CA to issue.",
+      "A stolen one soon expires."
     ],
     "answer": 3,
-    "explanation": "Pair a short lifetime with an issuer you can shut off.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Pair a short lifetime with an issuer you can shut off."
   },
   {
     "id": "sec-zero-04",
     "skillId": "sec-zero",
     "difficulty": "hard",
-    "prompt": "You terminated TLS at the edge and called the rest of the cluster trusted. What did you not get?",
+    "prompt": "You terminated TLS at the edge and called the rest of the cluster trusted. What is missing?",
     "choices": [
-      "DNS.",
-      "Protection from anything already inside. East-west traffic is anonymous.",
-      "A public certificate.",
-      "A load balancer."
+      "A WAF in front of the ingress.",
+      "Authentication between services.",
+      "Encryption from the client to edge.",
+      "A certificate from a public CA."
     ],
     "answer": 1,
-    "explanation": "mTLS or an equivalent identity on service calls is the inside half.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Anything already inside can call anything. mTLS or an equivalent identity on service calls is the inside half."
   },
   {
     "id": "sec-threat-01",
     "skillId": "sec-threat",
     "difficulty": "medium",
-    "prompt": "Before you pick a scanner, a threat model for a cluster asks:",
+    "prompt": "Before choosing a scanner, what does a threat model for a cluster ask?",
     "choices": [
-      "Which vendor is in the awesome-list.",
-      "The current CPU price.",
-      "How many dashboards you have.",
-      "What the assets are, who the attacker is, and which trust boundary they cross."
+      "Which compliance frameworks apply.",
+      "Which CVEs are in the current images.",
+      "Which tools the team already knows.",
+      "Assets, attackers, and trust boundaries."
     ],
     "answer": 3,
-    "explanation": "Tools come after the abuse case. A scanner does not know what you are afraid of.",
-    "source": "devsec blueprint",
-    "url": "https://devsecblueprint.com/curriculum"
+    "explanation": "Tools come after the abuse case. A scanner does not know what you are afraid of."
   },
   {
     "id": "sec-threat-02",
     "skillId": "sec-threat",
     "difficulty": "easy",
-    "prompt": "A trust boundary in a platform is:",
+    "prompt": "What is a trust boundary in a platform?",
     "choices": [
-      "Any microservice.",
-      "A Grafana panel.",
-      "A git branch.",
-      "A place where the caller's privileges change, such as the edge, the node, or the API server."
+      "Where traffic leaves the cloud region.",
+      "Where one team's ownership ends.",
+      "Where encryption is first applied.",
+      "Where the caller's privilege changes."
     ],
     "answer": 3,
-    "explanation": "Draw the boundaries. The attacks you care about cross one.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The edge, the node, and the API server are examples. Draw the boundaries. The attacks you care about cross one."
   },
   {
     "id": "sec-threat-03",
     "skillId": "sec-threat",
     "difficulty": "hard",
-    "prompt": "A container escape matters more than a bug in one app when:",
+    "prompt": "When does a container escape matter more than a bug in one app?",
     "choices": [
-      "The pod has a NetworkPolicy. That does not stop a kernel exploit.",
-      "The node is shared and the escape becomes every other pod on it, plus the node role.",
-      "The app has no data.",
-      "You use a service mesh, which prevents kernel bugs."
+      "When the app holds no sensitive data.",
+      "When other pods share the node.",
+      "When the app runs as a non-root user.",
+      "When the pod has no NetworkPolicy."
     ],
     "answer": 1,
-    "explanation": "Shared nodes share fate. The node role is the blast radius.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Shared nodes share fate. The escape becomes every other pod on it, plus the node role."
   },
   {
     "id": "sec-threat-04",
     "skillId": "sec-threat",
     "difficulty": "medium",
-    "prompt": "You modeled a stolen CI token as the attacker. The useful control is:",
+    "prompt": "You modeled a stolen CI token. What is the useful control?",
     "choices": [
-      "A longer token so rotation is rare.",
-      "Hiding the token in the log by not looking.",
-      "A wiki page that says not to leak it.",
-      "A token that can only deploy one environment and expires. Not a token that can also read every secret."
+      "Store it encrypted in the CI system.",
+      "Mask it in every log the CI writes.",
+      "Rotate it on a fixed schedule, once a year.",
+      "Scope it to one environment and expire it."
     ],
     "answer": 3,
-    "explanation": "Model the token's power. Then reduce it.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Model the token's power, then reduce it. Encryption and masking help keep it from leaking but do nothing once it is stolen."
   },
   {
     "id": "sec-vault-01",
@@ -709,175 +621,153 @@
     "difficulty": "medium",
     "prompt": "An OpenBao or Vault server just booted and will not serve secrets. What state is it in?",
     "choices": [
-      "Sealed. It needs unseal keys or a transit auto-unseal before it will decrypt.",
-      "Empty. You must recreate every secret after each reboot.",
-      "Healthy. A sealed server serves reads.",
-      "Read-only."
+      "Sealed",
+      "Standby",
+      "Uninitialized",
+      "Recovery"
     ],
     "answer": 0,
-    "explanation": "Unseal is the step between process-up and able-to-read.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/tutorials/openbao-vault-getting-started-e783c133"
+    "explanation": "Unseal is the step between process-up and able-to-read. It needs key shares or auto-unseal. A standby forwards requests to the active node."
   },
   {
     "id": "sec-vault-02",
     "skillId": "sec-vault",
     "difficulty": "hard",
-    "prompt": "Transit auto-unseal means:",
+    "prompt": "What does transit auto-unseal mean?",
     "choices": [
-      "Auto-unseal publishes the master key in etcd.",
-      "Another Vault or OpenBao encrypts the unseal key, so operators do not type key shares at boot.",
-      "The server never encrypts data.",
-      "Transit replaces policies."
+      "The root token unseals it during startup.",
+      "Another Vault decrypts the root key at boot.",
+      "Each node holds a share and unseals the others.",
+      "The unseal keys are stored in a cloud KMS."
     ],
     "answer": 1,
-    "explanation": "You still protect the transit token. You have moved the unseal problem, not deleted it.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/tutorials/openbao-vault-auto-unseal-transit-82d2a212"
+    "explanation": "Operators no longer type key shares at boot. You still protect the transit token. You moved the unseal problem, not deleted it. A cloud KMS is a different seal type."
   },
   {
     "id": "sec-vault-03",
     "skillId": "sec-vault",
     "difficulty": "easy",
-    "prompt": "A policy on a token should:",
+    "prompt": "What should an application's token policy allow?",
     "choices": [
-      "Be shared across every namespace.",
-      "Live in the container image.",
-      "Allow the paths that one app needs. A root token is not an application credential.",
-      "Be root, so the app does not fail."
+      "All paths, with a short token TTL.",
+      "The same paths as the root token.",
+      "Only the paths that app needs.",
+      "Read on all paths, write on its own."
     ],
     "answer": 2,
-    "explanation": "Issue a token or an AppRole for the workload. Keep root for recovery.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Issue a token or an AppRole for the workload. Keep root for recovery."
   },
   {
     "id": "sec-vault-04",
     "skillId": "sec-vault",
     "difficulty": "medium",
-    "prompt": "Dynamic database credentials from Vault are better than a static password because:",
+    "prompt": "Why are Vault's dynamic database credentials better than a static password?",
     "choices": [
-      "The database no longer authenticates.",
-      "They cannot be revoked.",
-      "They expire, and you can tie them to the client that asked.",
-      "They are stored in git for review."
+      "They skip the database's own auth.",
+      "They are cached on each client host.",
+      "They expire and are tied to the client.",
+      "They are stronger, with longer passwords."
     ],
     "answer": 2,
-    "explanation": "When the lease ends, the grant ends. A static password lives until someone remembers it.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "When the lease ends, the grant ends. A static password lives until someone remembers it."
   },
   {
     "id": "sec-bench-01",
     "skillId": "sec-bench",
     "difficulty": "medium",
-    "prompt": "kube-bench is:",
+    "prompt": "What is kube-bench?",
     "choices": [
-      "A CIS benchmark check of the cluster and node configuration. It is not a runtime intrusion detector.",
-      "A packet capture.",
-      "A replacement for RBAC.",
-      "An image scanner only."
+      "A CIS benchmark check of cluster config.",
+      "A load test for the Kubernetes API.",
+      "A runtime detector for node attacks.",
+      "A scanner for vulnerable cluster images."
     ],
     "answer": 0,
-    "explanation": "Run it to see the control plane flags and file permissions you drifted from. Fix the findings you accept.",
-    "source": "awesome-devsecops",
-    "url": "https://github.com/aquasecurity/kube-bench"
+    "explanation": "Run it to see the control plane flags and file permissions you drifted from. Fix the findings you accept."
   },
   {
     "id": "sec-bench-02",
     "skillId": "sec-bench",
     "difficulty": "easy",
-    "prompt": "Lynis on a Linux host is for:",
+    "prompt": "What is Lynis for on a Linux host?",
     "choices": [
-      "Replacing the package manager.",
-      "Drawing traces.",
-      "A local hardening audit: sshd, permissions, and kernel settings.",
-      "Scanning container images in a registry."
+      "Detecting live intrusions.",
+      "Patching its packages.",
+      "Auditing its hardening.",
+      "Scanning its open ports."
     ],
     "answer": 2,
-    "explanation": "It tells you what is weak on the box. It does not watch a running attack.",
-    "source": "awesome-devsecops",
-    "url": "https://cisofy.com/lynis/"
+    "explanation": "It reports sshd, permission and kernel weaknesses on the box. It does not watch a running attack."
   },
   {
     "id": "sec-bench-03",
     "skillId": "sec-bench",
     "difficulty": "medium",
-    "prompt": "osquery lets you:",
+    "prompt": "What does osquery let you do?",
     "choices": [
-      "Ask SQL questions of the live host: processes, sockets, and files.",
-      "Patch the kernel.",
-      "Sign images.",
-      "Replace Vault."
+      "Query live host state with SQL.",
+      "Collect host logs into one store.",
+      "Block processes by policy rules.",
+      "Scan hosts for unpatched CVEs."
     ],
     "answer": 0,
-    "explanation": "It is how you turn 'is this binary running' into a query you can repeat.",
-    "source": "awesome-devsecops",
-    "url": "https://osquery.io/"
+    "explanation": "Processes, sockets, and files become a query you can repeat across the fleet."
   },
   {
     "id": "sec-bench-04",
     "skillId": "sec-bench",
     "difficulty": "hard",
-    "prompt": "InSpec or an equivalent compliance profile in CI means:",
+    "prompt": "What does running an InSpec compliance profile in CI mean?",
     "choices": [
-      "Compliance replaces threat modeling.",
-      "The profile is the same thing as a penetration test.",
-      "The hardening rules fail the build when a machine or image drifts from them.",
-      "The rules only print a PDF."
+      "The rules produce a report for the auditor.",
+      "The profile tests the app for exploitable bugs.",
+      "Drift from the hardening rules fails the build.",
+      "The profile hardens each image as it builds."
     ],
     "answer": 2,
-    "explanation": "Encode the rule you care about so the next image cannot quietly drop it.",
-    "source": "awesome-devsecops",
-    "url": "https://github.com/inspec/inspec"
+    "explanation": "Encode the rule you care about so the next image cannot quietly drop it."
   },
   {
     "id": "sec-cspm-01",
     "skillId": "sec-cspm",
     "difficulty": "medium",
-    "prompt": "A cloud posture tool is yelling about a public bucket and an open security group. It will not tell you:",
+    "prompt": "A cloud posture tool flags a public bucket and an open security group. What will it not tell you?",
     "choices": [
-      "That the bucket is public.",
-      "That a security group allows the world.",
-      "That an access key is unused and old, if it has that check.",
-      "Whether a running container just spawned a shell. That is runtime."
+      "That an IAM user has no MFA enabled.",
+      "That a database snapshot is public.",
+      "That CloudTrail is turned off.",
+      "That a container just spawned a shell."
     ],
     "answer": 3,
-    "explanation": "CSPM looks at cloud configuration. Pair it with runtime and identity, or you only see the standing configuration.",
-    "source": "devsec blueprint",
-    "url": "https://devsecblueprint.com/curriculum"
+    "explanation": "CSPM looks at cloud configuration. Pair it with runtime and identity, or you only see the standing configuration."
   },
   {
     "id": "sec-cspm-02",
     "skillId": "sec-cspm",
     "difficulty": "easy",
-    "prompt": "The first public-bucket finding is fixed by:",
+    "prompt": "How do you fix the first public-bucket finding?",
     "choices": [
-      "Blocking public access and confirming the objects are not reachable, not by muting the tool.",
-      "Deleting the account.",
-      "Turning the scanner off.",
-      "Making the bucket name longer."
+      "Block public access and verify anonymously.",
+      "Make the objects private, one at a time.",
+      "Mark it as accepted risk in the tool.",
+      "Rename the bucket so it is not guessable."
     ],
     "answer": 0,
-    "explanation": "Confirm with an anonymous request. The console flag and the bytes on the internet should agree.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Confirm with an anonymous request. The console flag and the bytes on the internet should agree."
   },
   {
     "id": "sec-cspm-03",
     "skillId": "sec-cspm",
     "difficulty": "medium",
-    "prompt": "An unused admin access key older than a year is:",
+    "prompt": "What is an unused admin access key older than a year?",
     "choices": [
-      "A standing credential. Disable it.",
-      "Proof the account is healthy.",
-      "Required for Terraform.",
-      "A metric, not a secret."
+      "A standing credential to disable.",
+      "Low risk, since it is not in use.",
+      "Safe, if MFA is on for the user.",
+      "Fine, if it is stored encrypted."
     ],
     "answer": 0,
-    "explanation": "Old keys are how a laptop you recycled still opens the account.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Old keys are how a laptop you recycled still opens the account. MFA does not apply to access key calls."
   },
   {
     "id": "sec-cspm-04",
@@ -885,718 +775,628 @@
     "difficulty": "hard",
     "prompt": "The posture scan is green and an attacker is in a pod. How is that consistent?",
     "choices": [
-      "CSPM reads every syscall.",
-      "Pods cannot be compromised if buckets are private.",
-      "The cloud configuration can be tidy while a workload is compromised. Posture is not detection.",
-      "A green scan means no process is malicious."
+      "The pod's namespace was excluded from the scan.",
+      "Posture tools skip pods with service meshes.",
+      "Posture checks configuration, not activity.",
+      "The scan ran before the attacker got in."
     ],
     "answer": 2,
-    "explanation": "Use posture for the standing mistakes and runtime for the thing happening now.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The cloud configuration can be tidy while a workload is compromised. Use posture for standing mistakes and runtime detection for the thing happening now."
   },
   {
     "id": "sec-least-05",
     "skillId": "sec-least",
     "difficulty": "hard",
-    "prompt": "etcd is exposed on 2379 for a multi-member cluster. A client certificate from the Kubernetes CA is presented. Why is a dedicated etcd CA the point of the post?",
+    "prompt": "etcd for a multi-member cluster listens on 2379 and trusts the Kubernetes CA. Why should etcd have its own dedicated CA?",
     "choices": [
-      "Port 2379 is only for peer traffic. Client traffic is 2380.",
-      "etcd does not check the certificate CN or SAN. Any certificate from a trusted CA is enough, and there is no further authorization.",
-      "etcd requires the SAN to be the node name, so the Kubernetes CA is safer.",
-      "Client certificates are not used by etcd."
+      "A shared CA makes etcd peers trust API clients.",
+      "Any cert from a trusted CA gets full access.",
+      "etcd rejects certs whose SAN is not a node name.",
+      "The Kubernetes CA cannot sign client certs for etcd."
     ],
     "answer": 1,
-    "explanation": "2379 is client traffic, 2380 is peer traffic. Access is all or nothing once the certificate verifies.",
-    "source": "raesene",
-    "url": "https://raesene.github.io/blog/2017/05/01/Kubernetes-Security-etcd/"
+    "explanation": "etcd does not check the certificate's CN or SAN, and there is no further authorization by default. Access is all or nothing once the cert verifies. 2379 is client traffic, 2380 is peer."
   },
   {
     "id": "sec-least-06",
     "skillId": "sec-least",
     "difficulty": "medium",
-    "prompt": "kubeadm binds etcd to localhost and a clustered etcd does not. What changed?",
+    "prompt": "kubeadm binds etcd to localhost, and a clustered etcd does not. What changed?",
     "choices": [
-      "Clustered etcd cannot use TLS.",
-      "The API server no longer stores secrets in etcd.",
-      "The members must reach each other, so 2379 and 2380 are on the network and must be authenticated.",
-      "Localhost binding is less secure than a public bind."
+      "Clustered etcd disables client certificates.",
+      "The API server talks to etcd over UDP.",
+      "Members must reach each other over the network.",
+      "Clustered etcd stores secrets unencrypted."
     ],
     "answer": 2,
-    "explanation": "etcd holds secrets and service account material. A network listener without a private CA is the cluster.",
-    "source": "raesene",
-    "url": "https://raesene.github.io/blog/2017/05/01/Kubernetes-Security-etcd/"
+    "explanation": "2379 and 2380 are then on the network and must be authenticated. etcd holds secrets and service account material, so a listener without a private CA is the cluster."
   },
   {
     "id": "sec-pki-05",
     "skillId": "sec-pki",
     "difficulty": "hard",
-    "prompt": "The Kubernetes CA private key is on the API server disk and is valid for about ten years. Why is that a golden ticket?",
+    "prompt": "The Kubernetes CA private key sits on the API server's disk and is valid for about ten years. Why is it a golden ticket?",
     "choices": [
-      "The key only signs kubelet server certificates, not client certificates.",
-      "Client auth does not use that CA.",
-      "A stolen key expires with the admin's kubeconfig, which is usually a year.",
-      "Anyone who copies it can mint new client certificates and be a user of their choosing until the CA itself is replaced."
+      "It decrypts every Secret stored in etcd.",
+      "It signs service account tokens for pods.",
+      "It is the key the kubelets use to join.",
+      "It mints client certs for any identity."
     ],
     "answer": 3,
-    "explanation": "Basic auth and static tokens are worse operationally, but the online CA key is the long-lived identity forge.",
-    "source": "raesene",
-    "url": "https://raesene.github.io/blog/2019/04/16/kubernetes-certificate-auth-golden-key/"
+    "explanation": "Anyone who copies it can be any user until the CA itself is replaced, and certificates cannot be revoked. Service account tokens use a different key."
   },
   {
     "id": "sec-pki-06",
     "skillId": "sec-pki",
     "difficulty": "medium",
-    "prompt": "Why do clusters keep the CA key online instead of in an HSM or offline?",
+    "prompt": "Why do clusters keep the CA key online instead of offline or in an HSM?",
     "choices": [
-      "Kubernetes refuses to start if the key is on disk.",
-      "An offline CA is the kubeadm default.",
-      "The key is recreated every hour, so theft does not matter.",
-      "The control plane signs certificates as part of normal operation, so installers leave the key on the API server."
+      "Kubernetes cannot read keys from an HSM.",
+      "The key is rotated every time it starts.",
+      "Offline keys break etcd encryption.",
+      "The control plane signs certs routinely."
     ],
     "answer": 3,
-    "explanation": "Treat those files as the root of cluster identity. A disk copy is a persistent backdoor.",
-    "source": "raesene",
-    "url": "https://raesene.github.io/blog/2019/04/16/kubernetes-certificate-auth-golden-key/"
+    "explanation": "Installers leave it on the API server for kubelet and CSR signing. Treat those files as the root of cluster identity. A disk copy is a persistent backdoor."
   },
   {
     "id": "sec-sbom-05",
     "skillId": "sec-sbom",
     "difficulty": "medium",
-    "prompt": "cosign is used in CI so a consumer can check what?",
+    "prompt": "What can a consumer check when CI signs images with cosign?",
     "choices": [
-      "That the image digest was signed by the holder of a private key, not merely that a tag exists on a registry.",
-      "That the image has no CVEs.",
-      "That the Dockerfile passed a linter.",
-      "That Kubernetes will run it. Signing does not admit it."
+      "That a trusted key signed that exact digest.",
+      "That the image passed CI's tests and scans.",
+      "That the tag points at the newest build.",
+      "That the registry has not been tampered with."
     ],
     "answer": 0,
-    "explanation": "Do not commit the private key into the repository. A public key file is an invitation to attack the passphrase.",
-    "source": "raesene",
-    "url": "https://raesene.github.io/blog/2021/03/21/Trying-out-cosign/"
+    "explanation": "The signature says who signed which bytes, nothing more. Do not commit the private key into the repository, even encrypted."
   },
   {
     "id": "sec-sbom-06",
     "skillId": "sec-sbom",
     "difficulty": "easy",
-    "prompt": "Docker Content Trust never became the thing people verify in CI. Cosign showed up because:",
+    "prompt": "Why did cosign show up when Docker Content Trust already existed?",
     "choices": [
-      "Notary v1 is required on every cluster.",
-      "Signatures are stored in etcd.",
-      "Image signing was still a gap, and a single binary could sign a built digest.",
-      "Registries refused unsigned images by default."
+      "Registries started to require it.",
+      "Content Trust could not sign tags.",
+      "Image signing in CI was still a gap.",
+      "Content Trust had been withdrawn."
     ],
     "answer": 2,
-    "explanation": "Verification has to be a step you run. A signature nobody checks changes nothing.",
-    "source": "raesene",
-    "url": "https://raesene.github.io/blog/2021/03/21/Trying-out-cosign/"
+    "explanation": "A single binary could sign a built digest. Verification has to be a step you run. A signature nobody checks changes nothing."
   },
   {
     "id": "sec-runtime-05",
     "skillId": "sec-runtime",
     "difficulty": "medium",
-    "prompt": "--privileged is not the same statement as 'the process is root'. What extra does privileged add?",
+    "prompt": "What does --privileged add beyond the process being root?",
     "choices": [
-      "It mounts the service account token.",
-      "It turns on read-only root.",
-      "It lifts the isolation: capabilities, device access, and the ability to change the host, including loading modules.",
-      "It only sets UID 0."
+      "A host mount of / at /host in the container.",
+      "A user namespace mapped to host root.",
+      "All capabilities, all devices, no seccomp.",
+      "Host networking and the host's PID space."
     ],
     "answer": 2,
-    "explanation": "Root inside a default container is a reduced capability set. Privileged throws that away.",
-    "source": "raesene",
-    "url": "https://raesene.github.io/blog/2023/08/06/fun-with-privileged-container-breakout/"
+    "explanation": "Root inside a default container has a reduced capability set. Privileged throws that away and lets it change the host, including loading modules."
   },
   {
     "id": "sec-least-07",
     "skillId": "sec-least",
     "difficulty": "medium",
-    "prompt": "A container escape on a node hands the attacker the kubelet's credentials. Those credentials matter because:",
+    "prompt": "A container escape hands the attacker the kubelet's credentials. Why do they matter?",
     "choices": [
-      "The kubelet can read pods and their secrets from the API, so the node identity is a cluster identity.",
-      "The kubelet can only see its own node object and nothing else.",
-      "Kubelet credentials cannot call the API.",
-      "They expire when the container exits."
+      "They can read the node's pods and their secrets.",
+      "They can create pods on any node in the cluster.",
+      "They can read every secret in the cluster.",
+      "They can sign new certificates for users."
     ],
     "answer": 0,
-    "explanation": "Restrict what the node identity can do. A breakout should not become every secret on the cluster.",
-    "source": "raesene",
-    "url": "https://raesene.github.io/blog/2023/04/08/lets-talk-about-kubelet-authorization/"
+    "explanation": "The Node authorizer limits the kubelet to objects for its own node, but that still includes its pods' secrets. Keep the node identity narrow."
   },
   {
     "id": "sec-image-05",
     "skillId": "sec-image",
     "difficulty": "hard",
-    "prompt": "A scanner reports a clean image whose filesystem is unpacked only when the container starts. Why did the scan miss it?",
+    "prompt": "A scanner reports a clean image whose payload is unpacked only when the container starts. Why did it miss it?",
     "choices": [
-      "Scanners always execute the entrypoint.",
-      "A clean report means the layers are empty of code.",
-      "Runtime extraction is blocked by the OCI spec.",
-      "The scanner reads the image statically and never runs it, so a tarball extracted at startup is invisible."
+      "The scanner skipped compressed layers.",
+      "The CVE database was out of date.",
+      "The payload's packages had no CPEs.",
+      "Static scans never run the image."
     ],
     "answer": 3,
-    "explanation": "Static scan is not a guarantee about what the process will assemble. This is the 'malicious compliance' case.",
-    "source": "raesene",
-    "url": "https://raesene.github.io/blog/2023/04/23/Fun-with-container-images-Bypassing-vulnerability-scanners/"
+    "explanation": "A tarball extracted at startup is invisible to a static scan. A clean report is not a guarantee about what the process will assemble."
   },
   {
     "id": "sec-image-06",
     "skillId": "sec-image",
     "difficulty": "medium",
-    "prompt": "Vulnerability scanners and SBOM tools learn what is installed by:",
+    "prompt": "How do scanners and SBOM tools learn what is installed in an image?",
     "choices": [
-      "Reading package databases and well-known paths in the image, not by watching the running process.",
-      "Executing the image in a sandbox for a day.",
-      "Asking the registry for a CVE list that is always complete.",
-      "Reading the Kubernetes audit log."
+      "From package databases and known file paths.",
+      "By running the image and tracing its loads.",
+      "From the build logs stored with the image.",
+      "From the image labels set at build time."
     ],
     "answer": 0,
-    "explanation": "Hide or omit those files and the report changes. A green scan is a statement about the files the tool knew to open.",
-    "source": "raesene",
-    "url": "https://raesene.github.io/blog/2023/04/23/Fun-with-container-images-Bypassing-vulnerability-scanners/"
+    "explanation": "Hide or omit those files and the report changes. A green scan is a statement about the files the tool knew to open."
   },
   {
     "id": "sec-secrets-05",
     "skillId": "sec-secrets",
     "difficulty": "medium",
-    "prompt": "A database backup script uploads a dump to S3. The exercise says to encrypt before the upload because:",
+    "prompt": "Why encrypt a database dump before a script uploads it to S3?",
     "choices": [
-      "Encryption makes the restore script unnecessary.",
-      "The object store is another copy of the data. Transport encryption does not replace encrypting the dump.",
-      "S3 refuses unencrypted uploads from bash.",
-      "A backup should be world-readable so restores are easy."
+      "S3 encryption at rest is not on by default.",
+      "The bucket is another copy of the data.",
+      "S3 rejects unencrypted uploads by default.",
+      "TLS is not used by the S3 CLI by default."
     ],
     "answer": 1,
-    "explanation": "Log the backup and the restore. A backup you have not restored is a hope.",
-    "source": "tech-vault",
-    "url": "https://github.com/moabukar/tech-vault/tree/main/devops-challenges"
+    "explanation": "Transport and bucket encryption do not protect against anyone who can read the bucket. Log the backup and the restore. A backup you have not restored is a hope."
   },
   {
     "id": "sec-vault-05",
     "skillId": "sec-vault",
     "difficulty": "medium",
-    "prompt": "The Vault exercise is about an application reading a secret at start instead of baking it into Terraform. The application should authenticate as:",
+    "prompt": "An app reads a secret from Vault at start. How should it authenticate?",
     "choices": [
-      "A workload identity or AppRole with a policy for that one path, not with the root token.",
-      "The root token, stored in the AMI.",
-      "A Kubernetes Secret that contains the root token.",
-      "Anonymous mode."
+      "With AppRole or workload identity.",
+      "With a root token from the AMI.",
+      "With a token from Terraform output.",
+      "With a static token in the image."
     ],
     "answer": 0,
-    "explanation": "Root is for bringing Vault up. Workloads get a lease and a policy.",
-    "source": "tech-vault",
-    "url": "https://github.com/moabukar/tech-vault/tree/main/devops-challenges"
+    "explanation": "Root is for bringing Vault up. Workloads get a lease and a policy for their one path."
   },
   {
     "id": "sec-pipeline-05",
     "skillId": "sec-pipeline",
     "difficulty": "medium",
-    "prompt": "The DevSec Blueprint's container module splits security into build, ship, and run. A scan only in CI covers:",
+    "prompt": "Container security is often split into build, ship, and run. What does a CI-only scan cover?",
     "choices": [
-      "All three, because an image does not change after CI.",
-      "Run, because the scanner executes the container.",
-      "Nothing. CI scans are not about images.",
-      "Build. Ship still needs registry controls and signatures, and run still needs admission and runtime policy."
+      "Build and ship.",
+      "Ship and run.",
+      "All three.",
+      "Build only."
     ],
     "answer": 3,
-    "explanation": "The gap is the image that was scanned and the image that was admitted being different digests.",
-    "source": "devsec blueprint",
-    "url": "https://devsecblueprint.com/curriculum"
+    "explanation": "Ship needs registry controls and signatures. Run needs admission and runtime policy. The gap is the scanned and admitted images being different digests."
   },
   {
     "id": "sec-image-07",
     "skillId": "sec-image",
     "difficulty": "medium",
-    "prompt": "Vulnerability management in that curriculum is a lifecycle, not a dashboard. After a finding exists, the step people skip is:",
+    "prompt": "Vulnerability management is a lifecycle. What step do people skip?",
     "choices": [
-      "Opening a ticket and never looking at the new digest.",
-      "Naming an owner, a due date, and a check that the fix actually landed.",
-      "Running the scanner a second time with the same ignore file.",
-      "Deleting the asset so the finding closes."
+      "Scanning again with a second tool.",
+      "An owner, a due date, and verifying the fix.",
+      "Deduplicating findings across scanners.",
+      "Scoring each finding with CVSS first."
     ],
     "answer": 1,
-    "explanation": "A finding without an owner is a list. Verification is a rescan of the thing you shipped.",
-    "source": "devsec blueprint",
-    "url": "https://devsecblueprint.com/curriculum"
+    "explanation": "A finding without an owner is a list. Verification is a rescan of the thing you shipped."
   },
   {
     "id": "sec-sbom-07",
     "skillId": "sec-sbom",
     "difficulty": "hard",
-    "prompt": "Supply-chain security in the blueprint adds provenance and attestations on top of an SBOM. An attestation is:",
+    "prompt": "Supply-chain security adds provenance attestations on top of an SBOM. What is an attestation?",
     "choices": [
-      "The Dockerfile comments.",
-      "A signed statement about how the artifact was built, not the list of packages itself.",
-      "The CVE list.",
-      "A Kubernetes NetworkPolicy."
+      "A signed approval to deploy it.",
+      "A signed claim about how it was built.",
+      "A signed list of the packages inside.",
+      "A signed report of the CVEs it has."
     ],
     "answer": 1,
-    "explanation": "You can have a bill of materials and still not know which builder produced it. The attestation is that claim.",
-    "source": "devsec blueprint",
-    "url": "https://devsecblueprint.com/curriculum"
+    "explanation": "You can have a bill of materials and still not know which builder produced it. The attestation is that claim."
   },
   {
     "id": "sec-secrets-06",
     "skillId": "sec-secrets",
     "difficulty": "medium",
-    "prompt": "The cloud path's secrets module treats rotation as part of storage. A secret you cannot rotate without redeploying by hand is:",
+    "prompt": "Rotation is part of storing a secret. What is a secret you cannot rotate without a manual redeploy?",
     "choices": [
-      "Stuck. The design should fetch the current value and accept a new one.",
-      "Safer, because rotation is an outage.",
-      "Required to live in the image so the value is versioned.",
-      "Not a secret if it is in a manager."
+      "A design flaw to fix.",
+      "Fine if stored encrypted.",
+      "Fine if access is logged.",
+      "Fine if it never expires."
     ],
     "answer": 0,
-    "explanation": "Leakage includes env dumps, crash logs, and Terraform state. Rotation only works if every copy can be replaced.",
-    "source": "devsec blueprint",
-    "url": "https://devsecblueprint.com/curriculum"
+    "explanation": "The app should fetch the current value and accept a new one. Leakage includes env dumps, crash logs, and Terraform state, so rotation must reach every copy."
   },
   {
     "id": "sec-bench-05",
     "skillId": "sec-bench",
     "difficulty": "medium",
-    "prompt": "awesome-devsecops lists kube-hunter next to kube-bench. They do not do the same job.",
+    "prompt": "kube-hunter and kube-bench are often listed together. How do they differ?",
     "choices": [
-      "Both are image scanners.",
-      "kube-hunter hardens SSH. kube-bench is a service mesh.",
-      "They both edit RBAC.",
-      "kube-bench compares the cluster with the CIS benchmark. kube-hunter probes the cluster for attack paths."
+      "kube-hunter checks CIS config. kube-bench probes attacks.",
+      "kube-bench scans images. kube-hunter scans manifests.",
+      "kube-bench audits RBAC. kube-hunter audits policies.",
+      "kube-bench checks CIS config. kube-hunter probes attacks."
     ],
     "answer": 3,
-    "explanation": "One is a configuration review. The other is an active look at exposure. Run the active one only against a cluster you own.",
-    "source": "awesome-devsecops",
-    "url": "https://github.com/devsecops/awesome-devsecops"
+    "explanation": "One is a configuration review. The other actively looks for exposure, so run it only against a cluster you own."
   },
   {
     "id": "sec-secrets-07",
     "skillId": "sec-secrets",
     "difficulty": "easy",
-    "prompt": "git-secrets and similar hooks in that list exist to:",
+    "prompt": "What do git-secrets and similar hooks do?",
     "choices": [
-      "Replace Vault.",
-      "Refuse a commit that contains a credential pattern, before it is pushed.",
-      "Encrypt the repository.",
-      "Scan running containers."
+      "Rotate credentials found in commits.",
+      "Block commits that contain credentials.",
+      "Encrypt files that contain credentials.",
+      "Remove credentials from git history."
     ],
     "answer": 1,
-    "explanation": "A hook on the laptop is early. It is not a guarantee once the secret is already in history.",
-    "source": "awesome-devsecops",
-    "url": "https://github.com/awslabs/git-secrets"
+    "explanation": "A hook on the laptop is early. It is not a guarantee once the secret is already in history."
   },
   {
     "id": "sec-audit-05",
     "skillId": "sec-audit",
     "difficulty": "medium",
-    "prompt": "osquery is in the hunting section of that list because:",
+    "prompt": "Why is osquery useful for threat hunting?",
     "choices": [
-      "You can ask a fleet what processes and sockets exist right now, repeatedly.",
-      "It applies Terraform.",
-      "It signs images.",
-      "It is an admission controller."
+      "You can query a fleet's live state, repeatedly.",
+      "It blocks processes that match known threats.",
+      "It ships logs from every host to one SIEM.",
+      "It records every syscall for later replay."
     ],
     "answer": 0,
-    "explanation": "A query you can rerun is how a one-off incident check becomes a control.",
-    "source": "awesome-devsecops",
-    "url": "https://osquery.io/"
+    "explanation": "A query you can rerun is how a one-off incident check becomes a control."
   },
   {
     "id": "sec-pki-07",
     "skillId": "sec-pki",
     "difficulty": "medium",
-    "prompt": "A public Kubernetes API certificate often leaks:",
+    "prompt": "What does a public Kubernetes API certificate often leak?",
     "choices": [
-      "Internal names and addresses in the SAN, because the API cert lists what the control plane calls itself.",
-      "The CA private key.",
-      "Every Secret in the cluster.",
-      "The node kubelet client key."
+      "Internal names and IPs in its SAN.",
+      "The cluster's version in its subject.",
+      "The service account signing key.",
+      "The node list in its issuer field."
     ],
     "answer": 0,
-    "explanation": "Internet scanners find clusters by that certificate. Do not put the API on the internet unless you mean to.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2018-07-19-exploring-public-kubernetes-certificates.markdown"
+    "explanation": "The API cert lists what the control plane calls itself. Internet scanners find clusters by it. Do not put the API on the internet unless you mean to."
   },
   {
     "id": "sec-pki-08",
     "skillId": "sec-pki",
     "difficulty": "hard",
-    "prompt": "Basic auth and static bearer tokens are a poor cluster login because:",
+    "prompt": "Why are basic auth and static tokens a poor cluster login?",
     "choices": [
-      "The credentials sit in cleartext on the API server and changing them means a restart.",
-      "They rotate hourly with no restart.",
-      "They are stored only in an HSM.",
-      "They support revocation lists."
+      "Cleartext on disk, and changes need a restart.",
+      "They expire every hour and break automation.",
+      "They cannot be bound to RBAC roles.",
+      "They only work over plain HTTP."
     ],
     "answer": 0,
-    "explanation": "Certificates avoid the password file and add the revocation problem: a lost client cert stays valid until it expires.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2018-09-10-Kubernetes-Secret-User-Database.markdown"
+    "explanation": "Certificates avoid the password file but add the revocation problem: a lost client cert stays valid until it expires."
   },
   {
     "id": "sec-pki-09",
     "skillId": "sec-pki",
     "difficulty": "medium",
-    "prompt": "A vanilla cluster typically has separate CAs, not one. The main API CA is for:",
+    "prompt": "A vanilla cluster typically has several CAs. What is the main API CA for?",
     "choices": [
-      "Public ACME certificates for Ingress only.",
-      "Authenticating clients and components to the API server.",
-      "Signing container images.",
-      "The etcd peer CA, which is the same key."
+      "Signing tokens for service accounts.",
+      "Authenticating clients to the API server.",
+      "Signing serving certs for Ingress hosts.",
+      "Encrypting Secrets at rest in etcd."
     ],
     "answer": 1,
-    "explanation": "Mixing those CAs, especially giving etcd a cert from the general Kubernetes CA, widens who can read the database.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2022-10-29-PCI-Kubernetes-Section5%20-%20PKI.markdown"
+    "explanation": "Mixing CAs, especially giving etcd certs from the general Kubernetes CA, widens who can read the database."
   },
   {
     "id": "sec-image-08",
     "skillId": "sec-image",
     "difficulty": "medium",
-    "prompt": "Scanning a container image for OS CVEs depends on:",
+    "prompt": "What does scanning an image for OS CVEs depend on?",
     "choices": [
-      "The Kubernetes version.",
-      "Whether the container is running.",
-      "The tag string latest.",
-      "The distro package database inside the image. A scanner that does not understand that distro reports a false empty."
+      "The image's labels, which list the packages.",
+      "The registry's metadata about the image.",
+      "The build logs of the image's last build.",
+      "The distro's package database in the image."
     ],
     "answer": 3,
-    "explanation": "Windows images, language packages, and distroless images each break a naive OS-only scanner in a different way.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2020-06-21-Container_Vulnerability_Scanning_Fun.markdown"
+    "explanation": "A scanner that does not understand that distro reports a false empty. Windows images, language packages, and distroless images each break a naive scanner differently."
   },
   {
     "id": "sec-runtime-06",
     "skillId": "sec-runtime",
     "difficulty": "medium",
-    "prompt": "Windows process-isolated containers share a kernel. Hyper-V isolated containers:",
+    "prompt": "Windows process-isolated containers share a kernel. What about Hyper-V isolated ones?",
     "choices": [
-      "Disable networking.",
-      "Run in a utility VM, so the kernel boundary is closer to a virtual machine than to a Linux container.",
-      "Are the same as process isolation with a different name.",
-      "Cannot run on Kubernetes."
+      "They share a VM with every other pod.",
+      "Each runs in its own utility VM.",
+      "They share a kernel but not a registry.",
+      "They run as host processes with ACLs."
     ],
     "answer": 1,
-    "explanation": "Host-process containers are a further step: they are not isolated from the host process space.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2022-09-03-Fun-With-Windows-Containers-Popping-Calc.markdown"
+    "explanation": "The boundary is closer to a virtual machine. Host-process containers go the other way: they are not isolated from the host process space."
   },
   {
     "id": "sec-runtime-07",
     "skillId": "sec-runtime",
     "difficulty": "hard",
-    "prompt": "The question 'do containers still contain' does not have a yes, because:",
+    "prompt": "Why is there no simple yes to 'do containers still contain'?",
     "choices": [
-      "User namespaces remove the shared kernel.",
-      "Seccomp makes kernel exploits impossible.",
-      "A shared Linux kernel is a large attack surface, and kernel bugs become container escapes.",
-      "cgroups are a hypervisor."
+      "cgroups do not limit kernel memory.",
+      "Namespaces cannot hide host files.",
+      "Kernel bugs are container escapes.",
+      "Seccomp is off in most runtimes."
     ],
     "answer": 2,
-    "explanation": "Stronger isolation, a VM runtime or a sandbox, is a choice when the neighbor workload is not trusted.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2026-06-03-do-containers-still-contain.markdown"
+    "explanation": "A shared Linux kernel is a large attack surface. A VM runtime or a sandbox is the choice when the neighbor workload is not trusted."
   },
   {
     "id": "sec-runtime-08",
     "skillId": "sec-runtime",
     "difficulty": "medium",
-    "prompt": "PCI's runtime section, as applied to Kubernetes, is where you decide:",
+    "prompt": "For a regulated Kubernetes platform, what does runtime security decide?",
     "choices": [
-      "When a normal container is not enough isolation and you want a VM sandbox or a harder runtime.",
-      "The color of the dashboard.",
-      "Which git branch deploys.",
-      "How to write Rego."
+      "When to use a sandbox or VM-based runtime.",
+      "Which syscalls each workload may make.",
+      "Which capabilities to drop from each pod.",
+      "Which processes runtime tools should flag."
     ],
     "answer": 0,
-    "explanation": "Workload security limits what a normal container may do. Runtime security is the isolation technology under it.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2022-11-27-PCI-Kubernetes-Section9%20-%20Runtime%20Security.markdown"
+    "explanation": "Workload security limits what a normal container may do. Runtime security is the isolation technology under it."
   },
   {
     "id": "sec-bench-06",
     "skillId": "sec-bench",
     "difficulty": "medium",
-    "prompt": "A Kubernetes configuration standard has to be written down because:",
+    "prompt": "Why must a Kubernetes configuration standard be written down?",
     "choices": [
-      "The API server refuses insecure flags.",
-      "Distributions differ. CIS benchmarks and Pod Security are starting points, then you say which one you enforce.",
-      "kube-bench ships one config that every cluster already matches.",
-      "Admission cannot express configuration policy."
+      "Admission webhooks load it by name.",
+      "Distributions differ in their defaults.",
+      "kube-bench needs a file to compare to.",
+      "The API server reads it at start-up."
     ],
     "answer": 1,
-    "explanation": "The PCI configuration section is a standard plus a check, not a hope.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2022-12-18-PCI-Kubernetes-Section15%20-%20Configuration%20Management.markdown"
+    "explanation": "CIS benchmarks and Pod Security are starting points. Then you say which one you enforce. The standard plus a check, not a hope."
   },
   {
     "id": "sec-audit-06",
     "skillId": "sec-audit",
     "difficulty": "medium",
-    "prompt": "Kubernetes audit logging is off unless you turn it on. On a managed cluster you:",
+    "prompt": "Kubernetes audit logging is off until enabled. On a managed cluster, how do you set it?",
     "choices": [
-      "Check the cloud console. You often cannot pass --audit-policy-file yourself.",
-      "SSH to the API server and edit the manifest.",
-      "Read it from kubelet journald.",
-      "Assume GKE, EKS, and AKS share one default."
+      "Through the provider's console or API.",
+      "By editing the API server's manifest.",
+      "By adding a flag to each kubelet.",
+      "By deploying an audit DaemonSet."
     ],
     "answer": 0,
-    "explanation": "The policy chooses what is recorded. A policy that logs nothing meets the 'enabled' checkbox and misses the incident.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2022-11-12-PCI-Kubernetes-Section7%20-%20Auditing.markdown"
+    "explanation": "You often cannot pass --audit-policy-file yourself, and GKE, EKS, and AKS differ. A policy that logs nothing ticks the box and misses the incident."
   },
   {
     "id": "sec-bench-07",
     "skillId": "sec-bench",
     "difficulty": "easy",
-    "prompt": "The PCI container guidance is vendor neutral. You still have to map each recommendation onto:",
+    "prompt": "The PCI container guidance is vendor neutral. What do you still have to do?",
     "choices": [
-      "The objects your platform actually has: Pod Security, RBAC, a CNI, a registry.",
-      "A single checkbox named PCI.",
-      "The Docker Desktop UI only.",
-      "A PDF stored in git with no control behind it."
+      "Map each item to your platform's features.",
+      "Pick a certified vendor to implement it.",
+      "Wait for a Kubernetes-specific version.",
+      "Run the official PCI scanner against it."
     ],
     "answer": 0,
-    "explanation": "The useful table is threats and practices. The work is saying which Kubernetes feature meets each row.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2022-09-10-PCI-Guidance-for-containers-and-container-orchestration-tools.markdown"
+    "explanation": "The useful table is threats and practices. The work is saying which feature, such as Pod Security, RBAC or a CNI, meets each row."
   },
   {
     "id": "sec-audit-07",
     "skillId": "sec-audit",
     "difficulty": "hard",
-    "prompt": "Go pprof on a Kubernetes component is a debugging server. Left reachable, it gives:",
+    "prompt": "What does a reachable Go pprof endpoint on a Kubernetes component give away?",
     "choices": [
-      "A read-only list of pod names and nothing else.",
-      "The same data as /healthz.",
-      "Nothing, because pprof requires cluster-admin.",
-      "Profiles of the process, which can include sensitive internals, on an endpoint meant for developers."
+      "A shell inside the component's container.",
+      "Write access to the component's flags.",
+      "The component's TLS private key file.",
+      "Profiles of the process's internals."
     ],
     "answer": 3,
-    "explanation": "Treat debug and profile ports like admin ports. Do not expose them on a node address.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2024-06-18-Taking-A-Look-At-Kubernetes-Profiling.markdown"
+    "explanation": "It is a debugging server meant for developers. Treat debug and profile ports like admin ports. Do not expose them on a node address."
   },
   {
     "id": "sec-least-08",
     "skillId": "sec-least",
     "difficulty": "medium",
-    "prompt": "Long-lived credentials cloned from a system account are a persistence path because:",
+    "prompt": "Why are long-lived credentials minted from a system account a persistence path?",
     "choices": [
-      "RBAC cannot grant create on secrets.",
-      "A token cannot be used from outside the cluster.",
-      "They survive the original session. Static pods and extra tokens are the same class of problem: access that outlives the person.",
-      "Kubernetes deletes every token when the admin laptop locks."
+      "They are hidden from the API's audit log.",
+      "They can be used without any RBAC binding.",
+      "They keep working after the session ends.",
+      "They let the holder escalate to cluster-admin."
     ],
     "answer": 2,
-    "explanation": "Review who can create tokens, certificates, and static pods. That is the persistence list.",
-    "source": "raesene",
-    "url": "https://github.com/raesene/raesene.github.io/blob/main/_posts/2022-12-21-Kubernetes%20persistence%20with%20Tocan%20and%20Teisteanas.markdown"
+    "explanation": "Static pods and extra tokens are the same class of problem: access that outlives the person. Review who can create tokens, certificates, and static pods."
   },
   {
     "id": "sec-pki-10",
     "skillId": "sec-pki",
     "difficulty": "easy",
-    "prompt": "A kubeconfig user entry built from a crt and a key is:",
+    "prompt": "What is a kubeconfig user entry built from a crt and a key?",
     "choices": [
-      "Client certificate authentication. You still need a context and a binding before kubectl can do anything useful.",
-      "A ClusterRole.",
-      "A bearer token.",
-      "An image pull secret."
+      "Client certificate authentication.",
+      "A ServiceAccount token in disguise.",
+      "An OIDC login with offline tokens.",
+      "Basic auth stored in base64."
     ],
     "answer": 0,
-    "explanation": "The certificate is the identity. The role binding is the permission.",
-    "source": "tech-vault",
-    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+    "explanation": "The certificate is the identity. You still need a context and a role binding before kubectl can do anything useful."
   },
   {
     "id": "sec-vault-06",
     "skillId": "sec-vault",
     "difficulty": "easy",
-    "prompt": "The Vault challenge's application reads a password at start so that:",
+    "prompt": "Why should an app read its password from Vault at start?",
     "choices": [
-      "Secrets are written into git encrypted with a password that is also in git.",
-      "The password is not in the Terraform file or the image. The app authenticates to Vault for that path.",
-      "The root token is in the Deployment.",
-      "Vault replaces Kubernetes."
+      "So the password is versioned in git.",
+      "So it is not in the Terraform or the image.",
+      "So Vault can rotate the root token often.",
+      "So the app can cache it in a ConfigMap."
     ],
     "answer": 1,
-    "explanation": "A policy for one path. A lease that expires. Not root.",
-    "source": "tech-vault",
-    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+    "explanation": "The app authenticates to Vault for that one path, with a lease that expires. Not root."
   },
   {
     "id": "sec-secrets-08",
     "skillId": "sec-secrets",
     "difficulty": "hard",
-    "prompt": "A MySQL backup to S3 is incomplete when:",
+    "prompt": "When is a MySQL backup to S3 incomplete?",
     "choices": [
-      "You cannot restore it, or the dump is unencrypted, or the script does not log a failed upload.",
-      "The script is idempotent.",
-      "The dump is gzipped.",
-      "It runs from cron."
+      "When the restore was never tested.",
+      "When the dump is compressed first.",
+      "When it runs from a cron schedule.",
+      "When it uses mysqldump, not a snapshot."
     ],
     "answer": 0,
-    "explanation": "Encrypt, upload, log, and rehearse the restore. The restore script is part of the backup.",
-    "source": "tech-vault",
-    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+    "explanation": "Encrypt, upload, log, and rehearse the restore. The restore script is part of the backup."
   },
   {
     "id": "sec-pipeline-06",
     "skillId": "sec-pipeline",
     "difficulty": "medium",
-    "prompt": "Shift-left, in the blueprint's secure SDLC, means:",
+    "prompt": "What does shift-left mean in a secure SDLC?",
     "choices": [
-      "There is no production control.",
-      "Developers ignore the finding.",
-      "A security check runs in the pipeline on the change, not as a review the week before release.",
-      "Security writes the application."
+      "Developers own security and skip review.",
+      "Scans run nightly instead of at release.",
+      "Checks run on each change in the pipeline.",
+      "Security reviews move to the design phase only."
     ],
     "answer": 2,
-    "explanation": "The checkpoint has to be able to fail the build. A report nobody gates on is not a checkpoint.",
-    "source": "devsec blueprint",
-    "url": "https://devsecblueprint.com/curriculum"
+    "explanation": "The checkpoint has to be able to fail the build. A report nobody gates on is not a checkpoint."
   },
   {
     "id": "sec-pipeline-07",
     "skillId": "sec-pipeline",
     "difficulty": "easy",
-    "prompt": "SAST and SCA in a pipeline are different because:",
+    "prompt": "How do SAST and SCA in a pipeline differ?",
     "choices": [
-      "SCA replaces image scanning.",
-      "SAST signs the binary.",
-      "SAST reads your code. SCA reads the dependencies you pulled in.",
-      "They both execute the running service. That is closer to DAST."
+      "SAST runs the app. SCA reads the source.",
+      "SAST scans images. SCA scans the code.",
+      "SAST reads your code. SCA reads dependencies.",
+      "SAST reads dependencies. SCA reads your code."
     ],
     "answer": 2,
-    "explanation": "A container image scan is a third pass, over the OS packages in the image.",
-    "source": "devsec blueprint",
-    "url": "https://devsecblueprint.com/curriculum"
+    "explanation": "Running the app is DAST. An image scan is a third pass, over the OS packages in the image."
   },
   {
     "id": "sec-threat-05",
     "skillId": "sec-threat",
     "difficulty": "easy",
-    "prompt": "A threat model before a tool choice asks:",
+    "prompt": "What does a threat model ask before you choose a tool?",
     "choices": [
-      "How many dashboards you can draw.",
-      "Whether the cluster is certified.",
-      "What you are protecting, who can reach it, and which boundary they cross.",
-      "Which scanner is newest."
+      "Which compliance controls the auditors want.",
+      "Which CVEs affect the current release.",
+      "What to protect, from whom, across which boundary.",
+      "Which tools fit your budget and your stack."
     ],
     "answer": 2,
-    "explanation": "The blueprint's threat-modeling module is that question. The tool is how you check one of the answers.",
-    "source": "devsec blueprint",
-    "url": "https://devsecblueprint.com/curriculum"
+    "explanation": "The tool is how you check one of the answers."
   },
   {
     "id": "sec-zero-05",
     "skillId": "sec-zero",
     "difficulty": "medium",
-    "prompt": "Workload identity in that module replaces a copied kubeconfig because:",
+    "prompt": "Why does workload identity replace a copied kubeconfig?",
     "choices": [
-      "Identity is the network subnet.",
-      "A Secret named admin is mounted everywhere.",
-      "The pod authenticates as itself, with a short-lived token, and RBAC is written for that identity.",
-      "The node uses one admin kubeconfig for every pod."
+      "Workload identity skips RBAC for pods.",
+      "The node's identity is shared with pods.",
+      "Each pod authenticates as itself, briefly.",
+      "The kubeconfig cannot be mounted in a pod."
     ],
     "answer": 2,
-    "explanation": "Network policy limits who can talk. Identity limits who the API believes.",
-    "source": "devsec blueprint",
-    "url": "https://devsecblueprint.com/courses/preview/devsecops--kubernetes_security_engineering"
+    "explanation": "RBAC is written for that identity, with short-lived tokens. Network policy limits who can talk. Identity limits who the API believes."
   },
   {
     "id": "sec-bench-08",
     "skillId": "sec-bench",
     "difficulty": "easy",
-    "prompt": "kube-hunter and kube-bench stay different after you read the whole awesome list:",
+    "prompt": "How do kube-hunter and kube-bench differ?",
     "choices": [
-      "Hunter is an image scanner.",
-      "Bench is a packet capture.",
-      "Hunter looks for exposed attack paths. Bench compares configuration to the CIS benchmark.",
-      "Both edit the cluster."
+      "Hunter scans images. Bench scans manifests.",
+      "Hunter audits RBAC. Bench audits network policy.",
+      "Hunter probes for attack paths. Bench checks CIS.",
+      "Hunter checks CIS. Bench probes for attack paths."
     ],
     "answer": 2,
-    "explanation": "Do not point an active probe at a cluster you do not own.",
-    "source": "awesome-devsecops",
-    "url": "https://github.com/aquasecurity/kube-hunter"
+    "explanation": "Do not point an active probe at a cluster you do not own."
   },
   {
     "id": "sec-secrets-09",
     "skillId": "sec-secrets",
     "difficulty": "medium",
-    "prompt": "Conjur, CredStash, Blackbox, SOPS, and Transcrypt are all on the secrets list. They are not interchangeable:",
+    "prompt": "Conjur, CredStash, Blackbox, SOPS, and Transcrypt are all secrets tools. How do they differ?",
     "choices": [
-      "SOPS is a container runtime.",
-      "Some encrypt a file you commit. Some are a service the app calls. A file cipher is not a lease.",
-      "They all rotate cloud keys automatically.",
-      "They all run inside etcd."
+      "Some use KMS. Others use PGP for every file.",
+      "Some encrypt files in git. Some are services.",
+      "Some rotate keys. Others store certificates.",
+      "Some run in Kubernetes. Others run on hosts."
     ],
     "answer": 1,
-    "explanation": "Pick a service when many workloads need a rotation. Pick a file cipher when git must hold the ciphertext.",
-    "source": "awesome-devsecops",
-    "url": "https://github.com/cyberark/conjur"
+    "explanation": "A file cipher is not a lease. Pick a service when many workloads need rotation, and a file cipher when git must hold ciphertext."
   },
   {
     "id": "sec-audit-08",
     "skillId": "sec-audit",
     "difficulty": "easy",
-    "prompt": "OSSEC and Wazuh are host intrusion stacks. They differ from kube-bench because:",
+    "prompt": "How do OSSEC and Wazuh differ from kube-bench?",
     "choices": [
-      "They watch a running host for change and for suspicious events. Bench is a point-in-time config review.",
-      "They scan Terraform plans.",
-      "They issue certificates.",
-      "They replace NetworkPolicy."
+      "They watch hosts continuously for events.",
+      "They scan Kubernetes manifests for flaws.",
+      "They review cluster config once, on demand.",
+      "They enforce admission policy in clusters."
     ],
     "answer": 0,
-    "explanation": "A host agent does not see the Kubernetes API audit log. You still want both.",
-    "source": "awesome-devsecops",
-    "url": "https://wazuh.com/"
+    "explanation": "Bench is a point-in-time config review. A host agent does not see the Kubernetes API audit log. You still want both."
   },
   {
     "id": "sec-image-09",
     "skillId": "sec-image",
     "difficulty": "medium",
-    "prompt": "Microscanner and Snyk are both dependency or image scanners in that testing list. A green result still needs:",
+    "prompt": "Microscanner or Snyk gives a green result. What is still needed?",
     "choices": [
-      "The scanner to be installed on the node as root.",
-      "The digest you run to be the digest you scanned, and a person who owns the finding.",
-      "Nothing else. Green means the cluster is safe.",
-      "A second copy of the same scanner."
+      "A signature from the scanner's vendor.",
+      "The scanned digest to be the deployed one.",
+      "A second scanner to confirm the result.",
+      "A rescan after the pods are running."
     ],
     "answer": 1,
-    "explanation": "SCA, image scan, and host scan see different inventories.",
-    "source": "awesome-devsecops",
-    "url": "https://github.com/aquasecurity/microscanner"
+    "explanation": "Someone also has to own any finding. SCA, image scan, and host scan see different inventories."
   },
   {
     "id": "sec-incident-05",
     "skillId": "sec-incident",
     "difficulty": "medium",
-    "prompt": "StackStorm in the automation section is for:",
+    "prompt": "What is StackStorm for in security automation?",
     "choices": [
-      "Replacing the identity provider.",
-      "Building container images.",
-      "A chat client.",
-      "Wiring a detected event to a scripted action. The action is only as safe as the credentials it holds."
+      "Storing incident timelines and notes.",
+      "Paging on-call engineers by schedule.",
+      "Collecting forensic images from hosts.",
+      "Triggering scripted actions from events."
     ],
     "answer": 3,
-    "explanation": "An automation that can quarantine a host is an admin. Scope it and log it.",
-    "source": "awesome-devsecops",
-    "url": "https://github.com/StackStorm/st2"
+    "explanation": "The action is only as safe as the credentials it holds. An automation that can quarantine a host is an admin. Scope it and log it."
   },
   {
     "id": "sec-secrets-10",
     "skillId": "sec-secrets",
     "difficulty": "easy",
-    "prompt": "git-secrets fails closed when:",
+    "prompt": "What does git-secrets block, and what does it not do?",
     "choices": [
-      "A commit message or a diff matches a key pattern. It does not scrub history that already contains the key.",
-      "The remote rejects the push by itself.",
-      "It rotates the key.",
-      "It encrypts .env."
+      "New commits with keys, not old history.",
+      "Pushes with keys, and it rewrites history.",
+      "Old history, but not new commits.",
+      "Key files, but not keys in code."
     ],
     "answer": 0,
-    "explanation": "Run it as a hook before the push. After the push, rotate.",
-    "source": "awesome-devsecops",
-    "url": "https://github.com/awslabs/git-secrets"
+    "explanation": "Run it as a hook before the push. After the push, rotate."
   }
 ]

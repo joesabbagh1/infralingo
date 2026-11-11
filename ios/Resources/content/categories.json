@@ -1,0 +1,62 @@
+[
+  {
+    "id": "linux",
+    "title": "Linux",
+    "order": 1,
+    "blurb": "Processes, systemd, permissions, storage, and the host itself."
+  },
+  {
+    "id": "networking",
+    "title": "Networking",
+    "order": 2,
+    "blurb": "The protocols and failure modes an operator actually hits."
+  },
+  {
+    "id": "servers",
+    "title": "Servers and edge",
+    "order": 3,
+    "blurb": "Proxies and web servers in front of the workload."
+  },
+  {
+    "id": "containers",
+    "title": "Containers",
+    "order": 4,
+    "blurb": "Images, runtimes, networking, and the Docker security model."
+  },
+  {
+    "id": "kubernetes",
+    "title": "Kubernetes",
+    "order": 5,
+    "blurb": "Workloads, traffic, scheduling, storage, and cluster failure."
+  },
+  {
+    "id": "cicd",
+    "title": "CI/CD",
+    "order": 6,
+    "blurb": "Pipelines, artifacts, and the path from git to a running release."
+  },
+  {
+    "id": "iac",
+    "title": "Infrastructure as code",
+    "order": 7,
+    "blurb": "Terraform, Ansible, and policy around the change."
+  },
+  {
+    "id": "cloud",
+    "title": "Cloud infrastructure",
+    "order": 8,
+    "blurb": "Identity, networks, compute, and the shared responsibility line."
+  },
+  {
+    "id": "observability",
+    "title": "Observability",
+    "order": 9,
+    "blurb": "Logs, metrics, traces, and alerts you can act on."
+  },
+  {
+    "id": "security",
+    "title": "Infra security",
+    "order": 10,
+    "blurb": "Identity, supply chain, admission, runtime, and containment."
+  }
+]

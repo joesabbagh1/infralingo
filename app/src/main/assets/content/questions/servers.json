@@ -5,31 +5,27 @@
     "difficulty": "medium",
     "prompt": "Nginx is the public listener and the app is on 127.0.0.1:8080. What belongs in the server block?",
     "choices": [
-      "The app's source code.",
-      "A second listen on 8080 that publishes the app directly and ignores the proxy.",
-      "proxy_pass to the upstream, plus the headers the app needs for scheme and client address.",
-      "A root directive only. proxy_pass is for Apache."
+      "return 301 to the app's address and port.",
+      "fastcgi_pass to the app's address and port.",
+      "proxy_pass to the app, plus forwarded headers.",
+      "upstream with the app, plus a root directive."
     ],
     "answer": 2,
-    "explanation": "Nginx terminates the public connection and proxies. The app does not have to be on a public interface.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Nginx terminates the public connection and proxies. Headers tell the app the scheme and client address. A redirect would send clients to a loopback address, and fastcgi_pass speaks a different protocol."
   },
   {
     "id": "srv-nginx-02",
     "skillId": "srv-nginx",
     "difficulty": "medium",
-    "prompt": "A reload failed and the old workers are still serving. What does nginx -t buy you before the reload?",
+    "prompt": "What does nginx -t buy you before a reload?",
     "choices": [
-      "It flushes the upstream connections and cannot fail.",
-      "It checks the config without replacing the running workers. A bad reload is how you drop traffic.",
-      "It rotates logs.",
-      "It upgrades the package."
+      "It rolls back to the last good config if needed.",
+      "It validates the config before anything changes.",
+      "It reloads only the workers whose config changed.",
+      "It starts a test worker beside the old ones."
     ],
     "answer": 1,
-    "explanation": "Test, then reload. reload keeps the old workers if the new config does not load.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Test, then reload. A reload that fails to parse keeps the old workers, but testing first tells you why before traffic is at stake."
   },
   {
     "id": "srv-nginx-03",
@@ -37,15 +33,13 @@
     "difficulty": "hard",
     "prompt": "The upstream is healthy and Nginx returns 413. What is the knob?",
     "choices": [
-      "The TLS protocol list.",
-      "client_max_body_size. The body is larger than Nginx will read.",
-      "worker_processes. That sets the body limit.",
-      "keepalive_timeout, which is the body size."
+      "client_body_buffer_size",
+      "client_max_body_size",
+      "large_client_header_buffers",
+      "proxy_buffer_size"
     ],
     "answer": 1,
-    "explanation": "413 is a client body the proxy refused. Raise the limit on purpose, not by accident on an upload endpoint you did not mean to open.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "413 is a request body larger than Nginx will accept. Header buffers give 400 or 414, and buffer sizes affect memory, not the limit. Raise it on purpose for the upload endpoint."
   },
   {
     "id": "srv-nginx-04",
@@ -53,31 +47,27 @@
     "difficulty": "easy",
     "prompt": "What is a worker process in Nginx?",
     "choices": [
-      "The access log.",
-      "A CGI binary for every request.",
-      "The process that handles connections. The master reads config and manages workers.",
-      "A Kubernetes worker node."
+      "A thread spawned for each incoming request.",
+      "The process that writes the access log.",
+      "The process that handles client connections.",
+      "The process that reads and validates config."
     ],
     "answer": 2,
-    "explanation": "You scale workers with CPU. The master staying up is what makes a reload possible.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The master reads config and manages workers. Workers handle connections with an event loop, so you scale them with CPU, not requests."
   },
   {
     "id": "srv-apache-01",
     "skillId": "srv-apache",
     "difficulty": "medium",
-    "prompt": "You inherited an Apache server and a vhost is not the one you are hitting. What selects the vhost?",
+    "prompt": "You inherited an Apache server and the wrong vhost answers. What selects the vhost?",
     "choices": [
-      "The first vhost is always used for every name, even when the names match another one. The first is only the default.",
-      "The matching ServerName or ServerAlias for the Host header, after the listen address matches.",
-      "The alphabetical order of files in /etc only, ignoring ServerName.",
-      "The size of the access log."
+      "The vhost whose Listen directive matches the port.",
+      "ServerName or ServerAlias matching the Host header.",
+      "The DocumentRoot that contains the requested path.",
+      "The order of Include lines in apache2.conf."
     ],
     "answer": 1,
-    "explanation": "Name-based hosting needs the name to match. The default vhost catches what does not.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "After the address and port match, name-based hosting picks by ServerName or ServerAlias. The first vhost for that address is only the default for unmatched names."
   },
   {
     "id": "srv-apache-02",
@@ -85,15 +75,13 @@
     "difficulty": "easy",
     "prompt": "Apache and Nginx are both reasonable choices for which job?",
     "choices": [
-      "Serving static files and reverse-proxying to an application.",
-      "Replacing the kernel firewall.",
-      "Storing container images.",
-      "Running etcd."
+      "Static files and reverse proxying.",
+      "Running the application's code.",
+      "Load balancing at L4 for UDP.",
+      "Issuing TLS certificates via ACME."
     ],
     "answer": 0,
-    "explanation": "They are HTTP servers and proxies. The rest of the platform does not care which one, as long as the config is the one you tested.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "They are HTTP servers and proxies. The rest of the platform does not care which one, as long as the config is the one you tested."
   },
   {
     "id": "srv-apache-03",
@@ -101,79 +89,69 @@
     "difficulty": "medium",
     "prompt": "A .htaccess file changed nothing. What is a common reason?",
     "choices": [
-      "Apache reloads .htaccess only on reboot, and AllowOverride is irrelevant.",
-      "The file must be named htaccess.conf in /etc.",
-      "AllowOverride is off for that directory, so Apache never reads .htaccess.",
-      ".htaccess overrides the main config even when AllowOverride None."
+      "Apache caches it until a graceful reload.",
+      "mod_rewrite is required for any .htaccess.",
+      "AllowOverride None for that directory.",
+      "The file is not owned by the Apache user."
     ],
     "answer": 2,
-    "explanation": "AllowOverride None is also how you stop a web root from changing auth rules out from under you.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "With AllowOverride None, Apache never reads .htaccess. It is re-read per request otherwise. That setting is also how you stop a web root changing auth rules."
   },
   {
     "id": "srv-apache-04",
     "skillId": "srv-apache",
     "difficulty": "hard",
-    "prompt": "You are choosing between Nginx and Apache for a high-connection proxy. What is the actual decision?",
+    "prompt": "You are choosing between Nginx and Apache for a high-connection proxy. What is the real decision?",
     "choices": [
-      "Apache cannot proxy.",
-      "Nginx cannot do TLS.",
-      "The choice is fixed by the language of the application.",
-      "Which one your team can configure safely. Both can proxy. An unfamiliar rewrite language is an outage."
+      "Which one supports HTTP/2 to the upstream servers.",
+      "Which one has a lower memory footprint per worker.",
+      "Which one can terminate TLS without a module.",
+      "Which one your team can configure and debug safely."
     ],
     "answer": 3,
-    "explanation": "Operability beats the benchmark you are not going to run.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Both can proxy at high connection counts. An unfamiliar rewrite language is an outage. Operability beats the benchmark you are not going to run."
   },
   {
     "id": "srv-caddy-01",
     "skillId": "srv-caddy",
     "difficulty": "medium",
-    "prompt": "Caddy's selling point on a small edge host is:",
+    "prompt": "What is Caddy's selling point on a small edge host?",
     "choices": [
-      "It replaces Kubernetes.",
-      "It cannot terminate TLS.",
-      "It only serves FTP.",
-      "It fetches and renews a public certificate for the site names with very little config."
+      "Built-in load balancing across data centers.",
+      "A web UI for editing proxy rules live.",
+      "Native support for running PHP in-process.",
+      "Automatic certificates with almost no config."
     ],
     "answer": 3,
-    "explanation": "Automatic HTTPS is the feature. You still have to point DNS at the host and let it answer the challenge.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Automatic HTTPS is the feature. You still have to point DNS at the host and let it answer the ACME challenge."
   },
   {
     "id": "srv-caddy-02",
     "skillId": "srv-caddy",
     "difficulty": "easy",
-    "prompt": "A Caddy site block with reverse_proxy is doing the same job as:",
+    "prompt": "A Caddy site block with reverse_proxy does the same job as:",
     "choices": [
-      "Nginx proxy_pass.",
-      "iptables MASQUERADE.",
-      "A git remote.",
-      "A Prometheus scrape."
+      "Nginx proxy_pass",
+      "Nginx try_files",
+      "Nginx rewrite",
+      "Nginx alias"
     ],
     "answer": 0,
-    "explanation": "Both are reverse proxies. The syntax changes, the role does not.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Both are reverse proxies. The syntax changes, the role does not. try_files, rewrite and alias are about local files and URLs."
   },
   {
     "id": "srv-caddy-03",
     "skillId": "srv-caddy",
     "difficulty": "medium",
-    "prompt": "Automatic HTTPS failed. What do you check before blaming the proxy code?",
+    "prompt": "Automatic HTTPS failed. What do you check before blaming the proxy?",
     "choices": [
-      "That the app is written in Go.",
-      "The inode of the access log.",
-      "DNS points at this host, port 80 or 443 is reachable for the challenge, and the hostname is one a public CA may sign.",
-      "That the server has a GPU."
+      "The certificate store directory is world-writable.",
+      "The host's clock is set to the CA's time zone.",
+      "DNS points here, and 80 or 443 is reachable.",
+      "The site block lists a tls directive with email."
     ],
     "answer": 2,
-    "explanation": "ACME needs a reachable name. An internal-only name needs an internal CA, not a public one.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "ACME needs a public name that resolves to this host and a reachable challenge port. An internal-only name needs an internal CA."
   },
   {
     "id": "srv-caddy-04",
@@ -181,47 +159,41 @@
     "difficulty": "hard",
     "prompt": "Why would you still put Caddy behind a cloud load balancer?",
     "choices": [
-      "You would not. Two proxies always break TLS.",
-      "Caddy cannot run if any other proxy exists.",
-      "Load balancers cannot pass TCP 443.",
-      "The balancer is the stable public address and the health check. Caddy is the HTTP config on the instance."
+      "Caddy cannot listen on privileged ports.",
+      "Caddy cannot renew certificates on its own.",
+      "The balancer is needed for HTTP/2 support.",
+      "Stable public address and health checks."
     ],
     "answer": 3,
-    "explanation": "Edges stack. Know which hop terminates TLS so you do not decrypt twice by accident.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The balancer is the stable address and health check. Caddy is the HTTP config on the instance. Know which hop terminates TLS so you do not decrypt twice by accident."
   },
   {
     "id": "srv-envoy-01",
     "skillId": "srv-envoy",
     "difficulty": "medium",
-    "prompt": "In a service mesh, Envoy's usual job next to an app is:",
+    "prompt": "In a service mesh, what is Envoy's usual job next to an app?",
     "choices": [
-      "To replace the container runtime.",
-      "To store the deployment YAML.",
-      "To be the Kubernetes scheduler.",
-      "To be the sidecar that takes inbound and outbound traffic so policy, mTLS, and metrics happen outside the app."
+      "The control plane pushing config to other proxies.",
+      "The CNI plugin wiring the pod's network.",
+      "The admission webhook injecting the mesh labels.",
+      "The sidecar handling its traffic, mTLS and metrics."
     ],
     "answer": 3,
-    "explanation": "The app talks to localhost or is redirected to the sidecar. The sidecar talks to the rest of the mesh.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The app's traffic is redirected through the sidecar, and the sidecar talks to the rest of the mesh. istiod or similar is the control plane."
   },
   {
     "id": "srv-envoy-02",
     "skillId": "srv-envoy",
     "difficulty": "medium",
-    "prompt": "A listener, a route, and a cluster in Envoy correspond to:",
+    "prompt": "In Envoy, what do a listener, a route, and a cluster correspond to?",
     "choices": [
-      "CPU, memory, and disk.",
-      "Namespace, pod, and node.",
-      "Where it accepts connections, how it matches a request, and the upstream pool it sends to.",
-      "Three kinds of TLS certificates."
+      "Matching, accepting, and health checking.",
+      "The port, the TLS context, and the filter chain.",
+      "Accepting, matching, and the upstream pool.",
+      "Accepting, the upstream pool, and matching."
     ],
     "answer": 2,
-    "explanation": "If the cluster has no healthy endpoints, the listener still accepts and then fails the request.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "If the cluster has no healthy endpoints, the listener still accepts and then fails the request."
   },
   {
     "id": "srv-envoy-03",
@@ -229,47 +201,41 @@
     "difficulty": "hard",
     "prompt": "An eBPF program redirects connections into Envoy without the app knowing. What must the redirect avoid?",
     "choices": [
-      "A loop, where Envoy's own outbound connection is redirected back into Envoy.",
-      "Using a socket.",
-      "Reading packet headers.",
-      "Running on Linux."
+      "Recapturing Envoy's own outbound connections.",
+      "Redirecting connections to loopback addresses.",
+      "Changing the source port of redirected flows.",
+      "Redirecting UDP flows that Envoy cannot parse."
     ],
     "answer": 0,
-    "explanation": "The usual guard is a mark or an identity so the proxy's own flows are not captured again.",
-    "source": "iximiuz",
-    "url": "https://labs.iximiuz.com/tutorials/ebpf-envoy-egress-dc77ccd7"
+    "explanation": "Without a guard, Envoy's upstream connection is redirected back into Envoy in a loop. The usual guard is a mark or an identity so the proxy's own flows are skipped."
   },
   {
     "id": "srv-envoy-04",
     "skillId": "srv-envoy",
     "difficulty": "easy",
-    "prompt": "Envoy is not unique to one mesh. What else uses it?",
+    "prompt": "Envoy is not unique to one mesh. Where else is it used?",
     "choices": [
-      "Only as a text editor.",
-      "Only on Windows desktops.",
-      "Ingress controllers and API gateways. It is a proxy you can run on its own.",
-      "Only Istio."
+      "Service discovery and DNS servers.",
+      "Log shippers and metrics agents.",
+      "Ingress controllers and API gateways.",
+      "Container runtimes and image builders."
     ],
     "answer": 2,
-    "explanation": "Treat it as a programmable proxy. The control plane is what differs between products.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Treat it as a programmable proxy you can run on its own. Contour, Emissary and Envoy Gateway use it. The control plane is what differs."
   },
   {
     "id": "srv-cache-01",
     "skillId": "srv-cache",
     "difficulty": "medium",
-    "prompt": "A caching reverse proxy in front of an app helps when:",
+    "prompt": "When does a caching reverse proxy in front of an app help?",
     "choices": [
-      "Every response is a unique POST.",
-      "You want to hide a memory leak in the app. The cache will not do that.",
-      "The origin is faster than the cache.",
-      "Many clients fetch the same cacheable response and you can say so with freshness rules."
+      "Each client fetches its own personalized pages.",
+      "The app is slow because of database write locks.",
+      "Most requests are POSTs that change state.",
+      "Many clients fetch the same cacheable responses."
     ],
     "answer": 3,
-    "explanation": "Cache what is safe to reuse. Authenticated and personalized responses need explicit rules or you will leak one user to another.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Cache what is safe to reuse, with freshness rules. Authenticated and personalized responses need explicit rules or you will leak one user to another."
   },
   {
     "id": "srv-cache-02",
@@ -277,15 +243,13 @@
     "difficulty": "easy",
     "prompt": "What does a CDN cache that your origin used to serve?",
     "choices": [
-      "TCP state for SSH.",
-      "Copies of cacheable responses, closer to the client.",
-      "Your git credentials.",
-      "The origin's private keys, by default."
+      "Database query results for the origin.",
+      "Copies of cacheable responses near clients.",
+      "Every response, including private ones.",
+      "The origin's TLS session keys for reuse."
     ],
     "answer": 1,
-    "explanation": "The origin still has to serve the first request and anything you mark uncacheable.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The origin still serves the first request and anything you mark private or uncacheable."
   },
   {
     "id": "srv-cache-03",
@@ -293,30 +257,26 @@
     "difficulty": "medium",
     "prompt": "You deployed a new asset and clients still see the old one. What is the lever?",
     "choices": [
-      "Changing the TCP port of SSH.",
-      "The cache key and the TTL or the invalidation. A new file at the same URL can be sitting in the cache.",
-      "Restarting the laptop browser only. Shared caches ignore origin headers.",
-      "Deleting the origin. Caches then invent a new file."
+      "A new ETag, which caches check every time.",
+      "Hashed file names, or a purge of that URL.",
+      "A restart of the origin to clear its cache.",
+      "A shorter keepalive timeout on the proxy."
     ],
     "answer": 1,
-    "explanation": "Name the asset with a hash, or purge. Otherwise the TTL is the wait.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "A new file at the same URL can sit in the cache until its TTL. Caches only revalidate the ETag once the copy is stale. Name assets with a hash, or purge."
   },
   {
     "id": "srv-cache-04",
     "skillId": "srv-cache",
     "difficulty": "hard",
-    "prompt": "Why is caching a Set-Cookie response dangerous by default?",
+    "prompt": "Why is caching a Set-Cookie response dangerous?",
     "choices": [
-      "Cookies disable TCP.",
-      "Caches cannot store headers.",
-      "Set-Cookie forces the origin offline.",
-      "The next client can receive the first client's cookie and session."
+      "The cookie expires before the cached copy does.",
+      "Browsers reject cookies served from a cache.",
+      "The cache strips the cookie and logs users out.",
+      "The next client may receive the first one's session."
     ],
     "answer": 3,
-    "explanation": "Default rules should treat cookie and authorization responses as private.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Default rules should treat cookie and authorization responses as private."
   }
 ]

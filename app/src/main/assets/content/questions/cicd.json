@@ -3,177 +3,155 @@
     "id": "cicd-git-01",
     "skillId": "cicd-git",
     "difficulty": "easy",
-    "prompt": "A secret landed in a commit that is already on the remote. Deleting the file in a new commit is not enough because:",
+    "prompt": "A secret landed in a commit that is already on the remote. Why is deleting the file in a new commit not enough?",
     "choices": [
-      "Git rewrites old blobs when you delete a file.",
-      "Remotes only store the latest tree.",
-      "A force push of one empty commit erases every blob.",
-      "The secret remains in the history anyone can clone."
+      "The remote keeps a cached copy for thirty days.",
+      "Git only removes it once you run git gc locally.",
+      "The deletion is not pushed until the branch merges.",
+      "The secret is still in the history anyone can clone."
     ],
     "answer": 3,
-    "explanation": "Rotate the secret first. History rewrite is a second, coordinated step.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Rotate the secret first. History rewrite is a second, coordinated step, and clones made before it keep the secret anyway."
   },
   {
     "id": "cicd-git-02",
     "skillId": "cicd-git",
     "difficulty": "medium",
-    "prompt": "main is protected and you need a reviewed change. What is the point of the protection?",
+    "prompt": "main is protected and you need a reviewed change. What does the protection do?",
     "choices": [
-      "It encrypts the repository.",
-      "It blocks all tags.",
-      "The branch that deploys cannot be rewritten or updated without the review you required.",
-      "It makes git faster."
+      "Prevents anyone from creating branches off main.",
+      "Runs the CI workflows before every push to main.",
+      "Blocks updates to main without the required review.",
+      "Signs every commit that is merged into main."
     ],
     "answer": 2,
-    "explanation": "Protection is a policy on the remote. It is not a property of the commits themselves.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Protection is a policy on the remote, not a property of the commits. Required checks are configured with it but run on the pull request."
   },
   {
     "id": "cicd-git-03",
     "skillId": "cicd-git",
     "difficulty": "medium",
-    "prompt": "You rebased a branch that a colleague had pulled. What did you change?",
+    "prompt": "You rebased a branch a colleague had already pulled. What did you change?",
     "choices": [
-      "Nothing, if the diff is the same.",
-      "The default branch of the remote.",
-      "The commit hashes. Their copy of the branch is now a different history.",
-      "Only the commit messages. Hashes are stable across rebase."
+      "Only the commit dates, not the hashes.",
+      "Only the merge base, not the commits.",
+      "The commit hashes, so their copy diverges.",
+      "The commit authors, so blame is rewritten."
     ],
     "answer": 2,
-    "explanation": "Rebase is fine on a branch you own. It is hostile on a branch other people have based work on.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Rebase rewrites commits, so every hash changes. Fine on a branch you own, hostile on a branch other people have based work on."
   },
   {
     "id": "cicd-git-04",
     "skillId": "cicd-git",
     "difficulty": "hard",
-    "prompt": "A signed tag and a floating branch name differ for a release because:",
+    "prompt": "Why release from a signed tag rather than a branch name?",
     "choices": [
-      "Git cannot sign a tag.",
-      "The tag can name one commit. A branch moves when someone pushes.",
-      "Tags move by default and branches cannot.",
-      "Signatures cover the working tree, not the commit."
+      "A tag is pushed with every git push.",
+      "A tag names one commit. A branch moves.",
+      "A tag carries the build artifacts with it.",
+      "A branch cannot be checked out in CI."
     ],
     "answer": 1,
-    "explanation": "Release from a tag or a commit you recorded. Do not release from a branch tip that can still move.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Release from a tag or a commit you recorded. Tags are not pushed by default, and a branch tip can still move."
   },
   {
     "id": "cicd-actions-01",
     "skillId": "cicd-actions",
     "difficulty": "medium",
-    "prompt": "A job needs to deploy to cloud without a long-lived access key. What should it use?",
+    "prompt": "A job must deploy to a cloud without a long-lived access key. What should it use?",
     "choices": [
-      "A cloud access key in the repository secrets, with admin rights, reused by every repo.",
-      "The runner's instance profile from an untrusted pull request, with no subject check.",
-      "A key checked into the workflow YAML.",
-      "OIDC federation, so the workflow gets a short-lived token for one role."
+      "An access key in an environment secret.",
+      "A personal access token from a maintainer.",
+      "The runner's instance role for all jobs.",
+      "OIDC federation to a role scoped to the repo."
     ],
     "answer": 3,
-    "explanation": "Federate the identity and constrain the subject to the repo and the branch you trust.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Federate the identity and constrain the subject to the repo and branch you trust. An instance role would be shared with every job on that runner."
   },
   {
     "id": "cicd-actions-02",
     "skillId": "cicd-actions",
     "difficulty": "hard",
-    "prompt": "pull_request_target runs with the base repository's secrets and a checkout of the pull request can run its code. Why is that dangerous?",
+    "prompt": "pull_request_target runs with the base repository's secrets. Why is checking out the PR's code in it dangerous?",
     "choices": [
-      "It only runs on tags.",
-      "Secrets are not available to any GitHub event.",
-      "Untrusted code from the pull request executes in a context that can see secrets.",
-      "pull_request_target has no token."
+      "The workflow file is taken from the PR branch.",
+      "The GITHUB_TOKEN is scoped to the fork.",
+      "The PR's code runs where secrets are visible.",
+      "The PR's code can push directly to main."
     ],
     "answer": 2,
-    "explanation": "Use pull_request for untrusted code. Keep secrets off workflows that execute the PR's own scripts.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "pull_request_target uses the base branch's workflow file, which is why it is trusted. Running the PR's scripts in it hands them the secrets. Use pull_request for untrusted code."
   },
   {
     "id": "cicd-actions-03",
     "skillId": "cicd-actions",
     "difficulty": "easy",
-    "prompt": "A workflow file lives in:",
+    "prompt": "Where does a GitHub Actions workflow file live?",
     "choices": [
-      "The runner's /etc.",
-      "The container registry.",
-      "Kubernetes only.",
-      ".github/workflows in the repository that runs it."
+      ".github/actions",
+      ".ci/workflows",
+      ".github/runners",
+      ".github/workflows"
     ],
     "answer": 3,
-    "explanation": "The file is code. Review it like the deploy it performs.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The file is code. Review it like the deploy it performs. .github/actions is a common place for local composite actions."
   },
   {
     "id": "cicd-actions-04",
     "skillId": "cicd-actions",
     "difficulty": "medium",
-    "prompt": "actions/checkout@v4 is convenient and weaker than a pin because:",
+    "prompt": "Why is actions/checkout@v4 weaker than a pin?",
     "choices": [
-      "Pinning breaks permissions.",
-      "The tag can move to a new commit you have not read. A SHA pin does not.",
-      "A SHA changes every time the action's default branch changes, so it is less stable. The SHA is the stable one.",
-      "Tags are immutable on GitHub."
+      "The v4 tag runs with broader token permissions.",
+      "The v4 tag can be moved to unreviewed code.",
+      "The v4 tag skips the action's signature check.",
+      "The v4 tag always resolves to a pre-release."
     ],
     "answer": 1,
-    "explanation": "Pin third-party actions to a commit if the workflow can deploy or read secrets.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "A tag can move to a commit you have not read. A full SHA pin cannot. Pin third-party actions if the workflow can deploy or read secrets."
   },
   {
     "id": "cicd-jenkins-01",
     "skillId": "cicd-jenkins",
     "difficulty": "medium",
-    "prompt": "A Jenkins controller and its agents divide the work as:",
+    "prompt": "How do a Jenkins controller and its agents divide the work?",
     "choices": [
-      "Agents cannot be ephemeral.",
-      "The controller schedules and holds configuration. The agent runs the build.",
-      "The agent stores credentials and the controller executes compilers.",
-      "They must be the same machine."
+      "Agents hold credentials. The controller runs.",
+      "The controller schedules. Agents run builds.",
+      "Agents schedule. The controller runs builds.",
+      "The controller runs builds. Agents store logs."
     ],
     "answer": 1,
-    "explanation": "Keep the controller small and the agents replaceable. A persistent agent accumulates secrets and toolchains.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Keep the controller small and the agents replaceable. Running builds on the controller exposes its credentials and config."
   },
   {
     "id": "cicd-jenkins-02",
     "skillId": "cicd-jenkins",
     "difficulty": "easy",
-    "prompt": "A Jenkinsfile in the repo is better than a job clicked together in the UI because:",
+    "prompt": "Why is a Jenkinsfile in the repo better than a job built in the UI?",
     "choices": [
-      "Jenkinsfile disables credentials.",
-      "The UI job is automatically reproducible.",
-      "The pipeline is reviewed and versioned with the code.",
-      "The UI cannot run pipelines."
+      "It gets access to more Jenkins plugins.",
+      "It can run on agents, unlike UI jobs.",
+      "It is reviewed and versioned with the code.",
+      "It runs faster than a UI-defined job does."
     ],
     "answer": 2,
-    "explanation": "If it is not in git, you cannot review the deploy.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "If it is not in git, you cannot review the deploy."
   },
   {
     "id": "cicd-jenkins-03",
     "skillId": "cicd-jenkins",
     "difficulty": "medium",
-    "prompt": "Credentials in a Jenkins job should be:",
+    "prompt": "How should credentials be used in a Jenkins job?",
     "choices": [
-      "Printed in the log so the next person can debug.",
-      "Stored in the job description.",
-      "The same global admin token for every folder.",
-      "Looked up from the credentials store and masked, scoped to the jobs that need them."
+      "From environment variables set on the agent.",
+      "From a file committed beside the Jenkinsfile.",
+      "From one global token shared by every folder.",
+      "From the credentials store, scoped and masked."
     ],
     "answer": 3,
-    "explanation": "Scope and mask. A folder store is narrower than the global one.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Scope and mask. A folder store is narrower than the global one, and agent env vars are visible to every job on that agent."
   },
   {
     "id": "cicd-jenkins-04",
@@ -181,175 +159,153 @@
     "difficulty": "hard",
     "prompt": "A shared agent just built an untrusted branch and will build main next. What is the risk?",
     "choices": [
-      "Agents wipe themselves on every job by default. They do not, unless you made them ephemeral.",
-      "Branches cannot share an agent.",
-      "The risk is only cosmetic.",
-      "Files, tokens, and a poisoned tool cache from the untrusted build can affect main."
+      "The untrusted build used up the agent's executors.",
+      "The workspace for main is locked by the last build.",
+      "The agent's JVM keeps the old branch's classpath.",
+      "Leftover files or a poisoned cache can affect main."
     ],
     "answer": 3,
-    "explanation": "Use ephemeral agents, or isolate untrusted jobs from the agent that produces releases.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Agents do not wipe themselves unless you made them ephemeral. Use ephemeral agents, or isolate untrusted jobs from the agent that produces releases."
   },
   {
     "id": "cicd-artifacts-01",
     "skillId": "cicd-artifacts",
     "difficulty": "medium",
-    "prompt": "You rebuilt version 1.4.2 from a branch that moved and pushed it over the old artifact. What broke?",
+    "prompt": "You rebuilt version 1.4.2 from a branch that moved and pushed over the old artifact. What broke?",
     "choices": [
-      "Versions are supposed to float.",
-      "Registries reject overwrites, so this cannot happen. Many will not.",
-      "The git tag is the artifact.",
-      "The version no longer names one set of bytes. Anyone who already verified 1.4.2 verified something else."
+      "1.4.2 now fails its checksum on every pull.",
+      "1.4.2 lost its tag in the git repository.",
+      "1.4.2 is now marked deprecated by the registry.",
+      "1.4.2 no longer names one set of bytes."
     ],
     "answer": 3,
-    "explanation": "Publish an immutable version. A new commit is a new version.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Anyone who already verified 1.4.2 verified something else. Publish an immutable version. A new commit is a new version."
   },
   {
     "id": "cicd-artifacts-02",
     "skillId": "cicd-artifacts",
     "difficulty": "easy",
-    "prompt": "An artifact repository such as Nexus exists to:",
+    "prompt": "What is an artifact repository such as Nexus for?",
     "choices": [
-      "Replace git.",
-      "Run the production pods.",
-      "Store only container logs.",
-      "Hold the built outputs the deploy consumes, separate from the source repo."
+      "Storing the source code that builds read from.",
+      "Storing the pipeline's logs and test reports.",
+      "Storing the cluster's manifests for GitOps.",
+      "Storing the built outputs that deploys consume."
     ],
     "answer": 3,
-    "explanation": "Source is git. The thing you run is the artifact.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Source is git. The thing you run is the artifact."
   },
   {
     "id": "cicd-artifacts-03",
     "skillId": "cicd-artifacts",
     "difficulty": "medium",
-    "prompt": "Promotion between staging and production should move:",
+    "prompt": "What should move from staging to production during promotion?",
     "choices": [
-      "A tag that still points at a moving branch.",
-      "The same digest or the same immutable artifact, not a new build from the same branch name.",
-      "A fresh build of main, which might not match what you tested.",
-      "The working tree of a laptop."
+      "The same Dockerfile and build arguments.",
+      "The same immutable artifact or digest.",
+      "A fresh build from the same release tag.",
+      "A fresh build from the same commit SHA."
     ],
     "answer": 1,
-    "explanation": "If you rebuild, you did not promote. You tested one thing and shipped another.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "If you rebuild, you did not promote. Even the same commit can produce different bytes on a different day. You tested one thing and shipped another."
   },
   {
     "id": "cicd-artifacts-04",
     "skillId": "cicd-artifacts",
     "difficulty": "hard",
-    "prompt": "A container image and a Helm chart and a git commit all claim to be the release. What has to agree?",
+    "prompt": "An image, a Helm chart and a git commit all claim to be the release. What has to agree?",
     "choices": [
-      "The image tag latest, the chart without a version, and today's main.",
-      "They cannot be related.",
-      "The chart values pin the image digest, and the git commit records that chart version.",
-      "Only the git branch name. Digests are optional."
+      "The git tag name matches the image tag and the chart name.",
+      "The chart's appVersion matches the git branch name.",
+      "The chart pins the image digest, and git pins the chart version.",
+      "The image tag and the chart version use the same number."
     ],
     "answer": 2,
-    "explanation": "One release, one set of ids, written down.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "One release, one set of ids, written down. Matching names are a convention. Pinned digests and versions are the link."
   },
   {
     "id": "cicd-promotion-01",
     "skillId": "cicd-promotion",
     "difficulty": "medium",
-    "prompt": "A manual approval gate before production is useful when:",
+    "prompt": "When is a manual approval gate before production useful?",
     "choices": [
-      "Approvals replace tests.",
-      "The gate rebuilds from main after approval, picking up new commits.",
-      "A human has to accept the already-built artifact, not when a human rebuilds it by hand.",
-      "You want production to build from a different Dockerfile."
+      "When a human reruns the tests after approval.",
+      "When a human rebuilds it on a trusted machine.",
+      "When a human accepts the artifact already built.",
+      "When a human picks which commit gets built."
     ],
     "answer": 2,
-    "explanation": "Approve the thing you tested. Do not let the gate become a second, untested build.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Approve the thing you tested. Do not let the gate become a second, untested build."
   },
   {
     "id": "cicd-promotion-02",
     "skillId": "cicd-promotion",
     "difficulty": "easy",
-    "prompt": "Staging and production should differ by:",
+    "prompt": "How should staging and production differ?",
     "choices": [
-      "Whether tests ran.",
-      "Config and scale, not by a different commit of the application.",
-      "The application source.",
-      "The language."
+      "The build pipeline.",
+      "Config and scale only.",
+      "The commit deployed.",
+      "The base image used."
     ],
     "answer": 1,
-    "explanation": "If staging is a different build, it did not rehearse the release.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "If staging runs a different build, it did not rehearse the release."
   },
   {
     "id": "cicd-promotion-03",
     "skillId": "cicd-promotion",
     "difficulty": "hard",
-    "prompt": "A rollback should be:",
+    "prompt": "What should a rollback be?",
     "choices": [
-      "A deploy of a previously known artifact, which you still have.",
-      "A revert commit that is built for the first time during the incident.",
-      "A kubectl delete of the namespace.",
-      "Impossible if you use GitOps."
+      "A deploy of a previous artifact you kept.",
+      "A revert commit, built and deployed fast.",
+      "A rebuild of the last release tag.",
+      "A restore of the cluster from backup."
     ],
     "answer": 0,
-    "explanation": "Keep the old artifact. A rollback that requires a rebuild is not a rollback.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "A rollback that requires a rebuild is not a rollback. Keep the old artifact so you deploy known bytes during the incident."
   },
   {
     "id": "cicd-promotion-04",
     "skillId": "cicd-promotion",
     "difficulty": "medium",
-    "prompt": "Environment-specific config belongs:",
+    "prompt": "Where does environment-specific config belong?",
     "choices": [
-      "Baked into the image as a build arg for each environment, producing several 'same' versions.",
-      "In the application source as a production password.",
-      "In the git history of a public repo.",
-      "Outside the immutable artifact, injected at deploy."
+      "In the image, set by a build arg per env.",
+      "In the source, behind an environment flag.",
+      "In the image, in one file per environment.",
+      "Outside the artifact, injected at deploy."
     ],
     "answer": 3,
-    "explanation": "One artifact, many configs. Secrets stay in the secret store.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "One artifact, many configs. Build args per environment produce several 'same' versions. Secrets stay in the secret store."
   },
   {
     "id": "cicd-runners-01",
     "skillId": "cicd-runners",
     "difficulty": "medium",
-    "prompt": "A self-hosted runner on a production network, shared by every repository in the org, is:",
+    "prompt": "What is a self-hosted runner on the production network, shared by every repository in the org?",
     "choices": [
-      "A pivot. Untrusted workflows become code running next to production.",
-      "The recommended default for public forks.",
-      "Isolated per job even when the disk persists.",
-      "Unable to read environment variables."
+      "A pivot from any workflow into production.",
+      "A safe default if forks cannot trigger it.",
+      "Isolated per job, since each job has a workspace.",
+      "Fine, as long as its disk is encrypted."
     ],
     "answer": 0,
-    "explanation": "Isolate runners. Ephemeral is better than a long-lived machine full of caches and tokens.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Untrusted workflows become code running next to production, with caches and tokens left between jobs. Isolate runners and prefer ephemeral ones."
   },
   {
     "id": "cicd-runners-02",
     "skillId": "cicd-runners",
     "difficulty": "easy",
-    "prompt": "GitHub-hosted runners are a better default for a public repository because:",
+    "prompt": "Why are GitHub-hosted runners a better default for a public repository?",
     "choices": [
-      "The untrusted job does not land on your network.",
-      "They are faster than any self-hosted machine.",
-      "They can reach your private subnets automatically.",
-      "They store your production kubeconfig."
+      "Untrusted jobs do not run on your network.",
+      "They are the only runners forks can trigger.",
+      "They cache dependencies between all jobs.",
+      "They come with your cloud credentials set."
     ],
     "answer": 0,
-    "explanation": "Bring a self-hosted runner only when the job needs your private network, and then scope it.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Bring a self-hosted runner only when the job needs your private network, and then scope it."
   },
   {
     "id": "cicd-runners-03",
@@ -357,158 +313,138 @@
     "difficulty": "hard",
     "prompt": "A runner's cloud role can deploy, and the workflow checks out a pull request. What should be true of that role?",
     "choices": [
-      "Roles cannot be limited by repository.",
-      "The role is safe because the runner is in a private subnet.",
-      "Only workflows you trust, on branches you protect, can assume it. A fork's pull request must not.",
-      "Any workflow in the repo can assume it, including forks."
+      "It can be assumed only from the runner's subnet.",
+      "It can be assumed only while a PR is open.",
+      "Only protected branches' workflows can assume it.",
+      "Any workflow in the repo can assume it, not forks."
     ],
     "answer": 2,
-    "explanation": "The identity of the workflow is part of the security boundary.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Fork PRs and unprotected branches must not get it. Same-repo branches can still run unreviewed code. The workflow's identity is part of the security boundary."
   },
   {
     "id": "cicd-runners-04",
     "skillId": "cicd-runners",
     "difficulty": "medium",
-    "prompt": "Caches on a shared runner are a supply-chain issue because:",
+    "prompt": "Why are caches on a shared runner a supply-chain issue?",
     "choices": [
-      "Caches live in the registry and are immutable.",
-      "Only the compiler uses caches, never package managers.",
-      "A previous job can poison a dependency cache the next job trusts.",
-      "Caches are signed by the dependency author always."
+      "Caches skip the lockfile's integrity hashes.",
+      "Caches make builds non-deterministic.",
+      "One job can poison what the next job trusts.",
+      "Caches leak the runner's IP to package hosts."
     ],
     "answer": 2,
-    "explanation": "Key the cache tightly or rebuild on a clean agent for the release job.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Key the cache tightly or rebuild on a clean agent for the release job."
   },
   {
     "id": "cicd-supply-01",
     "skillId": "cicd-supply",
     "difficulty": "medium",
-    "prompt": "Pinning an action or a base image by digest helps because:",
+    "prompt": "Why pin an action or a base image by digest?",
     "choices": [
-      "A digest includes the Kubernetes manifests.",
-      "A moved tag cannot change what you run without a review of the new digest.",
-      "Digests are easier to remember.",
-      "Tags cannot be scanned."
+      "A digest gets security fixes on its own.",
+      "A moved tag cannot change what you run.",
+      "A digest pulls faster than a tag does.",
+      "A digest also verifies the publisher."
     ],
     "answer": 1,
-    "explanation": "Update digests on purpose, with a diff, not because a tag moved overnight.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Update digests on purpose, with a diff, not because a tag moved overnight. A digest proves bytes, not who published them, and it never updates itself."
   },
   {
     "id": "cicd-supply-02",
     "skillId": "cicd-supply",
     "difficulty": "medium",
-    "prompt": "A dependency bot opened a pull request that bumps a library. What do you still owe?",
+    "prompt": "A dependency bot opened a PR that bumps a library. What do you still owe?",
     "choices": [
-      "Disabling the test workflow for bot authors.",
-      "A review and a test run. The bot does not know if the new version is safe for this program.",
-      "Nothing. Bots only open safe upgrades.",
-      "A production deploy from the bot's branch with no review."
+      "Nothing if the package is signed.",
+      "A review and a passing test run.",
+      "Nothing if the bump is a patch.",
+      "A merge only if the CVE is critical."
     ],
     "answer": 1,
-    "explanation": "The bot is a patch proposal. Your pipeline is the gate.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "The bot is a patch proposal. Your pipeline is the gate. Semver is a promise, not a proof."
   },
   {
     "id": "cicd-supply-03",
     "skillId": "cicd-supply",
     "difficulty": "hard",
-    "prompt": "A malicious version of a small library ran in your build. The build had the deploy key. What failed?",
+    "prompt": "A malicious version of a small library ran in your build, and the build had the deploy key. What failed?",
     "choices": [
-      "The registry, which should execute install scripts with your cloud role.",
-      "Nothing. Install scripts cannot use environment variables.",
-      "The build environment was allowed to deploy, so code you did not write had your production credentials.",
-      "Lockfiles, which would have made the install unreproducible. The lockfile is what you wanted."
+      "The registry did not scan the package.",
+      "The build ran without network egress rules.",
+      "Build and deploy shared one credential.",
+      "The lockfile allowed a range of versions."
     ],
     "answer": 2,
-    "explanation": "Split fetch, build, and deploy credentials. A build does not need to be able to ship.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "Code you did not write had your production credentials. Split fetch, build, and deploy credentials. A build does not need to be able to ship."
   },
   {
     "id": "cicd-supply-04",
     "skillId": "cicd-supply",
     "difficulty": "easy",
-    "prompt": "An SBOM attached to a release is:",
+    "prompt": "What is an SBOM attached to a release?",
     "choices": [
-      "The runtime firewall.",
-      "The git blame.",
-      "A list of what went into the artifact, so you can answer 'are we affected' when a CVE appears.",
-      "A vulnerability scan result. Related, not the same."
+      "A signature proving who built it.",
+      "A record of who approved the release.",
+      "An inventory of what went into it.",
+      "A list of its known vulnerabilities."
     ],
     "answer": 2,
-    "explanation": "Generate it from the build you actually shipped.",
-    "source": "roadmap.sh",
-    "url": "https://roadmap.sh/devops"
+    "explanation": "It lets you answer 'are we affected' when a CVE appears. Generate it from the build you actually shipped. Scans and signatures are separate artifacts."
   },
   {
     "id": "cicd-actions-05",
     "skillId": "cicd-actions",
     "difficulty": "medium",
-    "prompt": "A GitHub Actions exercise that builds and pushes on push to main should not:",
+    "prompt": "A GitHub Actions workflow builds and pushes an image on push to main. What should it not do?",
     "choices": [
-      "Run tests before the push.",
-      "Use a registry in the same account.",
-      "Use a long-lived cloud admin key in the workflow when the job only needs to push one image.",
-      "Pin the action to a commit."
+      "Run the tests before the push.",
+      "Push to a registry in its account.",
+      "Use a long-lived cloud admin key.",
+      "Pin the actions it uses by SHA."
     ],
     "answer": 2,
-    "explanation": "The workflow is a principal. Scope it to the registry repository it pushes.",
-    "source": "tech-vault",
-    "url": "https://github.com/moabukar/tech-vault/tree/main/devops-challenges"
+    "explanation": "The workflow is a principal. Scope it to the one registry repository it pushes."
   },
   {
     "id": "cicd-actions-06",
     "skillId": "cicd-actions",
     "difficulty": "medium",
-    "prompt": "A GitHub Actions workflow for a Flask app that tests, builds an image, and pushes it is broken when:",
+    "prompt": "A workflow tests a Flask app, builds an image, and pushes it. When is it broken?",
     "choices": [
-      "It uses ubuntu-latest.",
-      "It runs on push to main.",
-      "Tests fail and the later steps still count as success, or the registry credentials are missing, or the Dockerfile does not build.",
-      "The workflow file is in .github/workflows. That location is wrong."
+      "The image is tagged with the SHA.",
+      "It runs on every push to main.",
+      "Failed tests still let the push run.",
+      "The tests run in a container."
     ],
     "answer": 2,
-    "explanation": "Fix the tests first. A green build of a failing test suite is the pipeline lying.",
-    "source": "tech-vault",
-    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+    "explanation": "Fix the tests first. A green build of a failing test suite is the pipeline lying. Missing registry credentials and a broken Dockerfile are the other usual causes."
   },
   {
     "id": "cicd-artifacts-05",
     "skillId": "cicd-artifacts",
     "difficulty": "medium",
-    "prompt": "A broken pipeline that should test, build, and push is fixed only when:",
+    "prompt": "When is a broken test, build, and push pipeline actually fixed?",
     "choices": [
-      "You skip tests to go green.",
-      "You tag latest and overwrite yesterday's image with untested code.",
-      "The same workflow does all three, tests pass, and the registry receives the image you just built.",
-      "You build locally and push by hand."
+      "Tests are marked optional to unblock it.",
+      "The image is built and pushed by hand.",
+      "Tests pass and the tested build is pushed.",
+      "The image builds and pushes as latest."
     ],
     "answer": 2,
-    "explanation": "The registry tag should be the commit you tested, not a floating latest.",
-    "source": "tech-vault",
-    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+    "explanation": "The registry tag should be the commit you tested, not a floating latest that overwrites yesterday's image."
   },
   {
     "id": "cicd-runners-05",
     "skillId": "cicd-runners",
     "difficulty": "easy",
-    "prompt": "Tilt for local microservices is:",
+    "prompt": "What is Tilt for local microservices?",
     "choices": [
-      "A secret manager.",
-      "A dev loop that rebuilds and redeploys when the file changes. It is not the production deploy.",
-      "A replacement for GitHub Actions in production.",
-      "A Kubernetes distribution."
+      "A tool for deploying to production.",
+      "A dev loop that rebuilds on file change.",
+      "A CI service for running test suites.",
+      "A local Kubernetes distribution."
     ],
     "answer": 1,
-    "explanation": "The Tiltfile wires frontend, backend, and database. Live reload is the point. Production still wants a pipeline.",
-    "source": "tech-vault",
-    "url": "https://github.com/moabukar/tech-vault/blob/main/devops-challenges/README.md"
+    "explanation": "The Tiltfile wires frontend, backend, and database. Live reload is the point. Production still wants a pipeline."
   }
 ]

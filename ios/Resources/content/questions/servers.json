@@ -1,0 +1,282 @@
+[
+  {
+    "id": "srv-nginx-01",
+    "skillId": "srv-nginx",
+    "difficulty": "medium",
+    "prompt": "Nginx is the public listener and the app is on 127.0.0.1:8080. What belongs in the server block?",
+    "choices": [
+      "return 301 to the app's address and port.",
+      "fastcgi_pass to the app's address and port.",
+      "proxy_pass to the app, plus forwarded headers.",
+      "upstream with the app, plus a root directive."
+    ],
+    "answer": 2,
+    "explanation": "Nginx terminates the public connection and proxies. Headers tell the app the scheme and client address. A redirect would send clients to a loopback address, and fastcgi_pass speaks a different protocol."
+  },
+  {
+    "id": "srv-nginx-02",
+    "skillId": "srv-nginx",
+    "difficulty": "medium",
+    "prompt": "What does nginx -t buy you before a reload?",
+    "choices": [
+      "It rolls back to the last good config if needed.",
+      "It validates the config before anything changes.",
+      "It reloads only the workers whose config changed.",
+      "It starts a test worker beside the old ones."
+    ],
+    "answer": 1,
+    "explanation": "Test, then reload. A reload that fails to parse keeps the old workers, but testing first tells you why before traffic is at stake."
+  },
+  {
+    "id": "srv-nginx-03",
+    "skillId": "srv-nginx",
+    "difficulty": "hard",
+    "prompt": "The upstream is healthy and Nginx returns 413. What is the knob?",
+    "choices": [
+      "client_body_buffer_size",
+      "client_max_body_size",
+      "large_client_header_buffers",
+      "proxy_buffer_size"
+    ],
+    "answer": 1,
+    "explanation": "413 is a request body larger than Nginx will accept. Header buffers give 400 or 414, and buffer sizes affect memory, not the limit. Raise it on purpose for the upload endpoint."
+  },
+  {
+    "id": "srv-nginx-04",
+    "skillId": "srv-nginx",
+    "difficulty": "easy",
+    "prompt": "What is a worker process in Nginx?",
+    "choices": [
+      "A thread spawned for each incoming request.",
+      "The process that writes the access log.",
+      "The process that handles client connections.",
+      "The process that reads and validates config."
+    ],
+    "answer": 2,
+    "explanation": "The master reads config and manages workers. Workers handle connections with an event loop, so you scale them with CPU, not requests."
+  },
+  {
+    "id": "srv-apache-01",
+    "skillId": "srv-apache",
+    "difficulty": "medium",
+    "prompt": "You inherited an Apache server and the wrong vhost answers. What selects the vhost?",
+    "choices": [
+      "The vhost whose Listen directive matches the port.",
+      "ServerName or ServerAlias matching the Host header.",
+      "The DocumentRoot that contains the requested path.",
+      "The order of Include lines in apache2.conf."
+    ],
+    "answer": 1,
+    "explanation": "After the address and port match, name-based hosting picks by ServerName or ServerAlias. The first vhost for that address is only the default for unmatched names."
+  },
+  {
+    "id": "srv-apache-02",
+    "skillId": "srv-apache",
+    "difficulty": "easy",
+    "prompt": "Apache and Nginx are both reasonable choices for which job?",
+    "choices": [
+      "Static files and reverse proxying.",
+      "Running the application's code.",
+      "Load balancing at L4 for UDP.",
+      "Issuing TLS certificates via ACME."
+    ],
+    "answer": 0,
+    "explanation": "They are HTTP servers and proxies. The rest of the platform does not care which one, as long as the config is the one you tested."
+  },
+  {
+    "id": "srv-apache-03",
+    "skillId": "srv-apache",
+    "difficulty": "medium",
+    "prompt": "A .htaccess file changed nothing. What is a common reason?",
+    "choices": [
+      "Apache caches it until a graceful reload.",
+      "mod_rewrite is required for any .htaccess.",
+      "AllowOverride None for that directory.",
+      "The file is not owned by the Apache user."
+    ],
+    "answer": 2,
+    "explanation": "With AllowOverride None, Apache never reads .htaccess. It is re-read per request otherwise. That setting is also how you stop a web root changing auth rules."
+  },
+  {
+    "id": "srv-apache-04",
+    "skillId": "srv-apache",
+    "difficulty": "hard",
+    "prompt": "You are choosing between Nginx and Apache for a high-connection proxy. What is the real decision?",
+    "choices": [
+      "Which one supports HTTP/2 to the upstream servers.",
+      "Which one has a lower memory footprint per worker.",
+      "Which one can terminate TLS without a module.",
+      "Which one your team can configure and debug safely."
+    ],
+    "answer": 3,
+    "explanation": "Both can proxy at high connection counts. An unfamiliar rewrite language is an outage. Operability beats the benchmark you are not going to run."
+  },
+  {
+    "id": "srv-caddy-01",
+    "skillId": "srv-caddy",
+    "difficulty": "medium",
+    "prompt": "What is Caddy's selling point on a small edge host?",
+    "choices": [
+      "Built-in load balancing across data centers.",
+      "A web UI for editing proxy rules live.",
+      "Native support for running PHP in-process.",
+      "Automatic certificates with almost no config."
+    ],
+    "answer": 3,
+    "explanation": "Automatic HTTPS is the feature. You still have to point DNS at the host and let it answer the ACME challenge."
+  },
+  {
+    "id": "srv-caddy-02",
+    "skillId": "srv-caddy",
+    "difficulty": "easy",
+    "prompt": "A Caddy site block with reverse_proxy does the same job as:",
+    "choices": [
+      "Nginx proxy_pass",
+      "Nginx try_files",
+      "Nginx rewrite",
+      "Nginx alias"
+    ],
+    "answer": 0,
+    "explanation": "Both are reverse proxies. The syntax changes, the role does not. try_files, rewrite and alias are about local files and URLs."
+  },
+  {
+    "id": "srv-caddy-03",
+    "skillId": "srv-caddy",
+    "difficulty": "medium",
+    "prompt": "Automatic HTTPS failed. What do you check before blaming the proxy?",
+    "choices": [
+      "The certificate store directory is world-writable.",
+      "The host's clock is set to the CA's time zone.",
+      "DNS points here, and 80 or 443 is reachable.",
+      "The site block lists a tls directive with email."
+    ],
+    "answer": 2,
+    "explanation": "ACME needs a public name that resolves to this host and a reachable challenge port. An internal-only name needs an internal CA."
+  },
+  {
+    "id": "srv-caddy-04",
+    "skillId": "srv-caddy",
+    "difficulty": "hard",
+    "prompt": "Why would you still put Caddy behind a cloud load balancer?",
+    "choices": [
+      "Caddy cannot listen on privileged ports.",
+      "Caddy cannot renew certificates on its own.",
+      "The balancer is needed for HTTP/2 support.",
+      "Stable public address and health checks."
+    ],
+    "answer": 3,
+    "explanation": "The balancer is the stable address and health check. Caddy is the HTTP config on the instance. Know which hop terminates TLS so you do not decrypt twice by accident."
+  },
+  {
+    "id": "srv-envoy-01",
+    "skillId": "srv-envoy",
+    "difficulty": "medium",
+    "prompt": "In a service mesh, what is Envoy's usual job next to an app?",
+    "choices": [
+      "The control plane pushing config to other proxies.",
+      "The CNI plugin wiring the pod's network.",
+      "The admission webhook injecting the mesh labels.",
+      "The sidecar handling its traffic, mTLS and metrics."
+    ],
+    "answer": 3,
+    "explanation": "The app's traffic is redirected through the sidecar, and the sidecar talks to the rest of the mesh. istiod or similar is the control plane."
+  },
+  {
+    "id": "srv-envoy-02",
+    "skillId": "srv-envoy",
+    "difficulty": "medium",
+    "prompt": "In Envoy, what do a listener, a route, and a cluster correspond to?",
+    "choices": [
+      "Matching, accepting, and health checking.",
+      "The port, the TLS context, and the filter chain.",
+      "Accepting, matching, and the upstream pool.",
+      "Accepting, the upstream pool, and matching."
+    ],
+    "answer": 2,
+    "explanation": "If the cluster has no healthy endpoints, the listener still accepts and then fails the request."
+  },
+  {
+    "id": "srv-envoy-03",
+    "skillId": "srv-envoy",
+    "difficulty": "hard",
+    "prompt": "An eBPF program redirects connections into Envoy without the app knowing. What must the redirect avoid?",
+    "choices": [
+      "Recapturing Envoy's own outbound connections.",
+      "Redirecting connections to loopback addresses.",
+      "Changing the source port of redirected flows.",
+      "Redirecting UDP flows that Envoy cannot parse."
+    ],
+    "answer": 0,
+    "explanation": "Without a guard, Envoy's upstream connection is redirected back into Envoy in a loop. The usual guard is a mark or an identity so the proxy's own flows are skipped."
+  },
+  {
+    "id": "srv-envoy-04",
+    "skillId": "srv-envoy",
+    "difficulty": "easy",
+    "prompt": "Envoy is not unique to one mesh. Where else is it used?",
+    "choices": [
+      "Service discovery and DNS servers.",
+      "Log shippers and metrics agents.",
+      "Ingress controllers and API gateways.",
+      "Container runtimes and image builders."
+    ],
+    "answer": 2,
+    "explanation": "Treat it as a programmable proxy you can run on its own. Contour, Emissary and Envoy Gateway use it. The control plane is what differs."
+  },
+  {
+    "id": "srv-cache-01",
+    "skillId": "srv-cache",
+    "difficulty": "medium",
+    "prompt": "When does a caching reverse proxy in front of an app help?",
+    "choices": [
+      "Each client fetches its own personalized pages.",
+      "The app is slow because of database write locks.",
+      "Most requests are POSTs that change state.",
+      "Many clients fetch the same cacheable responses."
+    ],
+    "answer": 3,
+    "explanation": "Cache what is safe to reuse, with freshness rules. Authenticated and personalized responses need explicit rules or you will leak one user to another."
+  },
+  {
+    "id": "srv-cache-02",
+    "skillId": "srv-cache",
+    "difficulty": "easy",
+    "prompt": "What does a CDN cache that your origin used to serve?",
+    "choices": [
+      "Database query results for the origin.",
+      "Copies of cacheable responses near clients.",
+      "Every response, including private ones.",
+      "The origin's TLS session keys for reuse."
+    ],
+    "answer": 1,
+    "explanation": "The origin still serves the first request and anything you mark private or uncacheable."
+  },
+  {
+    "id": "srv-cache-03",
+    "skillId": "srv-cache",
+    "difficulty": "medium",
+    "prompt": "You deployed a new asset and clients still see the old one. What is the lever?",
+    "choices": [
+      "A new ETag, which caches check every time.",
+      "Hashed file names, or a purge of that URL.",
+      "A restart of the origin to clear its cache.",
+      "A shorter keepalive timeout on the proxy."
+    ],
+    "answer": 1,
+    "explanation": "A new file at the same URL can sit in the cache until its TTL. Caches only revalidate the ETag once the copy is stale. Name assets with a hash, or purge."
+  },
+  {
+    "id": "srv-cache-04",
+    "skillId": "srv-cache",
+    "difficulty": "hard",
+    "prompt": "Why is caching a Set-Cookie response dangerous?",
+    "choices": [
+      "The cookie expires before the cached copy does.",
+      "Browsers reject cookies served from a cache.",
+      "The cache strips the cookie and logs users out.",
+      "The next client may receive the first one's session."
+    ],
+    "answer": 3,
+    "explanation": "Default rules should treat cookie and authorization responses as private."
+  }
+]

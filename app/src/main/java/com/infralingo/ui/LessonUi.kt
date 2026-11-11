@@ -38,8 +38,6 @@ data class FeedbackUi(
     val note: String?,
     val answer: String,
     val explanation: String,
-    val source: String,
-    val url: String,
     val xp: Int,
     /** A ready-made question to hand to an assistant. */
     val askAi: String,

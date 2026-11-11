@@ -1,0 +1,570 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0C60B3FC3CF9BD0F1A552836 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 44B3C4DEBE17CDB379DF8509 /* Assets.xcassets */; };
+		0D1BA9EF02DC696DC070CF21 /* Chunky.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF86047A43F0698CA4F7D51 /* Chunky.swift */; };
+		170807405B805CD5A9E8561E /* AppUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB469B0460B906D7A7961BF /* AppUI.swift */; };
+		18DCA6B757FA953CD6B00E5F /* Icons.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF21B03D653909BBA6D68EA5 /* Icons.swift */; };
+		1B346B7B3CB08E8BA0A2BFE6 /* ProgressStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1C7B4940B72AC278B68E46 /* ProgressStore.swift */; };
+		1C6BC89E1EE44B966167C151 /* LessonUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46622ED70A0042B002512B6 /* LessonUI.swift */; };
+		2F143FD2D61A12FC68239302 /* Lesson.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4BBDB2A3D4C7683D26231E8 /* Lesson.swift */; };
+		40F641BE735746DEEC53D40E /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9BB63E69E6F2DA8AD34DD4 /* Theme.swift */; };
+		4161B2088C0500B4E970468C /* PracticeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3B0D1C7761E6AB018C6B2E /* PracticeScreen.swift */; };
+		4D086BAD1FD66C524F990651 /* Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C26EBDF16C808846EDC723 /* Activity.swift */; };
+		587DB27CA88C30573013A57D /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A0CC36E702C1AE9931089A /* Model.swift */; };
+		5B7B08D092156AA042C91795 /* ProgressRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FE9C17AB6DF3E94141D9DC3 /* ProgressRepository.swift */; };
+		5C8E9CC117A6B7F331B5D0B1 /* RNG.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D6BD3ED14C245EC5428687 /* RNG.swift */; };
+		6FD0EF3DFB56A836732DB10A /* Nunito.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9DC92A81EB6293E3E86EB789 /* Nunito.ttf */; };
+		83591AFD1C18779AB9949FEA /* InfralingoScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23F1DF7B0AC9E699D78F07FE /* InfralingoScreen.swift */; };
+		93A39174B46B70BF3B3CEAF7 /* DomainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495C1FE6EC897AAC9938565A /* DomainTests.swift */; };
+		9B4CCFCC2BE1148F07C9F8DD /* ProfileScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6D5E0D9D00389B39366513 /* ProfileScreen.swift */; };
+		A2A60D0EC67292EF021C32A8 /* content in Resources */ = {isa = PBXBuildFile; fileRef = E85F260FFB37FE4394D24AB1 /* content */; };
+		A56C72304D59C1EA23E50816 /* Mascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72FB0C03C76BC4A327E9B80 /* Mascot.swift */; };
+		A68388EE0E9FAA6F9E00B73F /* content in Resources */ = {isa = PBXBuildFile; fileRef = E85F260FFB37FE4394D24AB1 /* content */; };
+		AEFBD7C89D108653E5B56DFB /* LessonPlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C0BC9C6758B9F324B15CA78 /* LessonPlanner.swift */; };
+		B0D9D02540BD57666CA9D1F4 /* InfralingoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02A71C239D64E7D9E2E18A9E /* InfralingoApp.swift */; };
+		B7A3437FF2E3D1B2991B2ACC /* LearnScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A328351E309D4D71671D180 /* LearnScreen.swift */; };
+		BD98201872450FF385149CF6 /* licenses in Resources */ = {isa = PBXBuildFile; fileRef = 2F6BAA42CAA8A5FA059E5964 /* licenses */; };
+		CED3133078ED31CDC610FD1D /* ContentRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D466AF8D27EB9D642A9D34 /* ContentRepository.swift */; };
+		D5E9BCB94C72F63671DAC17C /* AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A35A8B3AA9698282A92A2E5 /* AppUITests.swift */; };
+		E2DA80DB5B0933CD56926C23 /* Scheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2D3D2CBE88CFE124BDBD16 /* Scheduler.swift */; };
+		E466A041C5490DB121274104 /* DataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7765952D088F5C308A6B94 /* DataTests.swift */; };
+		ED19C06C8E57A66A54588F34 /* BankJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B33F592EF8360A2F07CB949 /* BankJSON.swift */; };
+		EE1AAB7510060F343FD144F4 /* Mastery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E58D4F7DED17036A15356416 /* Mastery.swift */; };
+		EE233FC1E9791AC7544117D3 /* InfralingoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE54A0F4F098AD88310EF42F /* InfralingoViewModel.swift */; };
+		F778588F843C803F432B2F6B /* LessonScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA206D5C18CB3232595D1C45 /* LessonScreen.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D7857AA9A04F7F689791AFEF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E839054BE9526873D8E066C4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C7A2119FAA8C310A2E5FCE2D;
+			remoteInfo = Infralingo;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		02A71C239D64E7D9E2E18A9E /* InfralingoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfralingoApp.swift; sourceTree = "<group>"; };
+		0DB469B0460B906D7A7961BF /* AppUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUI.swift; sourceTree = "<group>"; };
+		10129D9F161C70FDCF5F0295 /* InfralingoTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = InfralingoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		23F1DF7B0AC9E699D78F07FE /* InfralingoScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfralingoScreen.swift; sourceTree = "<group>"; };
+		2A35A8B3AA9698282A92A2E5 /* AppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUITests.swift; sourceTree = "<group>"; };
+		2C9BB63E69E6F2DA8AD34DD4 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		2F6BAA42CAA8A5FA059E5964 /* licenses */ = {isa = PBXFileReference; lastKnownFileType = folder; name = licenses; path = Resources/licenses; sourceTree = SOURCE_ROOT; };
+		3F1C7B4940B72AC278B68E46 /* ProgressStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressStore.swift; sourceTree = "<group>"; };
+		44B3C4DEBE17CDB379DF8509 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		495C1FE6EC897AAC9938565A /* DomainTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainTests.swift; sourceTree = "<group>"; };
+		4A328351E309D4D71671D180 /* LearnScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnScreen.swift; sourceTree = "<group>"; };
+		505271AF0A0E74FBD44ED147 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		61D466AF8D27EB9D642A9D34 /* ContentRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentRepository.swift; sourceTree = "<group>"; };
+		61D6BD3ED14C245EC5428687 /* RNG.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNG.swift; sourceTree = "<group>"; };
+		7B33F592EF8360A2F07CB949 /* BankJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankJSON.swift; sourceTree = "<group>"; };
+		8FE9C17AB6DF3E94141D9DC3 /* ProgressRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRepository.swift; sourceTree = "<group>"; };
+		9C0BC9C6758B9F324B15CA78 /* LessonPlanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonPlanner.swift; sourceTree = "<group>"; };
+		9DC92A81EB6293E3E86EB789 /* Nunito.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Nunito.ttf; sourceTree = "<group>"; };
+		B46622ED70A0042B002512B6 /* LessonUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonUI.swift; sourceTree = "<group>"; };
+		B4BBDB2A3D4C7683D26231E8 /* Lesson.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lesson.swift; sourceTree = "<group>"; };
+		BC6D5E0D9D00389B39366513 /* ProfileScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileScreen.swift; sourceTree = "<group>"; };
+		BD2D3D2CBE88CFE124BDBD16 /* Scheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scheduler.swift; sourceTree = "<group>"; };
+		C8A0CC36E702C1AE9931089A /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		CA206D5C18CB3232595D1C45 /* LessonScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonScreen.swift; sourceTree = "<group>"; };
+		CE3B0D1C7761E6AB018C6B2E /* PracticeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeScreen.swift; sourceTree = "<group>"; };
+		CF7765952D088F5C308A6B94 /* DataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataTests.swift; sourceTree = "<group>"; };
+		D1F9133DE608C7AEC0124ED7 /* Infralingo.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Infralingo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4C26EBDF16C808846EDC723 /* Activity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Activity.swift; sourceTree = "<group>"; };
+		E58D4F7DED17036A15356416 /* Mastery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mastery.swift; sourceTree = "<group>"; };
+		E72FB0C03C76BC4A327E9B80 /* Mascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mascot.swift; sourceTree = "<group>"; };
+		E85F260FFB37FE4394D24AB1 /* content */ = {isa = PBXFileReference; lastKnownFileType = folder; name = content; path = Resources/content; sourceTree = SOURCE_ROOT; };
+		EE54A0F4F098AD88310EF42F /* InfralingoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfralingoViewModel.swift; sourceTree = "<group>"; };
+		FDF86047A43F0698CA4F7D51 /* Chunky.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chunky.swift; sourceTree = "<group>"; };
+		FF21B03D653909BBA6D68EA5 /* Icons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icons.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0CD450C9AEBCD72ADD9B3145 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				44B3C4DEBE17CDB379DF8509 /* Assets.xcassets */,
+				E85F260FFB37FE4394D24AB1 /* content */,
+				2F6BAA42CAA8A5FA059E5964 /* licenses */,
+				9DC92A81EB6293E3E86EB789 /* Nunito.ttf */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		0D34BD23B4C9411FB9C75029 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				D4C26EBDF16C808846EDC723 /* Activity.swift */,
+				B4BBDB2A3D4C7683D26231E8 /* Lesson.swift */,
+				9C0BC9C6758B9F324B15CA78 /* LessonPlanner.swift */,
+				E58D4F7DED17036A15356416 /* Mastery.swift */,
+				C8A0CC36E702C1AE9931089A /* Model.swift */,
+				61D6BD3ED14C245EC5428687 /* RNG.swift */,
+				BD2D3D2CBE88CFE124BDBD16 /* Scheduler.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		16CDBA05BCEA014F59C9152F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D1F9133DE608C7AEC0124ED7 /* Infralingo.app */,
+				10129D9F161C70FDCF5F0295 /* InfralingoTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7BBF2D667B9FCDDCB5C03D34 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				7B33F592EF8360A2F07CB949 /* BankJSON.swift */,
+				61D466AF8D27EB9D642A9D34 /* ContentRepository.swift */,
+				8FE9C17AB6DF3E94141D9DC3 /* ProgressRepository.swift */,
+				3F1C7B4940B72AC278B68E46 /* ProgressStore.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		ABD0C92BB027CFBC86F7C449 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				2A35A8B3AA9698282A92A2E5 /* AppUITests.swift */,
+				CF7765952D088F5C308A6B94 /* DataTests.swift */,
+				495C1FE6EC897AAC9938565A /* DomainTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		C0A9C859588C9590F5AC8946 /* Infralingo */ = {
+			isa = PBXGroup;
+			children = (
+				505271AF0A0E74FBD44ED147 /* Info.plist */,
+				02A71C239D64E7D9E2E18A9E /* InfralingoApp.swift */,
+				7BBF2D667B9FCDDCB5C03D34 /* Data */,
+				0D34BD23B4C9411FB9C75029 /* Domain */,
+				CC6815DE28724007E2FECDD1 /* UI */,
+			);
+			path = Infralingo;
+			sourceTree = "<group>";
+		};
+		C4EA69529FEF11E79014AEDE = {
+			isa = PBXGroup;
+			children = (
+				C0A9C859588C9590F5AC8946 /* Infralingo */,
+				0CD450C9AEBCD72ADD9B3145 /* Resources */,
+				ABD0C92BB027CFBC86F7C449 /* Tests */,
+				16CDBA05BCEA014F59C9152F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		CC6815DE28724007E2FECDD1 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				0DB469B0460B906D7A7961BF /* AppUI.swift */,
+				FDF86047A43F0698CA4F7D51 /* Chunky.swift */,
+				FF21B03D653909BBA6D68EA5 /* Icons.swift */,
+				23F1DF7B0AC9E699D78F07FE /* InfralingoScreen.swift */,
+				EE54A0F4F098AD88310EF42F /* InfralingoViewModel.swift */,
+				4A328351E309D4D71671D180 /* LearnScreen.swift */,
+				CA206D5C18CB3232595D1C45 /* LessonScreen.swift */,
+				B46622ED70A0042B002512B6 /* LessonUI.swift */,
+				E72FB0C03C76BC4A327E9B80 /* Mascot.swift */,
+				CE3B0D1C7761E6AB018C6B2E /* PracticeScreen.swift */,
+				BC6D5E0D9D00389B39366513 /* ProfileScreen.swift */,
+				2C9BB63E69E6F2DA8AD34DD4 /* Theme.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0C8C6B25E3C680ED513D0BB6 /* InfralingoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 61676C574B08A58A7434D2C8 /* Build configuration list for PBXNativeTarget "InfralingoTests" */;
+			buildPhases = (
+				1B697FA242C38EB986EB6D61 /* Sources */,
+				E092C51B0B22CF3CADC67901 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				164B9C42D5F5A1279CB38D01 /* PBXTargetDependency */,
+			);
+			name = InfralingoTests;
+			packageProductDependencies = (
+			);
+			productName = InfralingoTests;
+			productReference = 10129D9F161C70FDCF5F0295 /* InfralingoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C7A2119FAA8C310A2E5FCE2D /* Infralingo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 893BF8F563A2642A4C1AF6A0 /* Build configuration list for PBXNativeTarget "Infralingo" */;
+			buildPhases = (
+				0E1DB7F2DB5E7D96C396D8DD /* Sources */,
+				AF22885B46FC28A3BB375653 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Infralingo;
+			packageProductDependencies = (
+			);
+			productName = Infralingo;
+			productReference = D1F9133DE608C7AEC0124ED7 /* Infralingo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E839054BE9526873D8E066C4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					0C8C6B25E3C680ED513D0BB6 = {
+						ProvisioningStyle = Automatic;
+					};
+					C7A2119FAA8C310A2E5FCE2D = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 160084EF0DF8103D160D87BD /* Build configuration list for PBXProject "Infralingo" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = C4EA69529FEF11E79014AEDE;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 16CDBA05BCEA014F59C9152F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C7A2119FAA8C310A2E5FCE2D /* Infralingo */,
+				0C8C6B25E3C680ED513D0BB6 /* InfralingoTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AF22885B46FC28A3BB375653 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C60B3FC3CF9BD0F1A552836 /* Assets.xcassets in Resources */,
+				6FD0EF3DFB56A836732DB10A /* Nunito.ttf in Resources */,
+				A68388EE0E9FAA6F9E00B73F /* content in Resources */,
+				BD98201872450FF385149CF6 /* licenses in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E092C51B0B22CF3CADC67901 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A2A60D0EC67292EF021C32A8 /* content in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0E1DB7F2DB5E7D96C396D8DD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4D086BAD1FD66C524F990651 /* Activity.swift in Sources */,
+				170807405B805CD5A9E8561E /* AppUI.swift in Sources */,
+				ED19C06C8E57A66A54588F34 /* BankJSON.swift in Sources */,
+				0D1BA9EF02DC696DC070CF21 /* Chunky.swift in Sources */,
+				CED3133078ED31CDC610FD1D /* ContentRepository.swift in Sources */,
+				18DCA6B757FA953CD6B00E5F /* Icons.swift in Sources */,
+				B0D9D02540BD57666CA9D1F4 /* InfralingoApp.swift in Sources */,
+				83591AFD1C18779AB9949FEA /* InfralingoScreen.swift in Sources */,
+				EE233FC1E9791AC7544117D3 /* InfralingoViewModel.swift in Sources */,
+				B7A3437FF2E3D1B2991B2ACC /* LearnScreen.swift in Sources */,
+				2F143FD2D61A12FC68239302 /* Lesson.swift in Sources */,
+				AEFBD7C89D108653E5B56DFB /* LessonPlanner.swift in Sources */,
+				F778588F843C803F432B2F6B /* LessonScreen.swift in Sources */,
+				1C6BC89E1EE44B966167C151 /* LessonUI.swift in Sources */,
+				A56C72304D59C1EA23E50816 /* Mascot.swift in Sources */,
+				EE1AAB7510060F343FD144F4 /* Mastery.swift in Sources */,
+				587DB27CA88C30573013A57D /* Model.swift in Sources */,
+				4161B2088C0500B4E970468C /* PracticeScreen.swift in Sources */,
+				9B4CCFCC2BE1148F07C9F8DD /* ProfileScreen.swift in Sources */,
+				5B7B08D092156AA042C91795 /* ProgressRepository.swift in Sources */,
+				1B346B7B3CB08E8BA0A2BFE6 /* ProgressStore.swift in Sources */,
+				5C8E9CC117A6B7F331B5D0B1 /* RNG.swift in Sources */,
+				E2DA80DB5B0933CD56926C23 /* Scheduler.swift in Sources */,
+				40F641BE735746DEEC53D40E /* Theme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1B697FA242C38EB986EB6D61 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D5E9BCB94C72F63671DAC17C /* AppUITests.swift in Sources */,
+				E466A041C5490DB121274104 /* DataTests.swift in Sources */,
+				93A39174B46B70BF3B3CEAF7 /* DomainTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		164B9C42D5F5A1279CB38D01 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C7A2119FAA8C310A2E5FCE2D /* Infralingo */;
+			targetProxy = D7857AA9A04F7F689791AFEF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		30746DE1AA5975DA86939951 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Infralingo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.infralingo.Infralingo;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		4D0BB1D0F6E38B4A981B1F00 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.infralingo.InfralingoTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Infralingo.app/Infralingo";
+			};
+			name = Debug;
+		};
+		6C3F8011E81D1B896A9E1755 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.infralingo.InfralingoTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Infralingo.app/Infralingo";
+			};
+			name = Release;
+		};
+		95F71E5091BB0625FFB1C8D5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "-lsqlite3";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		C8E1B0DF1299A66619171443 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-lsqlite3";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		F4021F3830AD0C280F2DC482 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Infralingo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.infralingo.Infralingo;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		160084EF0DF8103D160D87BD /* Build configuration list for PBXProject "Infralingo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C8E1B0DF1299A66619171443 /* Debug */,
+				95F71E5091BB0625FFB1C8D5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		61676C574B08A58A7434D2C8 /* Build configuration list for PBXNativeTarget "InfralingoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4D0BB1D0F6E38B4A981B1F00 /* Debug */,
+				6C3F8011E81D1B896A9E1755 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		893BF8F563A2642A4C1AF6A0 /* Build configuration list for PBXNativeTarget "Infralingo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4021F3830AD0C280F2DC482 /* Debug */,
+				30746DE1AA5975DA86939951 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E839054BE9526873D8E066C4 /* Project object */;
+}

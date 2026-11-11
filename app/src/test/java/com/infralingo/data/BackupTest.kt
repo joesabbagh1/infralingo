@@ -45,8 +45,6 @@ class BackupTest {
         choices = listOf("a", "b", "c", "d"),
         answerIndex = 0,
         explanation = "because",
-        source = "test",
-        url = "",
     )
 
     @Test

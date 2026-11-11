@@ -29,7 +29,7 @@ class AppUiTest {
         questions = listOf("linux-proc", "linux-signals", "k8s-pods", "k8s-net").flatMap { skill ->
             (1..2).map { n ->
                 val choices = listOf("a", "b", "c", "d")
-                Question("$skill-$n", skill, Difficulty.MEDIUM, "$skill $n?", choices, 0, "why", "test", "")
+                Question("$skill-$n", skill, Difficulty.MEDIUM, "$skill $n?", choices, 0, "why")
             }
         },
     )

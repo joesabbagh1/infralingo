@@ -1,0 +1,646 @@
+[
+  {
+    "id": "iac-workflow-01",
+    "skillId": "iac-workflow",
+    "difficulty": "medium",
+    "prompt": "What is the usual Terraform change sequence?",
+    "choices": [
+      "init, apply, then plan to confirm no drift.",
+      "fmt, validate, plan -out, review, apply the plan.",
+      "fmt, plan, apply, then validate the result.",
+      "validate, apply -auto-approve, then plan."
+    ],
+    "answer": 1,
+    "explanation": "The plan is the review. Apply what you reviewed, not a new plan you have not read."
+  },
+  {
+    "id": "iac-workflow-02",
+    "skillId": "iac-workflow",
+    "difficulty": "easy",
+    "prompt": "What do terraform fmt and validate catch?",
+    "choices": [
+      "Style and internal consistency only.",
+      "Drift between the code and the cloud.",
+      "Permission errors in the cloud account.",
+      "Resources that the change would replace."
+    ],
+    "answer": 0,
+    "explanation": "Validation is local. It does not prove the cloud will accept the change. The plan is what talks about real resources."
+  },
+  {
+    "id": "iac-workflow-03",
+    "skillId": "iac-workflow",
+    "difficulty": "medium",
+    "prompt": "A module is called twice with different variables. What is that?",
+    "choices": [
+      "Two copies of one shared state.",
+      "One instance with merged inputs.",
+      "Two instances of one pattern.",
+      "A conflict on resource addresses."
+    ],
+    "answer": 2,
+    "explanation": "Addresses include the module instance name, so they do not collide. The duplication you want is in the module source, not in copy-paste."
+  },
+  {
+    "id": "iac-workflow-04",
+    "skillId": "iac-workflow",
+    "difficulty": "hard",
+    "prompt": "Someone suggests terraform apply -target on the production stack for a one-off. What is the cost?",
+    "choices": [
+      "The target's dependencies are skipped.",
+      "The plan is saved without a state lock.",
+      "Everything else is left unreconciled.",
+      "State for untargeted resources is reset."
+    ],
+    "answer": 2,
+    "explanation": "Target includes dependencies but skips the rest of the desired state, so the next full apply can surprise you. Use it as a scalpel in an incident, then run a full plan."
+  },
+  {
+    "id": "iac-state-01",
+    "skillId": "iac-state",
+    "difficulty": "medium",
+    "prompt": "What is Terraform state?",
+    "choices": [
+      "A backup of the cloud resources' configurations.",
+      "A cache Terraform can rebuild from the cloud.",
+      "A lock file that stops two applies at once.",
+      "A map from config addresses to real resource IDs."
+    ],
+    "answer": 3,
+    "explanation": "It is not a backup and cannot be fully rebuilt. Store it remotely, lock it, and restrict who can read it. It often contains secrets."
+  },
+  {
+    "id": "iac-state-02",
+    "skillId": "iac-state",
+    "difficulty": "hard",
+    "prompt": "Two people apply at once against one state with no lock. What can happen?",
+    "choices": [
+      "The cloud rejects the second apply's calls.",
+      "Terraform merges both writes like git does.",
+      "The second apply waits for the first to end.",
+      "One overwrites the other's record of reality."
+    ],
+    "answer": 3,
+    "explanation": "Locking has to be configured on the backend. Without it, both think they own the next change."
+  },
+  {
+    "id": "iac-state-03",
+    "skillId": "iac-state",
+    "difficulty": "medium",
+    "prompt": "A resource was created by hand. How does Terraform take it over without recreating it?",
+    "choices": [
+      "Run terraform refresh with it in the config.",
+      "Add it to the config with lifecycle ignore.",
+      "Import it, then plan until the diff is empty.",
+      "Add it to the config, then run apply."
+    ],
+    "answer": 2,
+    "explanation": "Import teaches state the existing ID. Applying the config alone would create a second one, and refresh only updates things already in state."
+  },
+  {
+    "id": "iac-state-04",
+    "skillId": "iac-state",
+    "difficulty": "easy",
+    "prompt": "Why are separate states per environment a good default?",
+    "choices": [
+      "Separate states make plans run in parallel.",
+      "Workspaces cannot share a state backend.",
+      "A bad change in dev cannot hit production.",
+      "Each state can use its own provider version."
+    ],
+    "answer": 2,
+    "explanation": "Split by blast radius. A single global state is a single global mistake."
+  },
+  {
+    "id": "iac-modules-01",
+    "skillId": "iac-modules",
+    "difficulty": "medium",
+    "prompt": "What is a module output?",
+    "choices": [
+      "A value the caller can use.",
+      "A value the caller must set.",
+      "A value shown only in plans.",
+      "A value kept out of state."
+    ],
+    "answer": 0,
+    "explanation": "Outputs are the module's return values, such as an ID the rest of the stack needs. Inputs are the arguments, and outputs are stored in state."
+  },
+  {
+    "id": "iac-modules-02",
+    "skillId": "iac-modules",
+    "difficulty": "easy",
+    "prompt": "Why source a module from a git tag rather than a branch?",
+    "choices": [
+      "A tag stays put. A branch moves.",
+      "A tag downloads faster than a branch.",
+      "A tag is required by terraform init.",
+      "A tag includes the module's state."
+    ],
+    "answer": 0,
+    "explanation": "Pin the source. Review the bump."
+  },
+  {
+    "id": "iac-modules-03",
+    "skillId": "iac-modules",
+    "difficulty": "hard",
+    "prompt": "A module rename changed a resource address and Terraform plans to recreate a database. What avoids that?",
+    "choices": [
+      "A moved block for the old and new address.",
+      "A lifecycle prevent_destroy on the database.",
+      "A terraform refresh before the next plan.",
+      "A depends_on from the new module to the old."
+    ],
+    "answer": 0,
+    "explanation": "Addresses are identity to Terraform. Tell it the resource moved. prevent_destroy only makes the plan fail, and state mv is the older CLI form."
+  },
+  {
+    "id": "iac-modules-04",
+    "skillId": "iac-modules",
+    "difficulty": "medium",
+    "prompt": "A child module hard-codes a region. Why is that a problem for the caller?",
+    "choices": [
+      "It cannot be reused elsewhere without a fork.",
+      "The caller's provider region is overridden.",
+      "Terraform rejects hard-coded values in modules.",
+      "The module's resources cannot be imported."
+    ],
+    "answer": 0,
+    "explanation": "Regions, names, and sizes are inputs. Hard-coding is how a module becomes a one-off script."
+  },
+  {
+    "id": "iac-plan-01",
+    "skillId": "iac-plan",
+    "difficulty": "medium",
+    "prompt": "A plan shows destroy and create for a resource you only renamed in the console. What is Terraform saying?",
+    "choices": [
+      "It will rename it in place, with a short outage first.",
+      "It will update the tags, then refresh the name.",
+      "It will create a copy and keep the original.",
+      "It will replace it, since the field forces a new one."
+    ],
+    "answer": 3,
+    "explanation": "Read a replace. It is downtime and data loss if the resource is a database."
+  },
+  {
+    "id": "iac-plan-02",
+    "skillId": "iac-plan",
+    "difficulty": "easy",
+    "prompt": "Why does applying a saved plan from plan -out matter?",
+    "choices": [
+      "It lets you edit the plan before applying.",
+      "You apply exactly the plan you reviewed.",
+      "It skips the state lock during the apply.",
+      "It applies faster by skipping a refresh."
+    ],
+    "answer": 1,
+    "explanation": "Terraform refuses a saved plan if state changed since, so nothing slips in that you did not read. The file is not meant to be edited."
+  },
+  {
+    "id": "iac-plan-03",
+    "skillId": "iac-plan",
+    "difficulty": "hard",
+    "prompt": "The plan is empty and production is still wrong. What can explain it?",
+    "choices": [
+      "The provider cached the old values from last run.",
+      "The plan used -refresh=false by default.",
+      "The resource has a lifecycle create_before_destroy.",
+      "Wrong state or workspace, or unmanaged resources."
+    ],
+    "answer": 3,
+    "explanation": "Check the workspace, the backend, and whether the broken thing is even in this configuration. An empty plan only means config and state agree."
+  },
+  {
+    "id": "iac-plan-04",
+    "skillId": "iac-plan",
+    "difficulty": "medium",
+    "prompt": "A variable marked sensitive still appears in state. What did sensitive change?",
+    "choices": [
+      "Whether providers may log its value.",
+      "Whether it is hashed before storage.",
+      "Whether the CLI shows it in output.",
+      "Whether it is encrypted in state."
+    ],
+    "answer": 2,
+    "explanation": "Sensitive is a display control. The state and the cloud still have the value. Protect those."
+  },
+  {
+    "id": "iac-policy-01",
+    "skillId": "iac-policy",
+    "difficulty": "medium",
+    "prompt": "What are Checkov, tfsec or Conftest in a pipeline for?",
+    "choices": [
+      "Failing a change that breaks a rule, before apply.",
+      "Detecting drift between state and the cloud.",
+      "Approving the plan in place of a reviewer.",
+      "Fixing insecure settings in the Terraform code."
+    ],
+    "answer": 0,
+    "explanation": "Policy as code catches a public bucket or an open security group in the diff, while the author is still at the keyboard. It does not replace the plan review."
+  },
+  {
+    "id": "iac-policy-02",
+    "skillId": "iac-policy",
+    "difficulty": "easy",
+    "prompt": "A policy check flags a security group that allows 0.0.0.0/0 to SSH. What is it?",
+    "choices": [
+      "A false positive, since NACLs filter SSH anyway.",
+      "A warning to ignore if the instance has no IP.",
+      "A finding to silence by disabling that check.",
+      "A real finding, unless a narrow exception applies."
+    ],
+    "answer": 3,
+    "explanation": "Write the exception narrowly if it is real. Do not turn the check off globally."
+  },
+  {
+    "id": "iac-policy-03",
+    "skillId": "iac-policy",
+    "difficulty": "medium",
+    "prompt": "How does Sentinel or OPA attached to a Terraform run differ from a laptop linter?",
+    "choices": [
+      "It checks the state file, not the plan.",
+      "It runs against the live cloud account.",
+      "It fixes the violations before apply.",
+      "It is a gate the apply cannot skip."
+    ],
+    "answer": 3,
+    "explanation": "A laptop linter is advice. A gate is how the rule survives a hurry."
+  },
+  {
+    "id": "iac-policy-04",
+    "skillId": "iac-policy",
+    "difficulty": "hard",
+    "prompt": "Policy passed the plan and the cloud still ends up with a public bucket. How?",
+    "choices": [
+      "The bucket's ACL is applied after the policy check.",
+      "Policy checks only see resources, not data sources.",
+      "Changed outside Terraform, or an attribute not covered.",
+      "The policy ran against the previous plan file."
+    ],
+    "answer": 2,
+    "explanation": "Policy on the plan does not watch the console. Pair it with a cloud scan for drift."
+  },
+  {
+    "id": "iac-ansible-01",
+    "skillId": "iac-ansible",
+    "difficulty": "medium",
+    "prompt": "How do Ansible and Terraform usually split the job?",
+    "choices": [
+      "Ansible creates infra. Terraform configures it.",
+      "Terraform handles Linux. Ansible handles cloud.",
+      "Ansible tracks state. Terraform is stateless.",
+      "Terraform creates infra. Ansible configures it."
+    ],
+    "answer": 3,
+    "explanation": "Use each for the loop it is good at. Driving both at the same resource without a boundary makes two sources of truth."
+  },
+  {
+    "id": "iac-ansible-02",
+    "skillId": "iac-ansible",
+    "difficulty": "easy",
+    "prompt": "What happens when you run an idempotent Ansible task twice?",
+    "choices": [
+      "The second run is skipped entirely.",
+      "The second run fails as a duplicate.",
+      "The second run changes nothing.",
+      "The second run reverts the first."
+    ],
+    "answer": 2,
+    "explanation": "Idempotent means the second run is a no-op when the world already matches. It still runs and checks."
+  },
+  {
+    "id": "iac-ansible-03",
+    "skillId": "iac-ansible",
+    "difficulty": "medium",
+    "prompt": "What is Ansible Vault for?",
+    "choices": [
+      "Signing playbooks before they are run.",
+      "Encrypting secrets in the automation repo.",
+      "Fetching secrets from HashiCorp Vault.",
+      "Storing the inventory of managed hosts."
+    ],
+    "answer": 1,
+    "explanation": "The encrypted file can live in git. The password cannot. Fetching from HashiCorp Vault is a lookup plugin."
+  },
+  {
+    "id": "iac-ansible-04",
+    "skillId": "iac-ansible",
+    "difficulty": "hard",
+    "prompt": "A playbook writes a secret to a world-readable file in /tmp and deletes it at the end. What is still wrong?",
+    "choices": [
+      "Others can read it until the delete runs.",
+      "The delete task is skipped in check mode.",
+      "/tmp is cleared only at the next reboot.",
+      "The file is cached by Ansible's fact store."
+    ],
+    "answer": 0,
+    "explanation": "The secret is exposed on disk, and a failed play may never reach the delete. Use a secret store, a tight file mode, and no_log."
+  },
+  {
+    "id": "iac-secrets-01",
+    "skillId": "iac-secrets",
+    "difficulty": "medium",
+    "prompt": "A cloud credential in terraform.tfvars was committed to git. What is it now?",
+    "choices": [
+      "Leaked. Rotate it.",
+      "Safe if the repo is private.",
+      "Safe once you delete the file.",
+      "Masked by Terraform in plans."
+    ],
+    "answer": 0,
+    "explanation": "tfvars is a common accident. Keep secrets in a secret manager or a CI secret and pass them in at run time."
+  },
+  {
+    "id": "iac-secrets-02",
+    "skillId": "iac-secrets",
+    "difficulty": "easy",
+    "prompt": "What does SOPS let you do?",
+    "choices": [
+      "Encrypt values in a file and still diff the keys.",
+      "Store secrets in a server with an audit log.",
+      "Scan git history for secrets before a push.",
+      "Rotate cloud credentials on a schedule."
+    ],
+    "answer": 0,
+    "explanation": "The file can be reviewed. The value cannot be read without the key."
+  },
+  {
+    "id": "iac-secrets-03",
+    "skillId": "iac-secrets",
+    "difficulty": "hard",
+    "prompt": "Why do External Secrets Operator and the CSI secrets driver exist?",
+    "choices": [
+      "So secrets in git are encrypted at rest.",
+      "So pods can share secrets across namespaces.",
+      "So secrets are stored in etcd encrypted.",
+      "So the cluster fetches secrets from a manager."
+    ],
+    "answer": 3,
+    "explanation": "The source of truth stays in the manager. The manifest only says which secret to fetch."
+  },
+  {
+    "id": "iac-secrets-04",
+    "skillId": "iac-secrets",
+    "difficulty": "medium",
+    "prompt": "When are Sealed Secrets a reasonable choice?",
+    "choices": [
+      "When the plaintext must be visible for review.",
+      "When secrets must be shared across clusters as-is.",
+      "When you need to rotate secrets automatically.",
+      "When git should hold ciphertext the cluster opens."
+    ],
+    "answer": 3,
+    "explanation": "Review the fact that a secret changed. Do not review the secret. A sealed secret is bound to one cluster's key."
+  },
+  {
+    "id": "iac-modules-05",
+    "skillId": "iac-modules",
+    "difficulty": "medium",
+    "prompt": "What is a three-tier Terraform layout with modules pushing you toward?",
+    "choices": [
+      "One root module so state stays in one file.",
+      "A separate repo and pipeline for each tier.",
+      "Each tier in its own workspace of one config.",
+      "Network, compute and data as modules with I/O."
+    ],
+    "answer": 3,
+    "explanation": "Modules are how the same tier is reviewed once and reused per environment, with outputs instead of hard-coded IDs."
+  },
+  {
+    "id": "iac-workflow-05",
+    "skillId": "iac-workflow",
+    "difficulty": "medium",
+    "prompt": "Packer bakes an AMI with Nginx, and Terraform launches from it. What is the point of the split?",
+    "choices": [
+      "Packer can manage state for the AMI it builds.",
+      "Terraform cannot create AMIs on its own.",
+      "Packer images boot faster than any user data.",
+      "An immutable image instead of configuring after boot."
+    ],
+    "answer": 3,
+    "explanation": "Disposable instances come from a baked image plus an autoscaling launch, not from a pet you configured by hand over SSH."
+  },
+  {
+    "id": "iac-policy-05",
+    "skillId": "iac-policy",
+    "difficulty": "medium",
+    "prompt": "A Rego policy requires S3 versioning and no public access, and apply must fail on a violation. Where does the check sit?",
+    "choices": [
+      "Against the plan, before apply.",
+      "In the bucket's own policy.",
+      "In a daily AWS Config rule.",
+      "In the S3 Block Public Access."
+    ],
+    "answer": 0,
+    "explanation": "Rego is the policy. Terraform is the change. The gate joins them before the bucket exists. The others act after."
+  },
+  {
+    "id": "iac-ansible-05",
+    "skillId": "iac-ansible",
+    "difficulty": "medium",
+    "prompt": "Ansible manages who can SSH to production through a jump host. Why must the playbook be idempotent?",
+    "choices": [
+      "A rerun must re-add any keys that were removed.",
+      "A rerun must rotate every key on the host.",
+      "A rerun must only touch hosts that failed.",
+      "A rerun must change nothing if access is right."
+    ],
+    "answer": 3,
+    "explanation": "The playbook is the access list. A second run that changes more, such as appending keys again, is a bug."
+  },
+  {
+    "id": "iac-policy-06",
+    "skillId": "iac-policy",
+    "difficulty": "easy",
+    "prompt": "What is IaC security, in practice?",
+    "choices": [
+      "Policy checks on the plan before apply.",
+      "Scanning the cloud for drift each night.",
+      "Encrypting Terraform state at rest.",
+      "Signing Terraform modules before use."
+    ],
+    "answer": 0,
+    "explanation": "The misconfiguration is cheapest to stop in the diff, where a public bucket becomes a failed change."
+  },
+  {
+    "id": "iac-policy-07",
+    "skillId": "iac-policy",
+    "difficulty": "hard",
+    "prompt": "Checkov and InSpec are both security testing tools. How do they split?",
+    "choices": [
+      "Checkov reads IaC. InSpec checks a system's state.",
+      "Checkov checks a system. InSpec reads IaC files.",
+      "Checkov uses Rego. InSpec uses Sentinel policies.",
+      "Checkov runs after apply. InSpec runs before it."
+    ],
+    "answer": 0,
+    "explanation": "Use the one that sees the artifact you are about to ship. A passing Checkov does not prove the host matches the profile."
+  },
+  {
+    "id": "iac-workflow-06",
+    "skillId": "iac-workflow",
+    "difficulty": "easy",
+    "prompt": "Why is version management easier once the platform is YAML and HCL?",
+    "choices": [
+      "Changes no longer need a pipeline.",
+      "You can diff, review, and recreate it.",
+      "Files cannot drift from the cluster.",
+      "Live state no longer needs a backup."
+    ],
+    "answer": 1,
+    "explanation": "The files are the source only if a controller or a pipeline actually applies them."
+  },
+  {
+    "id": "iac-workflow-07",
+    "skillId": "iac-workflow",
+    "difficulty": "easy",
+    "prompt": "Terraform enables versioning on an S3 bucket. What does that protect?",
+    "choices": [
+      "Objects from being read.",
+      "Earlier copies of overwritten objects.",
+      "The bucket itself from being deleted.",
+      "Objects from public access."
+    ],
+    "answer": 1,
+    "explanation": "Versioning is a flag on the bucket, off by default. It does not block public access or deletes of the bucket."
+  },
+  {
+    "id": "iac-ansible-06",
+    "skillId": "iac-ansible",
+    "difficulty": "easy",
+    "prompt": "How should an Ansible playbook that installs Apache be built?",
+    "choices": [
+      "Package and service modules, idempotent.",
+      "A shell task running apt-get install.",
+      "A script copied over and then run.",
+      "A command task with ignore_errors."
+    ],
+    "answer": 0,
+    "explanation": "package and service modules check state first. The second run should change nothing if Apache is already correct."
+  },
+  {
+    "id": "iac-modules-06",
+    "skillId": "iac-modules",
+    "difficulty": "medium",
+    "prompt": "A Terraform module should make the VPC pattern reusable. What should it expose?",
+    "choices": [
+      "Its state file to other modules.",
+      "CIDR inputs and ID outputs.",
+      "Its resources for callers to copy.",
+      "A fixed CIDR and region inside."
+    ],
+    "answer": 1,
+    "explanation": "If two environments differ only by variables, they should share the module. Callers should not copy the resource block."
+  },
+  {
+    "id": "iac-workflow-08",
+    "skillId": "iac-workflow",
+    "difficulty": "medium",
+    "prompt": "Terraform creates a Kubernetes cluster. Where should the cluster credentials be kept?",
+    "choices": [
+      "In terraform.tfvars, next to the code.",
+      "In the CI log, where admins can find them.",
+      "Out of committed state and out of git.",
+      "In a sensitive output, which hides them."
+    ],
+    "answer": 2,
+    "explanation": "Sensitive outputs are still in state. The cluster is cattle. The kubeconfig is a key."
+  },
+  {
+    "id": "iac-policy-08",
+    "skillId": "iac-policy",
+    "difficulty": "easy",
+    "prompt": "Why does OPA fail an apply when the S3 bucket is public?",
+    "choices": [
+      "The policy is evaluated against the plan.",
+      "AWS rejects public buckets by default.",
+      "OPA reads the bucket ACL after apply.",
+      "Rego runs as an S3 bucket policy."
+    ],
+    "answer": 0,
+    "explanation": "Versioning and block-public-access are two rules. Either one failing should stop Terraform."
+  },
+  {
+    "id": "iac-modules-07",
+    "skillId": "iac-modules",
+    "difficulty": "hard",
+    "prompt": "Moving resources between modules will destroy them unless what?",
+    "choices": [
+      "A moved block or state mv for each.",
+      "A matching name in the new module.",
+      "A refresh before the next plan.",
+      "A depends_on on the old module."
+    ],
+    "answer": 0,
+    "explanation": "Addresses are identity. The plan that says destroy on a database is the review that matters."
+  },
+  {
+    "id": "iac-ansible-07",
+    "skillId": "iac-ansible",
+    "difficulty": "medium",
+    "prompt": "Why should network automation with Ansible be idempotent?",
+    "choices": [
+      "Devices reboot when config changes.",
+      "Ansible caches facts between runs.",
+      "Reruns must not flap correct rules.",
+      "Network modules cannot run twice."
+    ],
+    "answer": 2,
+    "explanation": "A playbook that appends a rule every run will lock you out eventually."
+  },
+  {
+    "id": "iac-ansible-08",
+    "skillId": "iac-ansible",
+    "difficulty": "hard",
+    "prompt": "Why test an Ansible role with Molecule?",
+    "choices": [
+      "It runs the role in check mode on the fleet.",
+      "It records which hosts the role changed.",
+      "It converges and verifies in a throwaway VM.",
+      "It lints the YAML and the Jinja templates."
+    ],
+    "answer": 2,
+    "explanation": "A broken task fails before it hits the fleet. A role you only ran once on a laptop is untested."
+  },
+  {
+    "id": "iac-ansible-09",
+    "skillId": "iac-ansible",
+    "difficulty": "easy",
+    "prompt": "What do a Puppet master and agent do on a fleet?",
+    "choices": [
+      "The master builds images for the agents.",
+      "Agents check in and converge to the manifest.",
+      "The master pushes SSH commands to agents.",
+      "Agents report state, and admins fix drift."
+    ],
+    "answer": 1,
+    "explanation": "The manifest is the standard build. A second run does not keep changing a correct host."
+  },
+  {
+    "id": "iac-workflow-09",
+    "skillId": "iac-workflow",
+    "difficulty": "medium",
+    "prompt": "When does Terratest fail a change?",
+    "choices": [
+      "The plan shows resources being replaced.",
+      "tflint finds an unused variable.",
+      "Assertions fail on the real resources it applied.",
+      "terraform validate finds a syntax error first."
+    ],
+    "answer": 2,
+    "explanation": "Terratest applies the Terraform in a test account and checks real resources. Destroy them at the end. A test that leaves a VPC running is a bill."
+  },
+  {
+    "id": "iac-policy-09",
+    "skillId": "iac-policy",
+    "difficulty": "easy",
+    "prompt": "What is Deepfence ThreatMapper closer to?",
+    "choices": [
+      "A pre-commit hook for secret detection.",
+      "An admission controller for pod specs.",
+      "A view of deployed assets and attack paths.",
+      "A Terraform plan linter with policies."
+    ],
+    "answer": 2,
+    "explanation": "Checkov sees the code. ThreatMapper sees what is deployed. Drift lives between them."
+  }
+]

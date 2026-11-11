@@ -1,8 +1,6 @@
 package com.infralingo.ui
 
-import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.view.HapticFeedbackConstants
 import androidx.activity.compose.BackHandler
@@ -185,13 +183,6 @@ fun LessonScreen(
                             .putExtra(Intent.EXTRA_TEXT, feedback.askAi)
                         context.startActivity(Intent.createChooser(send, "Ask an assistant"))
                     },
-                    onSource = {
-                        try {
-                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(feedback.url)))
-                        } catch (_: ActivityNotFoundException) {
-                            // No browser on this device. Nothing useful to do with the link.
-                        }
-                    },
                 )
             }
         }
@@ -341,7 +332,7 @@ private fun ActionBar(hintsLeft: Int, canCheck: Boolean, onHint: () -> Unit, onC
 }
 
 @Composable
-private fun FeedbackPanel(feedback: FeedbackUi, onNext: () -> Unit, onAskAi: () -> Unit, onSource: () -> Unit) {
+private fun FeedbackPanel(feedback: FeedbackUi, onNext: () -> Unit, onAskAi: () -> Unit) {
     val palette = LocalPalette.current
     val tint = if (feedback.correct) palette.correctTint else palette.wrongTint
     val ink = if (feedback.correct) palette.correctInk else palette.wrongInk
@@ -381,9 +372,6 @@ private fun FeedbackPanel(feedback: FeedbackUi, onNext: () -> Unit, onAskAi: () 
         }
         Row(Modifier.padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             PanelLink("Ask AI", ink, onAskAi) { SparkleIcon(Modifier.size(18.dp), tint = ink) }
-            if (feedback.url.isNotBlank()) {
-                PanelLink(feedback.source, ink, onSource) { LinkIcon(Modifier.size(16.dp), tint = ink) }
-            }
         }
         DuoButton(
             text = if (feedback.correct) "Continue" else "Got it",
