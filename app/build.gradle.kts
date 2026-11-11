@@ -14,12 +14,29 @@ android {
         applicationId = "com.infralingo"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
+        // CI numbers each build so Android treats a new APK as an update.
+        versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
         versionName = "1.0"
+    }
+
+    // One fixed key, so every published APK installs over the last one and keeps progress.
+    // CI writes the keystore from repository secrets. Without it, release builds are unsigned.
+    val keystoreFile = System.getenv("INFRALINGO_KEYSTORE_FILE")?.let(::file)
+    val keystorePassword = System.getenv("INFRALINGO_KEYSTORE_PASSWORD")
+    val shared = if (keystoreFile != null && keystoreFile.exists() && keystorePassword != null) {
+        signingConfigs.create("shared") {
+            storeFile = keystoreFile
+            storePassword = keystorePassword
+            keyAlias = "infralingo"
+            keyPassword = keystorePassword
+        }
+    } else {
+        null
     }
 
     buildTypes {
         release {
+            signingConfig = shared
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
