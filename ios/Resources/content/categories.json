@@ -1,5 +1,11 @@
 [
   {
+    "id": "craft-ai",
+    "title": "Craft AI",
+    "order": 0,
+    "blurb": "Préparer l'entretien DevOps chez Craft AI, en français."
+  },
+  {
     "id": "linux",
     "title": "Linux",
     "order": 1,

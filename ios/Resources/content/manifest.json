@@ -1,5 +1,6 @@
 {
   "questionFiles": [
+    "craft-ai.json",
     "linux.json",
     "networking.json",
     "servers.json",

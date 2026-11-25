@@ -11,6 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1] / "app" / "src" / "main" / "assets" / "content"
 
 CATEGORIES = [
+    {"id": "craft-ai", "title": "Craft AI", "order": 0, "blurb": "Préparer l'entretien DevOps chez Craft AI, en français."},
     {"id": "linux", "title": "Linux", "order": 1, "blurb": "Processes, systemd, permissions, storage, and the host itself."},
     {"id": "networking", "title": "Networking", "order": 2, "blurb": "The protocols and failure modes an operator actually hits."},
     {"id": "servers", "title": "Servers and edge", "order": 3, "blurb": "Proxies and web servers in front of the workload."},
@@ -24,6 +25,46 @@ CATEGORIES = [
 ]
 
 SKILLS = [
+    ("cai-company", "craft-ai", "L'entreprise", 1),
+    ("cai-platform", "craft-ai", "La plateforme", 2),
+    ("cai-role", "craft-ai", "Le poste et l'entretien", 3),
+    ("cai-method", "craft-ai", "Méthode de diagnostic", 4),
+    ("cai-vocab", "craft-ai", "Vocabulaire", 5),
+    ("cai-lin-perf", "craft-ai", "Linux\u00a0: serveur lent", 6),
+    ("cai-lin-disk", "craft-ai", "Linux\u00a0: disque et mémoire", 7),
+    ("cai-lin-svc", "craft-ai", "Linux\u00a0: systemd et logs", 8),
+    ("cai-lin-perm", "craft-ai", "Linux\u00a0: droits", 9),
+    ("cai-lin-proc", "craft-ai", "Linux\u00a0: processus et signaux", 10),
+    ("cai-shell", "craft-ai", "Shell et scripts", 11),
+    ("cai-net-tcp", "craft-ai", "Réseau\u00a0: TCP/IP", 12),
+    ("cai-net-subnet", "craft-ai", "Réseau\u00a0: sous-réseaux", 13),
+    ("cai-net-dns", "craft-ai", "Réseau\u00a0: DNS", 14),
+    ("cai-net-http", "craft-ai", "Réseau\u00a0: HTTP et proxys", 15),
+    ("cai-net-tls", "craft-ai", "Réseau\u00a0: TLS", 16),
+    ("cai-net-fw", "craft-ai", "Réseau\u00a0: pare-feu et NAT", 17),
+    ("cai-net-debug", "craft-ai", "Réseau\u00a0: diagnostic", 18),
+    ("cai-outage", "craft-ai", "Simulations de pannes", 19),
+    ("cai-docker", "craft-ai", "Docker", 20),
+    ("cai-k8s-core", "craft-ai", "Kubernetes\u00a0: architecture", 21),
+    ("cai-k8s-run", "craft-ai", "Kubernetes\u00a0: sondes et ressources", 22),
+    ("cai-k8s-net", "craft-ai", "Kubernetes\u00a0: réseau", 23),
+    ("cai-k8s-debug", "craft-ai", "Kubernetes\u00a0: pannes", 24),
+    ("cai-k8s-ops", "craft-ai", "Kubernetes\u00a0: exploitation", 25),
+    ("cai-argo", "craft-ai", "Argo, Helm et GitOps", 26),
+    ("cai-gpu", "craft-ai", "GPU sur Kubernetes", 27),
+    ("cai-llm", "craft-ai", "Servir un LLM", 28),
+    ("cai-rag", "craft-ai", "RAG et bases vectorielles", 29),
+    ("cai-agents", "craft-ai", "Agents IA et sécurité", 30),
+    ("cai-cost", "craft-ai", "Coûts et IA frugale", 31),
+    ("cai-tf", "craft-ai", "Terraform", 32),
+    ("cai-ansible", "craft-ai", "Ansible et Packer", 33),
+    ("cai-cloud", "craft-ai", "AWS, GCP, Scaleway", 34),
+    ("cai-sov", "craft-ai", "Cloud souverain et conformité", 35),
+    ("cai-cicd", "craft-ai", "CI/CD et Jenkins", 36),
+    ("cai-git", "craft-ai", "Git", 37),
+    ("cai-obs", "craft-ai", "Observabilité", 38),
+    ("cai-incident", "craft-ai", "Incidents et SLO", 39),
+    ("cai-pg", "craft-ai", "PostgreSQL", 40),
     ("linux-processes", "linux", "Processes", 1),
     ("linux-signals", "linux", "Signals", 2),
     ("linux-systemd", "linux", "systemd", 3),
@@ -191,14 +232,14 @@ def main() -> None:
         name = f"{category['id']}.json"
         files.append(name)
         payload = by_category[category["id"]]
-        (questions_dir / name).write_text(json.dumps(payload, indent=2) + "\n")
+        (questions_dir / name).write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
-    (ROOT / "categories.json").write_text(json.dumps(CATEGORIES, indent=2) + "\n")
+    (ROOT / "categories.json").write_text(json.dumps(CATEGORIES, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     skills = [
         {"id": skill, "categoryId": category, "title": title, "order": order}
         for skill, category, title, order in SKILLS
     ]
-    (ROOT / "skills.json").write_text(json.dumps(skills, indent=2) + "\n")
+    (ROOT / "skills.json").write_text(json.dumps(skills, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     (ROOT / "manifest.json").write_text(json.dumps({"questionFiles": files}, indent=2) + "\n")
     print(f"wrote {len(built)} questions across {len(SKILLS)} skills")
 

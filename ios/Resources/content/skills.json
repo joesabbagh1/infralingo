@@ -1,5 +1,245 @@
 [
   {
+    "id": "cai-company",
+    "categoryId": "craft-ai",
+    "title": "L'entreprise",
+    "order": 1
+  },
+  {
+    "id": "cai-platform",
+    "categoryId": "craft-ai",
+    "title": "La plateforme",
+    "order": 2
+  },
+  {
+    "id": "cai-role",
+    "categoryId": "craft-ai",
+    "title": "Le poste et l'entretien",
+    "order": 3
+  },
+  {
+    "id": "cai-method",
+    "categoryId": "craft-ai",
+    "title": "Méthode de diagnostic",
+    "order": 4
+  },
+  {
+    "id": "cai-vocab",
+    "categoryId": "craft-ai",
+    "title": "Vocabulaire",
+    "order": 5
+  },
+  {
+    "id": "cai-lin-perf",
+    "categoryId": "craft-ai",
+    "title": "Linux : serveur lent",
+    "order": 6
+  },
+  {
+    "id": "cai-lin-disk",
+    "categoryId": "craft-ai",
+    "title": "Linux : disque et mémoire",
+    "order": 7
+  },
+  {
+    "id": "cai-lin-svc",
+    "categoryId": "craft-ai",
+    "title": "Linux : systemd et logs",
+    "order": 8
+  },
+  {
+    "id": "cai-lin-perm",
+    "categoryId": "craft-ai",
+    "title": "Linux : droits",
+    "order": 9
+  },
+  {
+    "id": "cai-lin-proc",
+    "categoryId": "craft-ai",
+    "title": "Linux : processus et signaux",
+    "order": 10
+  },
+  {
+    "id": "cai-shell",
+    "categoryId": "craft-ai",
+    "title": "Shell et scripts",
+    "order": 11
+  },
+  {
+    "id": "cai-net-tcp",
+    "categoryId": "craft-ai",
+    "title": "Réseau : TCP/IP",
+    "order": 12
+  },
+  {
+    "id": "cai-net-subnet",
+    "categoryId": "craft-ai",
+    "title": "Réseau : sous-réseaux",
+    "order": 13
+  },
+  {
+    "id": "cai-net-dns",
+    "categoryId": "craft-ai",
+    "title": "Réseau : DNS",
+    "order": 14
+  },
+  {
+    "id": "cai-net-http",
+    "categoryId": "craft-ai",
+    "title": "Réseau : HTTP et proxys",
+    "order": 15
+  },
+  {
+    "id": "cai-net-tls",
+    "categoryId": "craft-ai",
+    "title": "Réseau : TLS",
+    "order": 16
+  },
+  {
+    "id": "cai-net-fw",
+    "categoryId": "craft-ai",
+    "title": "Réseau : pare-feu et NAT",
+    "order": 17
+  },
+  {
+    "id": "cai-net-debug",
+    "categoryId": "craft-ai",
+    "title": "Réseau : diagnostic",
+    "order": 18
+  },
+  {
+    "id": "cai-outage",
+    "categoryId": "craft-ai",
+    "title": "Simulations de pannes",
+    "order": 19
+  },
+  {
+    "id": "cai-docker",
+    "categoryId": "craft-ai",
+    "title": "Docker",
+    "order": 20
+  },
+  {
+    "id": "cai-k8s-core",
+    "categoryId": "craft-ai",
+    "title": "Kubernetes : architecture",
+    "order": 21
+  },
+  {
+    "id": "cai-k8s-run",
+    "categoryId": "craft-ai",
+    "title": "Kubernetes : sondes et ressources",
+    "order": 22
+  },
+  {
+    "id": "cai-k8s-net",
+    "categoryId": "craft-ai",
+    "title": "Kubernetes : réseau",
+    "order": 23
+  },
+  {
+    "id": "cai-k8s-debug",
+    "categoryId": "craft-ai",
+    "title": "Kubernetes : pannes",
+    "order": 24
+  },
+  {
+    "id": "cai-k8s-ops",
+    "categoryId": "craft-ai",
+    "title": "Kubernetes : exploitation",
+    "order": 25
+  },
+  {
+    "id": "cai-argo",
+    "categoryId": "craft-ai",
+    "title": "Argo, Helm et GitOps",
+    "order": 26
+  },
+  {
+    "id": "cai-gpu",
+    "categoryId": "craft-ai",
+    "title": "GPU sur Kubernetes",
+    "order": 27
+  },
+  {
+    "id": "cai-llm",
+    "categoryId": "craft-ai",
+    "title": "Servir un LLM",
+    "order": 28
+  },
+  {
+    "id": "cai-rag",
+    "categoryId": "craft-ai",
+    "title": "RAG et bases vectorielles",
+    "order": 29
+  },
+  {
+    "id": "cai-agents",
+    "categoryId": "craft-ai",
+    "title": "Agents IA et sécurité",
+    "order": 30
+  },
+  {
+    "id": "cai-cost",
+    "categoryId": "craft-ai",
+    "title": "Coûts et IA frugale",
+    "order": 31
+  },
+  {
+    "id": "cai-tf",
+    "categoryId": "craft-ai",
+    "title": "Terraform",
+    "order": 32
+  },
+  {
+    "id": "cai-ansible",
+    "categoryId": "craft-ai",
+    "title": "Ansible et Packer",
+    "order": 33
+  },
+  {
+    "id": "cai-cloud",
+    "categoryId": "craft-ai",
+    "title": "AWS, GCP, Scaleway",
+    "order": 34
+  },
+  {
+    "id": "cai-sov",
+    "categoryId": "craft-ai",
+    "title": "Cloud souverain et conformité",
+    "order": 35
+  },
+  {
+    "id": "cai-cicd",
+    "categoryId": "craft-ai",
+    "title": "CI/CD et Jenkins",
+    "order": 36
+  },
+  {
+    "id": "cai-git",
+    "categoryId": "craft-ai",
+    "title": "Git",
+    "order": 37
+  },
+  {
+    "id": "cai-obs",
+    "categoryId": "craft-ai",
+    "title": "Observabilité",
+    "order": 38
+  },
+  {
+    "id": "cai-incident",
+    "categoryId": "craft-ai",
+    "title": "Incidents et SLO",
+    "order": 39
+  },
+  {
+    "id": "cai-pg",
+    "categoryId": "craft-ai",
+    "title": "PostgreSQL",
+    "order": 40
+  },
+  {
     "id": "linux-processes",
     "categoryId": "linux",
     "title": "Processes",
